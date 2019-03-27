@@ -1,6 +1,6 @@
 AWSTemplateFormatVersion: 2010-09-09
 Description: >-
-   WebServer, NGINX in ASG behind ALB, License:
+   DataStax ddac template
 Parameters:
   InstanceType:
     Description: EC2 instance type
@@ -36,12 +36,6 @@ Parameters:
   KeyPairName:
     Type: 'AWS::EC2::KeyPair::KeyName'
     ConstraintDescription: Name of an existing EC2 KeyPair.
-  WebserverCIDR:
-    AllowedPattern: >-
-      ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/([0-9]|[1-2][0-9]|3[0-2]))$
-    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/x
-    Description: Allowed CIDR block for  webserver access
-    Type: String
   RemoteAccessCIDR:
     AllowedPattern: >-
       ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/([0-9]|[1-2][0-9]|3[0-2]))$
@@ -134,13 +128,13 @@ Resources:
       Subscription:
         - Endpoint: !Ref EmailAddress
           Protocol: email
-  WebServerGroup:
+  ClusterNodeGroup:
     Type: 'AWS::AutoScaling::AutoScalingGroup'
     Properties:
       VPCZoneIdentifier:
         - !Ref PublicSubnet1ID
         - !Ref PublicSubnet2ID
-      LaunchConfigurationName: !Ref WebServerLaunchConfig
+      LaunchConfigurationName: !Ref ClusterNodeLaunchConfig
       MinSize: '2'
       MaxSize: '8'
       TargetGroupARNs:
@@ -162,22 +156,22 @@ Resources:
         MaxBatchSize: '1'
         PauseTime: PT15M
         WaitOnResourceSignals: 'true'
-  WebServerLaunchConfig:
+  ClusterNodeLaunchConfig:
     Type: 'AWS::AutoScaling::LaunchConfiguration'
     Metadata:
       'AWS::CloudFormation::Init':
         configSets:
-          webserver_install:
-            - config-webserver
-            - run_service-webserver
-        config-webserver:
+          workload_install:
+            - config-workload
+            - run_service-workload
+        config-workload:
           packages:
             apt:
-              nginx: []
-        run_service-webserver:
+              wget: []
+        run_service-workload:
           commands:
-            start_weberver:
-              command: /etc/init.d/nginx start
+            start_services:
+              command: echo "Replace with service start command"
     Properties:
       KeyName: !Ref KeyPairName
       ImageId: !FindInMap 
@@ -186,83 +180,56 @@ Resources:
         - US1604HVM
       InstanceType: !Ref InstanceType
       SecurityGroups:
-        - !Ref WebServerSecurityGroup
+        - !Ref ClusterNodeSecurityGroup
       UserData: !Base64 
         'Fn::Sub':
           - >
             #!/bin/bash -x
-
             #CFN Functions
-
             function cfn_fail
-
             {
-
-            cfn-signal -e 1 --stack ${AWS::StackName} --region ${AWS::Region}
-            --resource WebServerGroup
-
+            cfn-signal -e 1 --stack ${AWS::StackName} --region ${AWS::Region} --resource ClusterNodeGroup
             exit 1
-
             }
-
             function cfn_success
-
             {
-
-            cfn-signal -e 0 --stack ${AWS::StackName} --region ${AWS::Region}
-            --resource WebServerGroup
-
+            cfn-signal -e 0 --stack ${AWS::StackName} --region ${AWS::Region} --resource ClusterNodeGroup
             exit 0
-
             }
-
             S3URI=https://${QSS3BucketName}.${S3Region}.amazonaws.com/${QSS3KeyPrefix}
-
             echo \'[Cloning: Load QuickStart Common Utils]\'
-
             #Once Repo is public (Use quickstart-linux-utilities submodue)
-
-            git clone
-            https://github.com/aws-quickstart/quickstart-linux-utilities.git
-
+            git clone https://github.com/aws-quickstart/quickstart-linux-utilities.git
             source /quickstart-linux-utilities/quickstart-cfn-tools.source
-
             echo \'[Loaded: Load QuickStart Common Utils]\'
-
             echo \'[Update Operating System]\'
-
             qs_update-os || qs_err
-
             qs_bootstrap_pip || qs_err
-
             qs_aws-cfn-bootstrap || qs_err
 
-            cfn-init -v --stack ${AWS::StackName} --resource
-            WebServerLaunchConfig --configsets webserver_install
-            --region ${AWS::Region} || cfn_fail
+            cfn-init -v --stack ${AWS::StackName} --resource ClusterNodeLaunchConfig --configsets workload_install --region ${AWS::Region} || cfn_fail
 
             # Signal cfn-init (final check)
-
             [ $(qs_status) == 0 ] && cfn_success || cfn_fail
           - S3Region: !If 
               - GovCloudCondition
               - s3-us-gov-west-1
               - s3
-  WebServerScaleUpPolicy:
+  ClusterNodeScaleUpPolicy:
     Type: 'AWS::AutoScaling::ScalingPolicy'
     Properties:
       AdjustmentType: ChangeInCapacity
-      AutoScalingGroupName: !Ref WebServerGroup
+      AutoScalingGroupName: !Ref ClusterNodeGroup
       Cooldown: '60'
       ScalingAdjustment: '1'
-  WebServerScaleDownPolicy:
+  ClusterNodeScaleDownPolicy:
     Type: 'AWS::AutoScaling::ScalingPolicy'
     Properties:
       AdjustmentType: ChangeInCapacity
-      AutoScalingGroupName: !Ref WebServerGroup
+      AutoScalingGroupName: !Ref ClusterNodeGroup
       Cooldown: '60'
       ScalingAdjustment: '-1'
-  WebServerCPUAlarmHigh:
+  ClusterNodeCPUAlarmHigh:
     Type: 'AWS::CloudWatch::Alarm'
     Properties:
       AlarmDescription: Scale-up if CPU > 90% for 10 minutes
@@ -273,12 +240,12 @@ Resources:
       EvaluationPeriods: '2'
       Threshold: '90'
       AlarmActions:
-        - !Ref WebServerScaleUpPolicy
+        - !Ref ClusterNodeScaleUpPolicy
       Dimensions:
         - Name: AutoScalingGroupName
-          Value: !Ref WebServerGroup
+          Value: !Ref ClusterNodeGroup
       ComparisonOperator: GreaterThanThreshold
-  WebServerCPUAlarmLow:
+  ClusterNodeCPUAlarmLow:
     Type: 'AWS::CloudWatch::Alarm'
     Properties:
       AlarmDescription: Scale-down if CPU < 70% for 10 minutes
@@ -289,62 +256,18 @@ Resources:
       EvaluationPeriods: '2'
       Threshold: '70'
       AlarmActions:
-        - !Ref WebServerScaleDownPolicy
+        - !Ref ClusterNodeScaleDownPolicy
       Dimensions:
         - Name: AutoScalingGroupName
-          Value: !Ref WebServerGroup
+          Value: !Ref ClusterNodeGroup
       ComparisonOperator: LessThanThreshold
-  ApplicationLoadBalancer:
-    Type: 'AWS::ElasticLoadBalancingV2::LoadBalancer'
-    Properties:
-      Subnets:
-        - !Ref PublicSubnet1ID
-        - !Ref PublicSubnet2ID
-      SecurityGroups:
-        - !Ref WebServerSecurityGroup
-      Tags:
-        - Key: name
-          Value:  WebServer ASG Instance
-  ALBListener:
-    Type: 'AWS::ElasticLoadBalancingV2::Listener'
-    Properties:
-      DefaultActions:
-        - Type: forward
-          TargetGroupArn: !Ref ALBTargetGroup
-      LoadBalancerArn: !Ref ApplicationLoadBalancer
-      Port: '80'
-      Protocol: HTTP
-  ALBTargetGroup:
-    Type: 'AWS::ElasticLoadBalancingV2::TargetGroup'
-    Properties:
-      HealthCheckIntervalSeconds: 30
-      HealthCheckTimeoutSeconds: 5
-      HealthyThresholdCount: 3
-      Port: 80
-      Protocol: HTTP
-      UnhealthyThresholdCount: 5
-      VpcId: !Ref VPCID
-  WebServerSecurityGroup:
+  ClusterNodeSecurityGroup:
     Type: 'AWS::EC2::SecurityGroup'
     Properties:
-      GroupDescription: Enable HTTP from the load balancer only SSH Access from RemoteAccessCIDR
+      GroupDescription: Enable SSH Access from RemoteAccessCIDR
       SecurityGroupIngress:
         - IpProtocol: tcp
           FromPort: '22'
           ToPort: '22'
           CidrIp: !Ref RemoteAccessCIDR
-        - IpProtocol: tcp
-          FromPort: '80'
-          ToPort: '80'
-          CidrIp: !Ref WebserverCIDR
       VpcId: !Ref VPCID
-Outputs:
-  URL:
-    Description: The URL of WebServer
-    Value: !Join 
-      - ''
-      - - 'http://'
-        - !GetAtt 
-          - ApplicationLoadBalancer
-          - DNSName
-
