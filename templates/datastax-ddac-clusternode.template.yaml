@@ -79,12 +79,6 @@ Parameters:
   VPCID:
     Description: 'ID of the VPC (e.g., vpc-0343606e)'
     Type: 'AWS::EC2::VPC::Id'
-  VPCCIDR:
-    AllowedPattern: >-
-      ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/([0-9]|[1-2][0-9]|3[0-2]))$
-    ConstraintDescription: Must be a valid IP range in x.x.x.x/x notation
-    Description: The CIDR IP range of VPC
-    Type: String
 Mappings:
   AWSAMIRegionMap:
     AMI:
@@ -135,10 +129,8 @@ Resources:
         - !Ref PublicSubnet1ID
         - !Ref PublicSubnet2ID
       LaunchConfigurationName: !Ref ClusterNodeLaunchConfig
-      MinSize: '2'
-      MaxSize: '8'
-      TargetGroupARNs:
-        - !Ref ALBTargetGroup
+      MinSize: '1'
+      MaxSize: '2'
       NotificationConfiguration:
         TopicARN: !Ref NotificationTopic
         NotificationTypes:
@@ -183,34 +175,23 @@ Resources:
         - !Ref ClusterNodeSecurityGroup
       UserData: !Base64 
         'Fn::Sub':
-          - >
+          - |
             #!/bin/bash -x
-            #CFN Functions
-            function cfn_fail
-            {
-            cfn-signal -e 1 --stack ${AWS::StackName} --region ${AWS::Region} --resource ClusterNodeGroup
-            exit 1
+            function cfn_fail {
+            cfn-signal -e 1 --stack ${AWS::StackName} --region ${AWS::Region} --resource ClusterNodeGroup; exit 1
             }
-            function cfn_success
-            {
-            cfn-signal -e 0 --stack ${AWS::StackName} --region ${AWS::Region} --resource ClusterNodeGroup
-            exit 0
+            function cfn_success {
+            cfn-signal -e 0 --stack ${AWS::StackName} --region ${AWS::Region} --resource ClusterNodeGroup; exit 0
             }
             S3URI=https://${QSS3BucketName}.${S3Region}.amazonaws.com/${QSS3KeyPrefix}
-            echo \'[Cloning: Load QuickStart Common Utils]\'
-            #Once Repo is public (Use quickstart-linux-utilities submodue)
-            git clone https://github.com/aws-quickstart/quickstart-linux-utilities.git
-            source /quickstart-linux-utilities/quickstart-cfn-tools.source
-            echo \'[Loaded: Load QuickStart Common Utils]\'
-            echo \'[Update Operating System]\'
+            git clone https://github.com/aws-quickstart/quickstart-linux-utilities.git;
+            source /quickstart-linux-utilities/quickstart-cfn-tools.source;
             qs_update-os || qs_err
             qs_bootstrap_pip || qs_err
             qs_aws-cfn-bootstrap || qs_err
-
             cfn-init -v --stack ${AWS::StackName} --resource ClusterNodeLaunchConfig --configsets workload_install --region ${AWS::Region} || cfn_fail
-
-            # Signal cfn-init (final check)
             [ $(qs_status) == 0 ] && cfn_success || cfn_fail
+
           - S3Region: !If 
               - GovCloudCondition
               - s3-us-gov-west-1

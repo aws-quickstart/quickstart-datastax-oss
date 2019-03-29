@@ -9,7 +9,7 @@
     },
     {
         "ParameterKey": "KeyPairName",
-        "ParameterValue": "tonynv.pem"
+        "ParameterValue": "tonynv"
     },
     {
         "ParameterKey": "RemoteAccessCIDR",

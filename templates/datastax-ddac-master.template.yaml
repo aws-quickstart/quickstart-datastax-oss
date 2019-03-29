@@ -105,7 +105,7 @@ Resources:
         PublicSubnet1CIDR: !Ref PublicSubnet1CIDR
         PublicSubnet2CIDR: !Ref PublicSubnet2CIDR
         VPCCIDR: !Ref VPCCIDR
-  WorkloadStack:
+  ClusterNodeStack:
     DependsOn: VPCStack
     Type: AWS::CloudFormation::Stack
     Properties:
@@ -144,7 +144,3 @@ Resources:
           Fn::GetAtt:
           - VPCStack
           - Outputs.VPCID
-        VPCCIDR:
-          Fn::GetAtt:
-          - VPCStack
-          - Outputs.VPCCIDR
