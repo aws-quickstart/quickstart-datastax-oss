@@ -105,42 +105,55 @@ Resources:
         PublicSubnet1CIDR: !Ref PublicSubnet1CIDR
         PublicSubnet2CIDR: !Ref PublicSubnet2CIDR
         VPCCIDR: !Ref VPCCIDR
-  ClusterNodeStack:
+        #  ClusterNodeStack:
+        #    DependsOn: VPCStack
+        #    Type: AWS::CloudFormation::Stack
+        #    Properties:
+        #      TemplateURL:
+        #        Fn::Sub: https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}templates/datastax-ddac-clusternode.template.yaml
+        #      Parameters:
+        #        EmailAddress:
+        #          Ref: EmailAddress
+        #        InstanceType:
+        #          Ref: InstanceType
+        #        KeyPairName:
+        #          Ref: KeyPairName
+        #        PrivateSubnet1ID:
+        #          Fn::GetAtt:
+        #          - VPCStack
+        #          - Outputs.PrivateSubnet1AID
+        #        PrivateSubnet2ID:
+        #          Fn::GetAtt:
+        #          - VPCStack
+        #          - Outputs.PrivateSubnet2AID
+        #        PublicSubnet1ID:
+        #          Fn::GetAtt:
+        #          - VPCStack
+        #          - Outputs.PublicSubnet1ID
+        #        PublicSubnet2ID:
+        #          Fn::GetAtt:
+        #          - VPCStack
+        #          - Outputs.PublicSubnet2ID
+        #        QSS3BucketName:
+        #          Ref: QSS3BucketName
+        #        QSS3KeyPrefix:
+        #          Ref: QSS3KeyPrefix
+        #        RemoteAccessCIDR:
+        #          Ref: RemoteAccessCIDR
+        #        VPCID:
+        #          Fn::GetAtt:
+        #          - VPCStack
+        #          - Outputs.VPCID
+  SeedNode1:
     DependsOn: VPCStack
     Type: AWS::CloudFormation::Stack
     Properties:
       TemplateURL:
-        Fn::Sub: https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}templates/datastax-ddac-clusternode.template.yaml
+        Fn::Sub: https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}templates/noderegister.yaml.template
       Parameters:
-        EmailAddress:
-          Ref: EmailAddress
-        InstanceType:
-          Ref: InstanceType
-        KeyPairName:
-          Ref: KeyPairName
-        PrivateSubnet1ID:
-          Fn::GetAtt:
-          - VPCStack
-          - Outputs.PrivateSubnet1AID
-        PrivateSubnet2ID:
-          Fn::GetAtt:
-          - VPCStack
-          - Outputs.PrivateSubnet2AID
         PublicSubnet1ID:
           Fn::GetAtt:
           - VPCStack
           - Outputs.PublicSubnet1ID
-        PublicSubnet2ID:
-          Fn::GetAtt:
-          - VPCStack
-          - Outputs.PublicSubnet2ID
-        QSS3BucketName:
-          Ref: QSS3BucketName
-        QSS3KeyPrefix:
-          Ref: QSS3KeyPrefix
-        RemoteAccessCIDR:
-          Ref: RemoteAccessCIDR
-        VPCID:
-          Fn::GetAtt:
-          - VPCStack
-          - Outputs.VPCID
+        KeyPairName:
+          Ref: KeyPairName

@@ -1,0 +1,135 @@
+AWSTemplateFormatVersion: 2010-09-09
+Metadata:
+  License: Apache-2.0
+Description: Create the seednodes
+Parameters:
+  HashKeyElementName:
+    Description: HashType PrimaryKey Name
+    Type: String
+    Default: hostname
+    AllowedPattern: '[a-zA-Z0-9]*'
+    MinLength: '1'
+    MaxLength: '2048'
+    ConstraintDescription: must contain only alphanumberic characters
+  PublicSubnet1ID:
+    Description: Public Subnet Id 1
+    Type: 'AWS::EC2::Subnet::Id'
+  KeyPairName:
+    Type: 'AWS::EC2::KeyPair::KeyName'
+    ConstraintDescription: Name of an existing EC2 KeyPair.
+  RemoteAccessCIDR:
+    AllowedPattern: >-
+      ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/([0-9]|[1-2][0-9]|3[0-2]))$
+    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/x
+    Description: Allowed CIDR block for external SSH access
+    Type: String
+  VPCID:
+    Description: VPC ID
+    Type: 'AWS::EC2::VPC::Id'
+  VPCCIDR:
+    AllowedPattern: >-
+      ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/([0-9]|[1-2][0-9]|3[0-2]))$
+    Description: CIDR Block for the VPC
+    Type: String
+Mappings:
+  AWSAMIRegionMap:
+    AMI:
+      US1604HVM: ubuntu/images/hvm-ssd/ubuntu-xenial-16.04-amd64-server-20180405
+    ap-northeast-1:
+      US1604HVM: ami-60a4b21c
+    ap-northeast-2:
+      US1604HVM: ami-633d920d
+    ap-south-1:
+      US1604HVM: ami-dba580b4
+    ap-southeast-1:
+      US1604HVM: ami-82c9ecfe
+    ap-southeast-2:
+      US1604HVM: ami-2b12dc49
+    ca-central-1:
+      US1604HVM: ami-9d7afcf9
+    eu-central-1:
+      US1604HVM: ami-cd491726
+    eu-west-1:
+      US1604HVM: ami-74e6b80d
+    eu-west-2:
+      US1604HVM: ami-506e8f37
+    sa-east-1:
+      US1604HVM: ami-5782d43b
+    us-east-1:
+      US1604HVM: ami-6dfe5010
+    us-east-2:
+      US1604HVM: ami-e82a1a8d
+    us-west-1:
+      US1604HVM: ami-493f2f29
+    us-west-2:
+      US1604HVM: ami-ca89eeb2
+Conditions:
+  GovCloudCondition: !Equals 
+    - !Ref 'AWS::Region'
+    - us-gov-west-1
+Resources:
+  DynamoPolicy:
+        Type: AWS::IAM::Policy
+        Properties:
+            PolicyName: dynamo-policy
+            PolicyDocument:
+                Statement:
+                    Effect: Allow
+                    Action:
+                        - dynamodb:GetItem
+                        - dynamodb:PutItem
+                        - dynamodb:UpdateItem
+                        - dynamodb:Query
+                    Resource:
+                        !Sub arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${DDBTable}*
+  DDBTable:
+    Type: 'AWS::DynamoDB::Table'
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: !Ref HashKeyElementName
+          AttributeType: S
+      KeySchema:
+        - AttributeName: !Ref HashKeyElementName
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: '5'
+        WriteCapacityUnits: '10'
+  DDACSecGroup:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties:
+      GroupDescription: Enables SSH access to the DDAC Seed.
+      VpcId: !Ref VPCID
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: '22'
+          ToPort: '22'
+          CidrIp: !Ref RemoteAccessCIDR
+        - IpProtocol: tcp
+          FromPort: '0'
+          ToPort: '65535'
+          CidrIp: !Ref VPCCIDR
+  DDACSeed:
+    Type: 'AWS::EC2::Instance'
+    Properties:
+      InstanceType: 't2.large'
+      NetworkInterfaces:
+        - DeleteOnTermination: 'true'
+          DeviceIndex: 0
+          SubnetId: !Ref PublicSubnet1ID
+          GroupSet:
+            - !Ref DDACSecGroup
+      KeyName: !Ref KeyPairName
+      ImageId: !FindInMap 
+        - AWSAMIRegionMap
+        - !Ref 'AWS::Region'
+        - US1604HVM
+      BlockDeviceMappings:
+        - DeviceName: /dev/sda1
+          Ebs:
+            VolumeSize: '20'
+            VolumeType: gp2
+Outputs:
+  TableName:
+    Value: !Ref DDBTable
+    Description: NodeRegister DynamoDB table
+
