@@ -155,5 +155,15 @@ Resources:
           Fn::GetAtt:
           - VPCStack
           - Outputs.PublicSubnet1ID
+        VPCID:
+          Fn::GetAtt:
+          - VPCStack
+          - Outputs.VPCID
+        VPCCIDR :
+          Fn::GetAtt:
+          - VPCStack
+          - Outputs.VPCCIDR
         KeyPairName:
           Ref: KeyPairName
+        RemoteAccessCIDR:
+          Ref: RemoteAccessCIDR

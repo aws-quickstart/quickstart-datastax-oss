@@ -68,20 +68,46 @@ Conditions:
     - !Ref 'AWS::Region'
     - us-gov-west-1
 Resources:
+  RootRole: 
+    DependsOn: DDBTable
+    Type: "AWS::IAM::Role"
+    Properties: 
+    #    RoleName: !Sub Role-${DDBTable}
+      AssumeRolePolicyDocument: 
+        Version: "2012-10-17"
+        Statement: 
+          - 
+            Effect: "Allow"
+            Principal: 
+              Service: 
+                - "ec2.amazonaws.com"
+            Action: 
+              - "sts:AssumeRole"
+      Path: "/"
+  RootInstanceProfile: 
+    DependsOn: RootRole
+    Type: "AWS::IAM::InstanceProfile"
+    Properties: 
+      Path: "/"
+      Roles: 
+        - 
+          Ref: "RootRole"
   DynamoPolicy:
-        Type: AWS::IAM::Policy
-        Properties:
-            PolicyName: dynamo-policy
-            PolicyDocument:
-                Statement:
-                    Effect: Allow
-                    Action:
-                        - dynamodb:GetItem
-                        - dynamodb:PutItem
-                        - dynamodb:UpdateItem
-                        - dynamodb:Query
-                    Resource:
-                        !Sub arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${DDBTable}*
+    DependsOn: DDBTable
+    Type: AWS::IAM::Policy
+    Properties:
+        PolicyName: dynamo-policy
+        Roles: 
+        - !Ref RootRole
+        PolicyDocument:
+           Statement:
+              Effect: Allow
+              Action:
+                  - dynamodb:GetItem
+                  - dynamodb:PutItem
+                  - dynamodb:UpdateItem
+                  - dynamodb:Query
+              Resource: !Sub arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${DDBTable}*
   DDBTable:
     Type: 'AWS::DynamoDB::Table'
     Properties:
@@ -112,6 +138,7 @@ Resources:
     Type: 'AWS::EC2::Instance'
     Properties:
       InstanceType: 't2.large'
+      IamInstanceProfile: !Ref RootInstanceProfile
       NetworkInterfaces:
         - DeleteOnTermination: 'true'
           DeviceIndex: 0
