@@ -100,14 +100,32 @@ Resources:
         Roles: 
         - !Ref RootRole
         PolicyDocument:
+           Version: 2012-10-17
            Statement:
-              Effect: Allow
-              Action:
-                  - dynamodb:GetItem
-                  - dynamodb:PutItem
-                  - dynamodb:UpdateItem
-                  - dynamodb:Query
-              Resource: !Sub arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${DDBTable}*
+           Statement:
+             - Sid: ListAndDescribe
+               Effect: Allow
+               Action:
+                 - 'dynamodb:List*'
+                 - 'dynamodb:DescribeReservedCapacity*'
+                 - 'dynamodb:DescribeLimits'
+                 - 'dynamodb:DescribeTimeToLive'
+               Resource: '*'
+             - Sid: SpecificTable
+               Effect: Allow
+               Action:
+                 - 'dynamodb:BatchGet*'
+                 - 'dynamodb:DescribeStream'
+                 - 'dynamodb:DescribeTable'
+                 - 'dynamodb:Get*'
+                 - 'dynamodb:Query'
+                 - 'dynamodb:Scan'
+                 - 'dynamodb:BatchWrite*'
+                 - 'dynamodb:CreateTable'
+                 - 'dynamodb:Delete*'
+                 - 'dynamodb:Update*'
+                 - 'dynamodb:PutItem'
+               Resource: !Sub arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${DDBTable}*
   DDBTable:
     Type: 'AWS::DynamoDB::Table'
     Properties:
@@ -158,7 +176,10 @@ Resources:
       UserData:
         Fn::Base64: !Sub |
           #!/bin/bash -xe:
-          pip install noderegister 
+          apt-get update
+          apt-get install python-pip
+          pip3 install noderegister 
+          echo "Registering node to {DDBTable}"
           noderegister -r -D {DDBTable}
 
 Outputs:
