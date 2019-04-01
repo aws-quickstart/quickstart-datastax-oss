@@ -134,7 +134,7 @@ Resources:
           FromPort: '0'
           ToPort: '65535'
           CidrIp: !Ref VPCCIDR
-  DDACSeed:
+  DDACSeedNode1:
     Type: 'AWS::EC2::Instance'
     Properties:
       InstanceType: 't2.large'
@@ -155,6 +155,12 @@ Resources:
           Ebs:
             VolumeSize: '20'
             VolumeType: gp2
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash -xe:
+          pip install noderegister 
+          noderegister -r -D {DDBTable}
+
 Outputs:
   TableName:
     Value: !Ref DDBTable
