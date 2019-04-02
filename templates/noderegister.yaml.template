@@ -1,6 +1,4 @@
 AWSTemplateFormatVersion: 2010-09-09
-Metadata:
-  License: Apache-2.0
 Description: Create the seednodes
 Parameters:
   HashKeyElementName:
@@ -31,6 +29,60 @@ Parameters:
       ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/([0-9]|[1-2][0-9]|3[0-2]))$
     Description: CIDR Block for the VPC
     Type: String
+  SeedNodeTag:
+    ConstraintDescription: Name of seednode (seednode1 or seednode2)
+    AllowedValues: 
+      - seednode1
+      - seednode2
+    Default: seednode1
+    Type: String
+  QSS3BucketName:
+    AllowedPattern: '^[0-9a-zA-Z]+([0-9a-zA-Z-]*[0-9a-zA-Z])*$'
+    ConstraintDescription: >-
+      Quick Start bucket name can include numbers, lowercase letters, uppercase
+      letters, and hyphens (-). It cannot start or end with a hyphen (-).
+    Default: aws-quickstart
+    Type: String
+  QSS3KeyPrefix:
+    AllowedPattern: '^[0-9a-zA-Z-/]*$'
+    ConstraintDescription: >-
+      Quick Start key prefix can include numbers, lowercase letters, uppercase
+      letters, hyphens (-), and forward slash (/).
+    Default: quickstart-datastax-ddac/
+    Description: >-
+      S3 key prefix for the Quick Start assets. Quick Start key prefix can
+      include numbers, lowercase letters, uppercase letters, hyphens (-), and
+      forward slash (/).
+    Type: String
+  InstanceType:
+    AllowedValues:
+      - t2.micro
+      - t2.small
+      - t2.medium
+      - t2.large
+      - m4.large
+      - m4.xlarge
+      - m4.2xlarge
+      - m4.4xlarge
+      - m4.10xlarge
+      - c4.large
+      - c4.xlarge
+      - c4.2xlarge
+      - c4.4xlarge
+      - c4.8xlarge
+      - r4.large
+      - r4.xlarge
+      - r4.2xlarge
+      - r4.4xlarge
+      - r4.8xlarge
+    ConstraintDescription: "must be a valid EC2 instance type."
+    Default: t2.medium
+    Description: "EC2 instance type"
+    Type: String
+Conditions:
+  GovCloudCondition: !Equals
+    - !Ref AWS::Region
+    - us-gov-west-1
 Mappings:
   AWSAMIRegionMap:
     AMI:
@@ -63,13 +115,8 @@ Mappings:
       US1604HVM: ami-493f2f29
     us-west-2:
       US1604HVM: ami-ca89eeb2
-Conditions:
-  GovCloudCondition: !Equals 
-    - !Ref 'AWS::Region'
-    - us-gov-west-1
 Resources:
   RootRole: 
-    DependsOn: DDBTable
     Type: "AWS::IAM::Role"
     Properties: 
     #    RoleName: !Sub Role-${DDBTable}
@@ -85,7 +132,6 @@ Resources:
               - "sts:AssumeRole"
       Path: "/"
   RootInstanceProfile: 
-    DependsOn: RootRole
     Type: "AWS::IAM::InstanceProfile"
     Properties: 
       Path: "/"
@@ -93,7 +139,6 @@ Resources:
         - 
           Ref: "RootRole"
   DynamoPolicy:
-    DependsOn: DDBTable
     Type: AWS::IAM::Policy
     Properties:
         PolicyName: dynamo-policy
@@ -101,7 +146,6 @@ Resources:
         - !Ref RootRole
         PolicyDocument:
            Version: 2012-10-17
-           Statement:
            Statement:
              - Sid: ListAndDescribe
                Effect: Allow
@@ -136,8 +180,8 @@ Resources:
         - AttributeName: !Ref HashKeyElementName
           KeyType: HASH
       ProvisionedThroughput:
-        ReadCapacityUnits: '5'
-        WriteCapacityUnits: '10'
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 10
   DDACSecGroup:
     Type: 'AWS::EC2::SecurityGroup'
     Properties:
@@ -145,21 +189,121 @@ Resources:
       VpcId: !Ref VPCID
       SecurityGroupIngress:
         - IpProtocol: tcp
-          FromPort: '22'
-          ToPort: '22'
+          FromPort: 22
+          ToPort: 22
           CidrIp: !Ref RemoteAccessCIDR
         - IpProtocol: tcp
-          FromPort: '0'
-          ToPort: '65535'
+          FromPort: 0
+          ToPort: 65535
           CidrIp: !Ref VPCCIDR
-  DDACSeedNode1:
+  DDACSeedNode:
     Type: 'AWS::EC2::Instance'
+    Metadata:
+      'AWS::CloudFormation::Init':
+        configSets:
+          full_install:
+            - install_cfn
+            - install_ddac
+            - post_install
+        gen_ssh_key:
+          commands:
+            01_gen_ssh_key:
+              command:
+                - ''
+                - - |
+                    #!/usr/bin/env bash -e 
+                  - |
+                    apt-get -y install awscli 
+                  - |
+                    cd ~ubuntu/.ssh/ 
+                  - |
+                    ssh-keygen -t rsa -N '' -f lcm.pem 
+                  - |
+                    chown ubuntu:ubuntu lcm.pem* 
+                  - |
+                    echo 'Generated lcm.pem and lcm.pem.pub' 
+                  - 'aws s3 cp lcm.pem.pub s3://'
+                  - S3Bucket
+                  - ' --region '
+                  - 'AWS::Region'
+                  - |2
+                     
+        install_cfn:
+          files:
+            /etc/cfn/cfn-hup.conf:
+              content:
+                - ''
+                - - |
+                    [main]
+                  - stack=
+                  - 'AWS::StackId'
+                  - |+
+
+                  - region=
+                  - 'AWS::Region'
+                  - |+
+
+              group: root
+              mode: '000400'
+              owner: root
+            /etc/cfn/hooks.d/cfn-auto-reloader.conf:
+              content:
+                - ''
+                - - |
+                    [cfn-auto-reloader-hook]
+                  - |
+                    triggers=post.update
+                  - >
+                    path=Resources.DDACInstance.Metadata.AWS::CloudFormation::Init
+                  - 'action=/usr/local/bin/cfn-init -v '
+                  - '         --stack '
+                  - 'AWS::StackName'
+                  - '         --resource DDACSeedNode '
+                  - '         --configsets full_install '
+                  - '         --region '
+                  - 'AWS::Region'
+                  - |+
+
+                  - |
+                    runas=root
+          services:
+            sysvinit:
+              cfn-hup:
+                enabled: 'true'
+                ensureRunning: 'true'
+                files:
+                  - /etc/cfn/cfn-hup.conf
+                  - /etc/cfn/hooks.d/cfn-auto-reloader.conf
+        install_ddac:
+          files:
+            /home/ubuntu/deploy-dse.sh:
+              source: !Sub
+                - >-
+                  https://${QSS3BucketName}.${S3Region}.amazonaws.com/${QSS3KeyPrefix}scripts/deploy-dse.sh
+                - QSS3BucketName: !Ref QSS3BucketName
+                  S3Region: !If [ GovCloudCondition, s3-us-gov-west-1, s3 ]
+                  QSS3KeyPrefix: !Ref QSS3KeyPrefix
+              mode: '000755'
+              owner: root
+              group: root            
+          commands:
+            01_install_ddac:
+              command:
+                - ''
+                - - |
+                    #!/usr/bin/env bash -e 
+                  - |
+                    cloud_type="aws" 
+                  - |
+                    cd ~ && ./deploy-dse.sh 
+                  - |
+                    ' 
     Properties:
-      InstanceType: 't2.large'
+      InstanceType: !Ref InstanceType
       IamInstanceProfile: !Ref RootInstanceProfile
       NetworkInterfaces:
-        - DeleteOnTermination: 'true'
-          DeviceIndex: 0
+        - DeleteOnTermination: true
+          DeviceIndex: '0'
           SubnetId: !Ref PublicSubnet1ID
           GroupSet:
             - !Ref DDACSecGroup
@@ -171,17 +315,49 @@ Resources:
       BlockDeviceMappings:
         - DeviceName: /dev/sda1
           Ebs:
-            VolumeSize: '20'
+            VolumeSize: 20
             VolumeType: gp2
       UserData:
-        Fn::Base64: !Sub |
-          #!/bin/bash -xe:
-          apt-get update
-          apt-get install python-pip
+        Fn::Base64: !Sub
+        - |
+          #!/bin/bash -xe
+          #CFN Signaling fuctions (begin)
+          function cfn_fail
+          {
+            cfn-signal -e 1 --stack ${AWS::StackName} --region ${AWS::Region} --resource DDACSeedNode
+            exit 1
+          }
+          function cfn_success
+          {
+            cfn-signal -e 0 --stack ${AWS::StackName} --region ${AWS::Region} --resource DDACSeedNode
+            exit 0
+          }
+          #Load Linux utils
+          until git clone https://github.com/aws-quickstart/quickstart-linux-utilities.git ; do echo "Retrying"; done
+          cd /quickstart-linux-utilities && source quickstart-cfn-tools.source
+          # Constants
+          S3URI=https://${QSS3BucketName}.${S3Region}.amazonaws.com/${QSS3KeyPrefix}
+          REGISTER=${DDBTable}
+          # Prep operating systems
+          qs_update-os || qs_err
+          qs_bootstrap_pip || qs_err
+          qs_aws-cfn-bootstrap || qs_err
+          # Setup cfn-hup on ubuntu
+          ln -s /usr/local/init/ubuntu/cfn-hup /etc/init.d/cfn-hup || qs_err
+          chmod 775 /usr/local/init/ubuntu/cfn-hup || qs_err
+          update-rc.d cfn-hup defaults || qs_err
+          # Node Registeration
           pip3 install noderegister 
-          echo "Registering node to {DDBTable}"
-          noderegister -r -D {DDBTable}
+          echo "Register Node to $REGISTER" 
+          noderegister -r -D ${!REGISTER}
+          noderegister -a ${SeedNodeTag} -D ${!REGISTER}
+          noderegister -l -D ${!REGISTER}
+          #ddac install
+          cfn-init -v --stack ${AWS::StackName} --resource DDACSeedNode --configsets full_install --region ${AWS::Region} || cfn_fail
+          # Signal cfn-init (final check)
+          [ $(qs_status) == 0 ] && cfn_success || cfn_fail
 
+        - S3Region: !If [ GovCloudCondition, s3-us-gov-west-1, s3 ]
 Outputs:
   TableName:
     Value: !Ref DDBTable

@@ -106,7 +106,6 @@ Resources:
         PublicSubnet2CIDR: !Ref PublicSubnet2CIDR
         VPCCIDR: !Ref VPCCIDR
         #  ClusterNodeStack:
-        #    DependsOn: VPCStack
         #    Type: AWS::CloudFormation::Stack
         #    Properties:
         #      TemplateURL:
@@ -145,7 +144,6 @@ Resources:
         #          - VPCStack
         #          - Outputs.VPCID
   SeedNode1:
-    DependsOn: VPCStack
     Type: AWS::CloudFormation::Stack
     Properties:
       TemplateURL:
@@ -163,6 +161,8 @@ Resources:
           Fn::GetAtt:
           - VPCStack
           - Outputs.VPCCIDR
+        InstanceType:
+          Ref: InstanceType
         KeyPairName:
           Ref: KeyPairName
         RemoteAccessCIDR:
