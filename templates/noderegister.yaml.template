@@ -297,7 +297,12 @@ Resources:
                   - |
                     cd ~ && ./deploy-dse.sh 
                   - |
-                    ' 
+        post_install:
+            command:
+                - ''
+                - - |
+                    #!/usr/bin/env bash -e 
+                  - |
     Properties:
       InstanceType: !Ref InstanceType
       IamInstanceProfile: !Ref RootInstanceProfile

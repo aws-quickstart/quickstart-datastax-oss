@@ -1,2 +1,2 @@
-#!/bin/bash -x
-echo "Start Install"
+echo "Start DSE Deployment"
+echo "Finish DSE Deployment"
