@@ -238,11 +238,9 @@ Resources:
                   - stack=
                   - 'AWS::StackId'
                   - |+
-
                   - region=
                   - 'AWS::Region'
                   - |+
-
               group: root
               mode: '000400'
               owner: root
@@ -263,7 +261,6 @@ Resources:
                   - '         --region '
                   - 'AWS::Region'
                   - |+
-
                   - |
                     runas=root
           services:
