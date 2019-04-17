@@ -167,3 +167,7 @@ Resources:
           Ref: KeyPairName
         RemoteAccessCIDR:
           Ref: RemoteAccessCIDR
+        QSS3KeyPrefix:
+          Ref: QSS3KeyPrefix
+        QSS3BucketName:
+          Ref: QSS3BucketName

@@ -109,12 +109,10 @@ Mappings:
     us-west-2:
       US1604HVM: ami-ca89eeb2
 Resources:
-  RootRole: 
+  InstanceRole: 
     Type: "AWS::IAM::Role"
     Properties: 
-    #    RoleName: !Sub Role-${DDBTable}
       AssumeRolePolicyDocument: 
-        Version: "2012-10-17"
         Statement: 
           - 
             Effect: "Allow"
@@ -124,19 +122,18 @@ Resources:
             Action: 
               - "sts:AssumeRole"
       Path: "/"
-  RootInstanceProfile: 
+  InstanceProfile: 
     Type: "AWS::IAM::InstanceProfile"
     Properties: 
       Path: "/"
       Roles: 
-        - 
-          Ref: "RootRole"
+        - Ref: "InstanceRole"
   DynamoPolicy:
     Type: AWS::IAM::Policy
     Properties:
         PolicyName: dynamo-policy
         Roles: 
-        - !Ref RootRole
+        - !Ref InstanceRole
         PolicyDocument:
            Version: 2012-10-17
            Statement:
@@ -163,6 +160,19 @@ Resources:
                  - 'dynamodb:Update*'
                  - 'dynamodb:PutItem'
                Resource: !Sub arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${DDBTable}*
+  AuthenticatedS3Policy:
+    Type: AWS::IAM::Policy
+    Properties:
+        PolicyName: AuthenticatedS3GetObjects
+        Roles: 
+        - !Ref InstanceRole
+        PolicyDocument:
+           Statement:
+             - Sid: BucketAccess
+               Effect: Allow
+               Action:
+                 - 's3:GetObject'
+               Resource: !Sub arn:aws:s3:::${QSS3BucketName}/*
   DDBTable:
     Type: 'AWS::DynamoDB::Table'
     Properties:
@@ -192,6 +202,11 @@ Resources:
   DDACSeedNode1:
     Type: 'AWS::EC2::Instance'
     Metadata:
+      'AWS::CloudFormation::Authentication':
+       S3AccessCreds:
+         type: S3
+         roleName: !Ref InstanceRole
+         buckets: !Ref QSS3BucketName
       'AWS::CloudFormation::Init':
         configSets:
           full_install:
@@ -264,28 +279,27 @@ Resources:
                 files:
                   - /etc/cfn/cfn-hup.conf
                   - /etc/cfn/hooks.d/cfn-auto-reloader.conf
+                mode: '000755'
+                owner: root
+                group: root            
         install_ddac:
-          files:
-            /home/ubuntu/deploy-dse.sh:
-              source: !Sub
+          sources:
+            /home/ubuntu: !Sub
                 - >-
-                  https://${QSS3BucketName}.${S3Region}.amazonaws.com/${QSS3KeyPrefix}scripts/deploy-dse.sh
+                  https://${QSS3BucketName}.${S3Region}.amazonaws.com/${QSS3KeyPrefix}scripts/deploy.tar
                 - QSS3BucketName: !Ref QSS3BucketName
                   S3Region: !If [ GovCloudCondition, s3-us-gov-west-1, s3 ]
                   QSS3KeyPrefix: !Ref QSS3KeyPrefix
-              mode: '000755'
-              owner: root
-              group: root            
           commands:
             01_install_ddac:
               command:
                 - ''
                 - - |
-                    #!/usr/bin/env bash -e 
+                    #!/usr/bin/env bash -ex
                   - |
                     cloud_type="aws" 
                   - |
-                    cd ~ && ./deploy-dse.sh 
+                    cd /home/ubuntu/  && tar -xvf deploy.tar
                   - |
         post_install:
             command:
@@ -295,7 +309,7 @@ Resources:
                   - |
     Properties:
       InstanceType: !Ref InstanceType
-      IamInstanceProfile: !Ref RootInstanceProfile
+      IamInstanceProfile: !Ref InstanceProfile
       NetworkInterfaces:
         - DeleteOnTermination: true
           DeviceIndex: '0'
@@ -303,7 +317,6 @@ Resources:
           GroupSet:
             - !Ref DDACSecGroup
       KeyName: !Ref KeyPairName
-      HostId: seednode1
       ImageId: !FindInMap 
         - AWSAMIRegionMap
         - !Ref 'AWS::Region'
@@ -313,6 +326,9 @@ Resources:
           Ebs:
             VolumeSize: 20
             VolumeType: gp2
+      Tags:
+          - Key: Name
+            Value: seednode1
       UserData:
         Fn::Base64: !Sub
         - |
@@ -346,7 +362,7 @@ Resources:
           pip3 install noderegister 
           echo "Register Node to $REGISTER" 
           noderegister -r -D ${!REGISTER}
-          noderegister -a {$DDACSeedNode1.HostId} -D ${!REGISTER}
+          noderegister -a {$DDACSeedNode1}.Tags.Name -D ${!REGISTER}
           noderegister -l -D ${!REGISTER}
           #ddac install
           cfn-init -v --stack ${AWS::StackName} --resource DDACSeedNode1 --configsets full_install --region ${AWS::Region} || cfn_fail
