@@ -110,24 +110,24 @@ Mappings:
       US1604HVM: ami-ca89eeb2
 Resources:
   InstanceRole: 
-    Type: "AWS::IAM::Role"
+    Type: 'AWS::IAM::Role'
     Properties: 
       AssumeRolePolicyDocument: 
         Statement: 
           - 
-            Effect: "Allow"
+            Effect: 'Allow'
             Principal: 
               Service: 
-                - "ec2.amazonaws.com"
+                - 'ec2.amazonaws.com'
             Action: 
-              - "sts:AssumeRole"
-      Path: "/"
+              - 'sts:AssumeRole'
+      Path: '/'
   InstanceProfile: 
-    Type: "AWS::IAM::InstanceProfile"
+    Type: 'AWS::IAM::InstanceProfile'
     Properties: 
-      Path: "/"
+      Path: '/'
       Roles: 
-        - Ref: "InstanceRole"
+        - Ref: 'InstanceRole'
   DynamoPolicy:
     Type: AWS::IAM::Policy
     Properties:
@@ -209,8 +209,9 @@ Resources:
          buckets: !Ref QSS3BucketName
       'AWS::CloudFormation::Init':
         configSets:
-          full_install:
-            - install_cfn
+          cs_install:
+            - config_cfn_hup
+            - start_cfn_hup
             - install_ddac
             - post_install
         gen_ssh_key:
@@ -236,52 +237,45 @@ Resources:
                   - 'AWS::Region'
                   - |2
                      
-        install_cfn:
-          files:
-            /etc/cfn/cfn-hup.conf:
-              content:
-                - ''
+        config_cfn_hup:
+          files:  
+            /etc/cfn/cfn-hup.conf:  
+              content: !Sub |  
+                [main]  
+                stack=${AWS::StackId}  
+                region=${AWS::Region}  
+                verbose=true  
+                interval=5  
+              mode: '000400'  
+              owner: root  
+              group: root  
+            /etc/cfn/hooks.d/cfn-auto-reloader.conf:  
+              content: !Sub |  
+                [cfn-auto-reloader-hook]  
+                triggers=post.update  
+                path=Resources.DDACSeedNode1.Metadata.AWS::CloudFormation::Init  
+                action=cfn-init -v --stack ${AWS::StackName} --resource DDACSeedNode1 --configsets cs_install --region ${AWS::Region}  
+              mode: '000400'  
+              owner: root  
+              group: root  
+        start_cfn_hup:
+          commands:
+            01_cfn_hup_cfg:
                 - - |
-                    [main]
-                  - stack=
-                  - 'AWS::StackId'
-                  - |+
-                  - region=
-                  - 'AWS::Region'
-                  - |+
-              group: root
-              mode: '000400'
-              owner: root
-            /etc/cfn/hooks.d/cfn-auto-reloader.conf:
-              content:
-                - ''
+                    #!/usr/bin/env bash -ex
+                  - |
+                    ln -s /usr/local/init/ubuntu/cfn-hup /etc/init.d/cfn-hup
+                  - |
+                    chmod 775 /usr/local/init/ubuntu/cfn-hup
+                  - |
+                    update-rc.d cfn-hup defaults
+            02_cfn_hup_cfg:
                 - - |
-                    [cfn-auto-reloader-hook]
+                    #!/usr/bin/env bash -ex
                   - |
-                    triggers=post.update
-                  - >
-                    path=Resources.DDACSeedNode1.Metadata.AWS::CloudFormation::Init
-                  - 'action=/usr/local/bin/cfn-init -v '
-                  - '         --stack '
-                  - 'AWS::StackName'
-                  - '         --resource DDACSeedNode1 '
-                  - '         --configsets full_install '
-                  - '         --region '
-                  - 'AWS::Region'
-                  - |+
-                  - |
-                    runas=root
-          services:
-            sysvinit:
-              cfn-hup:
-                enabled: 'true'
-                ensureRunning: 'true'
-                files:
-                  - /etc/cfn/cfn-hup.conf
-                  - /etc/cfn/hooks.d/cfn-auto-reloader.conf
-                mode: '000755'
-                owner: root
-                group: root            
+                    systemctl enable cfn_hup.service
+                    systemctl start cfn_hup.service
+
         install_ddac:
           sources:
             /home/ubuntu: !Sub
@@ -302,10 +296,14 @@ Resources:
                     cd /home/ubuntu/  && tar -xvf deploy.tar
                   - |
         post_install:
-            command:
+          commands:
+            01_post_install_ddac:
+              command:
                 - ''
                 - - |
                     #!/usr/bin/env bash -e 
+                  - |
+                    echo "Install Complete"
                   - |
     Properties:
       InstanceType: !Ref InstanceType
@@ -354,22 +352,20 @@ Resources:
           qs_update-os || qs_err
           qs_bootstrap_pip || qs_err
           qs_aws-cfn-bootstrap || qs_err
-          # Setup cfn-hup on ubuntu
-          ln -s /usr/local/init/ubuntu/cfn-hup /etc/init.d/cfn-hup || qs_err
-          chmod 775 /usr/local/init/ubuntu/cfn-hup || qs_err
-          update-rc.d cfn-hup defaults || qs_err
           # Node Registeration
           pip3 install noderegister 
           echo "Register Node to $REGISTER" 
           noderegister -r -D ${!REGISTER}
-          noderegister -a {$DDACSeedNode1}.Tags.Name -D ${!REGISTER}
+          noderegister -a ${SeedType} -D ${!REGISTER}
           noderegister -l -D ${!REGISTER}
-          #ddac install
-          cfn-init -v --stack ${AWS::StackName} --resource DDACSeedNode1 --configsets full_install --region ${AWS::Region} || cfn_fail
+          #Run cfn-init configsets
+          cfn-init -v --stack ${AWS::StackName} --resource DDACSeedNode1 --configsets cs_install --region ${AWS::Region} || cfn_fail
           # Signal cfn-init (final check)
           [ $(qs_status) == 0 ] && cfn_success || cfn_fail
 
         - S3Region: !If [ GovCloudCondition, s3-us-gov-west-1, s3 ]
+          SeedType: 'seednode1'
+
 Outputs:
   TableName:
     Value: !Ref DDBTable
