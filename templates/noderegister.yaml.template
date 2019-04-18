@@ -201,6 +201,9 @@ Resources:
           CidrIp: !Ref VPCCIDR
   DDACSeedNode1:
     Type: 'AWS::EC2::Instance'
+    CreationPolicy:
+      ResourceSignal:
+        Timeout: PT15M
     Metadata:
       'AWS::CloudFormation::Authentication':
        S3AccessCreds:
@@ -210,72 +213,71 @@ Resources:
       'AWS::CloudFormation::Init':
         configSets:
           cs_install:
-            - config_cfn_hup
-            - start_cfn_hup
+            - install_and_enable_cfn_hup
             - install_ddac
             - post_install
-        gen_ssh_key:
-          commands:
-            01_gen_ssh_key:
-              command:
+        install_and_enable_cfn_hup:
+          files:
+            /etc/cfn/cfn-hup.conf:
+              content: !Join 
                 - ''
                 - - |
-                    #!/usr/bin/env bash -e 
-                  - |
-                    apt-get -y install awscli 
-                  - |
-                    cd ~ubuntu/.ssh/ 
-                  - |
-                    ssh-keygen -t rsa -N '' -f lcm.pem 
-                  - |
-                    chown ubuntu:ubuntu lcm.pem* 
-                  - |
-                    echo 'Generated lcm.pem and lcm.pem.pub' 
-                  - 'aws s3 cp lcm.pem.pub s3://'
-                  - S3Bucket
-                  - ' --region '
-                  - 'AWS::Region'
-                  - |2
-                     
-        config_cfn_hup:
-          files:  
-            /etc/cfn/cfn-hup.conf:  
-              content: !Sub |  
-                [main]  
-                stack=${AWS::StackId}  
-                region=${AWS::Region}  
-                verbose=true  
-                interval=5  
-              mode: '000400'  
-              owner: root  
-              group: root  
-            /etc/cfn/hooks.d/cfn-auto-reloader.conf:  
-              content: !Sub |  
-                [cfn-auto-reloader-hook]  
-                triggers=post.update  
-                path=Resources.DDACSeedNode1.Metadata.AWS::CloudFormation::Init  
-                action=cfn-init -v --stack ${AWS::StackName} --resource DDACSeedNode1 --configsets cs_install --region ${AWS::Region}  
-              mode: '000400'  
-              owner: root  
-              group: root  
-        start_cfn_hup:
-          commands:
-            01_cfn_hup_cfg:
-                - - |
-                    #!/usr/bin/env bash -ex
-                  - |
-                    ln -s /usr/local/init/ubuntu/cfn-hup /etc/init.d/cfn-hup
-                  - |
-                    chmod 775 /usr/local/init/ubuntu/cfn-hup
-                  - |
-                    update-rc.d cfn-hup defaults
-            02_cfn_hup_cfg:
-                - - |
-                    #!/usr/bin/env bash -ex
-                  - |
-                    systemctl enable cfn_hup.service
-                    systemctl start cfn_hup.service
+                    [main]
+                  - stack=
+                  - !Ref 'AWS::StackId'
+                  - |+
 
+                  - region=
+                  - !Ref 'AWS::Region'
+                  - |+
+
+              mode: '000400'
+              owner: root
+              group: root
+            /etc/cfn/hooks.d/cfn-auto-reloader.conf:
+              content: !Join 
+                - ''
+                - - |
+                    [cfn-auto-reloader-hook]
+                  - |
+                    triggers=post.update
+                  - >
+                    path=Resources.DDACSeedNode1.Metadata.AWS::CloudFormation::Init
+                  - 'action=/usr/local/bin/cfn-init -v '
+                  - '         --stack '
+                  - !Ref 'AWS::StackName'
+                  - '         --resource DDACSeedNode1 '
+                  - '         --configsets cs_install '
+                  - '         --region '
+                  - !Ref 'AWS::Region'
+                  - |+
+
+                  - |
+                    runas=root
+            /lib/systemd/system/cfn-hup.service:
+              content: !Join 
+                - ''
+                - - |
+                    [Unit]
+                  - |+
+                    Description=cfn-hup daemon
+
+                  - |
+                    [Service]
+                  - |
+                    Type=simple
+                  - |
+                    ExecStart=/usr/local/bin/cfn-hup
+                  - |+
+                    Restart=always
+                  - |
+                    [Install]
+                  - WantedBy=multi-user.target
+          commands:
+            01enable_cfn_hup:
+              command: systemctl enable cfn-hup.service
+            02start_cfn_hup:
+              command: systemctl start cfn-hup.service
         install_ddac:
           sources:
             /home/ubuntu: !Sub
@@ -286,25 +288,11 @@ Resources:
                   QSS3KeyPrefix: !Ref QSS3KeyPrefix
           commands:
             01_install_ddac:
-              command:
-                - ''
-                - - |
-                    #!/usr/bin/env bash -ex
-                  - |
-                    cloud_type="aws" 
-                  - |
-                    cd /home/ubuntu/  && tar -xvf deploy.tar
-                  - |
+                command: touch  /tmp/01_install_ddac
         post_install:
           commands:
             01_post_install_ddac:
-              command:
-                - ''
-                - - |
-                    #!/usr/bin/env bash -e 
-                  - |
-                    echo "Install Complete"
-                  - |
+              command: touch /tmp/01_post_install_ddac
     Properties:
       InstanceType: !Ref InstanceType
       IamInstanceProfile: !Ref InstanceProfile
@@ -359,7 +347,7 @@ Resources:
           noderegister -a ${SeedType} -D ${!REGISTER}
           noderegister -l -D ${!REGISTER}
           #Run cfn-init configsets
-          cfn-init -v --stack ${AWS::StackName} --resource DDACSeedNode1 --configsets cs_install --region ${AWS::Region} || cfn_fail
+          cfn-init -v --stack ${AWS::StackName} --resource DDACSeedNode1 --configsets cs_install --region ${AWS::Region} || qs_err
           # Signal cfn-init (final check)
           [ $(qs_status) == 0 ] && cfn_success || cfn_fail
 
