@@ -515,7 +515,7 @@ Resources:
           SeedType: 'seednode2'
 
 Outputs:
-  TableName:
+  DDBTable :
     Value: !Ref DDBTable
     Description: NodeRegister DynamoDB table
 

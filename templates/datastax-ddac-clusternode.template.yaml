@@ -131,9 +131,9 @@ Resources:
       LaunchConfigurationName: !Ref ClusterNodeLaunchConfig
       MinSize: '1'
       MaxSize: '2'
-      NotificationConfiguration:
-        TopicARN: !Ref NotificationTopic
-        NotificationTypes:
+      NotificationConfigurations:
+      -  TopicARN: !Ref NotificationTopic
+         NotificationTypes:
           - 'autoscaling:EC2_INSTANCE_LAUNCH'
           - 'autoscaling:EC2_INSTANCE_LAUNCH_ERROR'
           - 'autoscaling:EC2_INSTANCE_TERMINATE'
@@ -144,10 +144,10 @@ Resources:
         Count: '1'
     UpdatePolicy:
       AutoScalingRollingUpdate:
-        MinInstancesInService: '1'
-        MaxBatchSize: '1'
+        MinInstancesInService: 1
+        MaxBatchSize: 1
         PauseTime: PT15M
-        WaitOnResourceSignals: 'true'
+        WaitOnResourceSignals: true
   ClusterNodeLaunchConfig:
     Type: 'AWS::AutoScaling::LaunchConfiguration'
     Metadata:
@@ -202,14 +202,14 @@ Resources:
       AdjustmentType: ChangeInCapacity
       AutoScalingGroupName: !Ref ClusterNodeGroup
       Cooldown: '60'
-      ScalingAdjustment: '1'
+      ScalingAdjustment: 1
   ClusterNodeScaleDownPolicy:
     Type: 'AWS::AutoScaling::ScalingPolicy'
     Properties:
       AdjustmentType: ChangeInCapacity
       AutoScalingGroupName: !Ref ClusterNodeGroup
       Cooldown: '60'
-      ScalingAdjustment: '-1'
+      ScalingAdjustment: -1
   ClusterNodeCPUAlarmHigh:
     Type: 'AWS::CloudWatch::Alarm'
     Properties:
@@ -217,9 +217,9 @@ Resources:
       MetricName: CPUUtilization
       Namespace: AWS/EC2
       Statistic: Average
-      Period: '300'
-      EvaluationPeriods: '2'
-      Threshold: '90'
+      Period: 300
+      EvaluationPeriods: 2
+      Threshold: 90
       AlarmActions:
         - !Ref ClusterNodeScaleUpPolicy
       Dimensions:
@@ -233,9 +233,9 @@ Resources:
       MetricName: CPUUtilization
       Namespace: AWS/EC2
       Statistic: Average
-      Period: '300'
-      EvaluationPeriods: '2'
-      Threshold: '70'
+      Period: 300
+      EvaluationPeriods: 2
+      Threshold: 70
       AlarmActions:
         - !Ref ClusterNodeScaleDownPolicy
       Dimensions:
@@ -248,7 +248,7 @@ Resources:
       GroupDescription: Enable SSH Access from RemoteAccessCIDR
       SecurityGroupIngress:
         - IpProtocol: tcp
-          FromPort: '22'
-          ToPort: '22'
+          FromPort: 22
+          ToPort: 22
           CidrIp: !Ref RemoteAccessCIDR
       VpcId: !Ref VPCID
