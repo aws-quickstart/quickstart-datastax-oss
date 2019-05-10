@@ -288,11 +288,17 @@ Resources:
                   QSS3KeyPrefix: !Ref QSS3KeyPrefix
           commands:
             01_install_ddac:
-                command: touch  /tmp/01_install_ddac
+              command: "ln -s /home/ubuntu /home/ddac"
+            02_install_ddac:
+              command: "cd /home/ddac"
+            03_install_ddac:
+              command: "apt-get install -y openjdk-8-jdk"
+            04_install_ddac:
+              command: "/home/ddac/deploy-dse.sh"
         post_install:
           commands:
             01_post_install_ddac:
-              command: touch /tmp/01_post_install_ddac
+              command: "touch /tmp/01_post_install_ddac"
     Properties:
       InstanceType: !Ref InstanceType
       IamInstanceProfile: !Ref InstanceProfile

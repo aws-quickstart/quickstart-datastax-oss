@@ -1,0 +1,28 @@
+[
+  {
+    "ParameterKey": "KeyPairName",
+    "ParameterValue": "dse-quickstart-keypair"
+  },
+  {
+    "ParameterKey": "RemoteAccessCIDR",
+    "ParameterValue": "0.0.0.0/0"
+  },
+  {
+    "ParameterKey": "AvailabilityZones",
+    "ParameterValue": "us-west-2a,us-west-2b,us-west-2c"
+  },
+  {
+  "ParameterKey": "QSS3BucketName",
+  "ParameterValue": "scotth-ddac-test"
+  },
+  {
+  "ParameterKey": "QSS3KeyPrefix",
+  "ParameterValue": "quickstart-datastax-ddac/"
+  },
+  {
+  "ParameterKey": "EmailAddress",
+  "ParameterValue": "scott.hendrickson@datastax.com"
+  }
+
+
+]
