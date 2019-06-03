@@ -507,12 +507,14 @@ Resources:
           noderegister -a ${SeedType} -D ${!REGISTER}
           noderegister -l -D ${!REGISTER}
           #Run cfn-init configsets
+          echo ${DDACSeedNode1IP} >/tmp/node
           cfn-init -v --stack ${AWS::StackName} --resource DDACSeedNode2 --configsets cs_install --region ${AWS::Region} || qs_err
           # Signal cfn-init (final check)
           [ $(qs_status) == 0 ] && cfn_success || cfn_fail
 
         - S3Region: !If [ GovCloudCondition, s3-us-gov-west-1, s3 ]
           SeedType: 'seednode2'
+          DDACSeedNode1IP: !GetAtt DDACSeedNode1.PrivateIp
 
 Outputs:
   DDBTable :
