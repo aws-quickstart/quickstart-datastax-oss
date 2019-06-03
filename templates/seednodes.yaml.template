@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: 2010-09-09
-Description: Create the seednodes
+Description: Create ddac seednodes
 Parameters:
   HashKeyElementName:
     Description: HashType PrimaryKey Name

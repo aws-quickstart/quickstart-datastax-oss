@@ -145,10 +145,10 @@ Resources:
           Ref: InstanceType
         KeyPairName:
           Ref: KeyPairName
-        DDTable:
+        DDBTable:
           Fn::GetAtt:
           - SeedNodeStack
-          - Outputs.DDTable
+          - Outputs.DDBTable
         PrivateSubnet1ID:
           Fn::GetAtt:
           - VPCStack
