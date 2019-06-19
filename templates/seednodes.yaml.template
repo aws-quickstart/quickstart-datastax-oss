@@ -287,15 +287,20 @@ Resources:
                   S3Region: !If [ GovCloudCondition, s3-us-gov-west-1, s3 ]
                   QSS3KeyPrefix: !Ref QSS3KeyPrefix
           commands:
-            01_set_permissions:
-                command:  chmod 755 /home/ubuntu/deploy/*
-            02_run_deployment_scripts:
-                cwd: /home/ubuntu/deploy
-                command: ./deploy-dse.sh -args for seednode1 
+            01_install_ddac:
+              command: "ln -s /home/ubuntu /home/ddac"
+            02_install_ddac:
+              command: "cd /home/ddac"
+            03_install_ddac:
+              command: "apt-get install -y openjdk-8-jdk"
+            04_install_ddac:
+              command: "apt-get install -y jq"
+            05_install_ddac:
+              command: "/home/ddac/deploy-dse.sh ddac-cluster ddac-dc0"
         post_install:
           commands:
             01_post_install_ddac:
-              command: touch /tmp/01_post_install_ddac
+              command: "touch /tmp/01_post_install_ddac"
     Properties:
       InstanceType: !Ref InstanceType
       IamInstanceProfile: !Ref InstanceProfile
@@ -444,15 +449,22 @@ Resources:
                   S3Region: !If [ GovCloudCondition, s3-us-gov-west-1, s3 ]
                   QSS3KeyPrefix: !Ref QSS3KeyPrefix
           commands:
-            01_set_permissions:
-                command:  chmod 755 /home/ubuntu/deploy/*
-            02_run_deployment_scripts:
-                cwd: /home/ubuntu/deploy
-                command: ./deploy-dse.sh -args for seednode2 
+            01_install_ddac:
+              command: "ln -s /home/ubuntu /home/ddac"
+            02_install_ddac:
+              command: "cd /home/ddac"
+            03_install_ddac:
+              command: "apt-get install -y openjdk-8-jdk"
+            04_install_ddac:
+              command: "pip install awscli"
+            05_install_ddac:
+              command: "apt-get install -y jq"
+            06_install_ddac:
+              command: !Sub '/home/ddac/deploy-dse-get-seed.sh ${AWS::Region} ${DDBTable} ddac-cluster ddac-dc0'
         post_install:
           commands:
             01_post_install_ddac:
-              command: touch /tmp/01_post_install_ddac
+              command: "touch /tmp/01_post_install_ddac"
     Properties:
       InstanceType: !Ref InstanceType
       IamInstanceProfile: !Ref InstanceProfile
@@ -518,4 +530,3 @@ Outputs:
   DDBTable :
     Value: !Ref DDBTable
     Description: NodeRegister DynamoDB table
-

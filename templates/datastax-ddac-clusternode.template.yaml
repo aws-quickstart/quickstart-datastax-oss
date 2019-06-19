@@ -34,6 +34,7 @@ Parameters:
       ([a-zA-Z0-9_\-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([a-zA-Z0-9\-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)
     ConstraintDescription: Must be a valid email id.
   DDTable:
+    Type: String
     Description: Noderegister DynamoDB Table 
   KeyPairName:
     Type: 'AWS::EC2::KeyPair::KeyName'
@@ -204,14 +205,14 @@ Resources:
       AdjustmentType: ChangeInCapacity
       AutoScalingGroupName: !Ref ClusterNodeGroup
       Cooldown: '60'
-      ScalingAdjustment: 1
-  ClusterNodeScaleDownPolicy:
-    Type: 'AWS::AutoScaling::ScalingPolicy'
-    Properties:
-      AdjustmentType: ChangeInCapacity
-      AutoScalingGroupName: !Ref ClusterNodeGroup
-      Cooldown: '60'
-      ScalingAdjustment: -1
+      ScalingAdjustment: 1    
+  # ClusterNodeScaleDownPolicy:
+  #   Type: 'AWS::AutoScaling::ScalingPolicy'
+  #   Properties:
+  #     AdjustmentType: ChangeInCapacity
+  #     AutoScalingGroupName: !Ref ClusterNodeGroup
+  #     Cooldown: '60'
+  #     ScalingAdjustment: -1
   ClusterNodeCPUAlarmHigh:
     Type: 'AWS::CloudWatch::Alarm'
     Properties:
@@ -228,22 +229,22 @@ Resources:
         - Name: AutoScalingGroupName
           Value: !Ref ClusterNodeGroup
       ComparisonOperator: GreaterThanThreshold
-  ClusterNodeCPUAlarmLow:
-    Type: 'AWS::CloudWatch::Alarm'
-    Properties:
-      AlarmDescription: Scale-down if CPU < 70% for 10 minutes
-      MetricName: CPUUtilization
-      Namespace: AWS/EC2
-      Statistic: Average
-      Period: 300
-      EvaluationPeriods: 2
-      Threshold: 70
-      AlarmActions:
-        - !Ref ClusterNodeScaleDownPolicy
-      Dimensions:
-        - Name: AutoScalingGroupName
-          Value: !Ref ClusterNodeGroup
-      ComparisonOperator: LessThanThreshold
+  # ClusterNodeCPUAlarmLow:
+  #   Type: 'AWS::CloudWatch::Alarm'
+  #   Properties:
+  #     AlarmDescription: Scale-down if CPU < 70% for 10 minutes
+  #     MetricName: CPUUtilization
+  #     Namespace: AWS/EC2
+  #     Statistic: Average
+  #     Period: 300
+  #     EvaluationPeriods: 2
+  #     Threshold: 70
+  #     AlarmActions:
+  #       - !Ref ClusterNodeScaleDownPolicy
+  #     Dimensions:
+  #       - Name: AutoScalingGroupName
+  #         Value: !Ref ClusterNodeGroup
+  #     ComparisonOperator: LessThanThreshold
   ClusterNodeSecurityGroup:
     Type: 'AWS::EC2::SecurityGroup'
     Properties:

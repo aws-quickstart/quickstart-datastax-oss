@@ -148,7 +148,7 @@ Resources:
         DDTable:
           Fn::GetAtt:
           - SeedNodeStack
-          - Outputs.DDTable
+          - Outputs.DDBTable
         PrivateSubnet1ID:
           Fn::GetAtt:
           - VPCStack
