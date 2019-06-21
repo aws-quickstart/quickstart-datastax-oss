@@ -12,6 +12,9 @@ Parameters:
   PublicSubnet1ID:
     Description: Public Subnet Id 1
     Type: 'AWS::EC2::Subnet::Id'
+  PublicSubnet2ID:
+    Description: Public Subnet Id 2
+    Type: 'AWS::EC2::Subnet::Id'
   KeyPairName:
     Type: 'AWS::EC2::KeyPair::KeyName'
     ConstraintDescription: Name of an existing EC2 KeyPair.
@@ -306,7 +309,7 @@ Resources:
       IamInstanceProfile: !Ref InstanceProfile
       NetworkInterfaces:
         - DeleteOnTermination: true
-          DeviceIndex: '0'
+          DeviceIndex: 0
           SubnetId: !Ref PublicSubnet1ID
           GroupSet:
             - !Ref DDACSecGroup
@@ -471,7 +474,7 @@ Resources:
       NetworkInterfaces:
         - DeleteOnTermination: true
           DeviceIndex: '0'
-          SubnetId: !Ref PublicSubnet1ID
+          SubnetId: !Ref PublicSubnet2ID
           GroupSet:
             - !Ref DDACSecGroup
       KeyName: !Ref KeyPairName
@@ -530,3 +533,9 @@ Outputs:
   DDBTable :
     Value: !Ref DDBTable
     Description: NodeRegister DynamoDB table
+  Seed1IpAddress :
+    Value: !GetAtt DDACSeedNode1.PrivateIp
+    Description: 1st Seed Ip
+  Seed2IpAddress :
+    Value: !GetAtt DDACSeedNode2.PrivateIp
+    Description: 2nd Seed Ip
