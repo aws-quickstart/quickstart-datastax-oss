@@ -112,6 +112,30 @@ Mappings:
       Value: "5"
     "8":
       Value: "6"    
+    "9":
+      Value: "7"
+    "10":
+      Value: "8"
+    "11":
+      Value: "9"
+    "12":
+      Value: "10"
+    "13":
+      Value: "11"
+    "14":
+      Value: "12"    
+    "15":
+      Value: "13"
+    "16":
+      Value: "14"
+    "17":
+      Value: "15"
+    "18":
+      Value: "16"
+    "19":
+      Value: "17"    
+    "20":
+      Value: "18"        
   AWSAMIRegionMap:
     AMI:
       US1604HVM: ubuntu/images/hvm-ssd/ubuntu-xenial-16.04-amd64-server-20180405
