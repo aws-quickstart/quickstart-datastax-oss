@@ -131,38 +131,6 @@ Resources:
       Path: '/'
       Roles: 
         - Ref: 'InstanceRole'
-  DynamoPolicy:
-    Type: AWS::IAM::Policy
-    Properties:
-        PolicyName: dynamo-policy
-        Roles: 
-        - !Ref InstanceRole
-        PolicyDocument:
-           Version: 2012-10-17
-           Statement:
-             - Sid: ListAndDescribe
-               Effect: Allow
-               Action:
-                 - 'dynamodb:List*'
-                 - 'dynamodb:DescribeReservedCapacity*'
-                 - 'dynamodb:DescribeLimits'
-                 - 'dynamodb:DescribeTimeToLive'
-               Resource: '*'
-             - Sid: SpecificTable
-               Effect: Allow
-               Action:
-                 - 'dynamodb:BatchGet*'
-                 - 'dynamodb:DescribeStream'
-                 - 'dynamodb:DescribeTable'
-                 - 'dynamodb:Get*'
-                 - 'dynamodb:Query'
-                 - 'dynamodb:Scan'
-                 - 'dynamodb:BatchWrite*'
-                 - 'dynamodb:CreateTable'
-                 - 'dynamodb:Delete*'
-                 - 'dynamodb:Update*'
-                 - 'dynamodb:PutItem'
-               Resource: !Sub arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${DDBTable}*
   AuthenticatedS3Policy:
     Type: AWS::IAM::Policy
     Properties:
@@ -176,18 +144,6 @@ Resources:
                Action:
                  - 's3:GetObject'
                Resource: !Sub arn:aws:s3:::${QSS3BucketName}/*
-  DDBTable:
-    Type: 'AWS::DynamoDB::Table'
-    Properties:
-      AttributeDefinitions:
-        - AttributeName: !Ref HashKeyElementName
-          AttributeType: S
-      KeySchema:
-        - AttributeName: !Ref HashKeyElementName
-          KeyType: HASH
-      ProvisionedThroughput:
-        ReadCapacityUnits: 5
-        WriteCapacityUnits: 10
   DDACSecGroup:
     Type: 'AWS::EC2::SecurityGroup'
     Properties:
@@ -299,7 +255,7 @@ Resources:
             04_install_ddac:
               command: "apt-get install -y jq"
             05_install_ddac:
-              command: "/home/ddac/deploy-dse.sh ddac-cluster ddac-dc0"
+              command: "/home/ddac/deploy-dse.sh ddac-cluster ddac-dc0 10.0.128.5"
         post_install:
           commands:
             01_post_install_ddac:
@@ -309,7 +265,8 @@ Resources:
       IamInstanceProfile: !Ref InstanceProfile
       NetworkInterfaces:
         - DeleteOnTermination: true
-          DeviceIndex: 0
+          PrivateIpAddress: "10.0.128.5"
+          DeviceIndex: '0'
           SubnetId: !Ref PublicSubnet1ID
           GroupSet:
             - !Ref DDACSecGroup
@@ -346,24 +303,17 @@ Resources:
           cd /quickstart-linux-utilities && source quickstart-cfn-tools.source
           # Constants
           S3URI=https://${QSS3BucketName}.${S3Region}.amazonaws.com/${QSS3KeyPrefix}
-          REGISTER=${DDBTable}
           # Prep operating systems
           qs_update-os || qs_err
           qs_bootstrap_pip || qs_err
           qs_aws-cfn-bootstrap || qs_err
-          # Node Registeration
-          pip3 install noderegister 
-          echo "Register Node to $REGISTER" 
-          noderegister -r -D ${!REGISTER}
-          noderegister -a ${SeedType} -D ${!REGISTER}
-          noderegister -l -D ${!REGISTER}
           #Run cfn-init configsets
           cfn-init -v --stack ${AWS::StackName} --resource DDACSeedNode1 --configsets cs_install --region ${AWS::Region} || qs_err
           # Signal cfn-init (final check)
           [ $(qs_status) == 0 ] && cfn_success || cfn_fail
 
         - S3Region: !If [ GovCloudCondition, s3-us-gov-west-1, s3 ]
-          SeedType: 'seednode1'
+#          SeedType: 'seednode1'
   DDACSeedNode2:
     Type: 'AWS::EC2::Instance'
     CreationPolicy:
@@ -463,7 +413,7 @@ Resources:
             05_install_ddac:
               command: "apt-get install -y jq"
             06_install_ddac:
-              command: !Sub '/home/ddac/deploy-dse-get-seed.sh ${AWS::Region} ${DDBTable} ddac-cluster ddac-dc0'
+              command: "/home/ddac/deploy-dse.sh ddac-cluster ddac-dc0 10.0.128.5,10.0.144.5"
         post_install:
           commands:
             01_post_install_ddac:
@@ -473,6 +423,7 @@ Resources:
       IamInstanceProfile: !Ref InstanceProfile
       NetworkInterfaces:
         - DeleteOnTermination: true
+          PrivateIpAddress: "10.0.144.5"
           DeviceIndex: '0'
           SubnetId: !Ref PublicSubnet2ID
           GroupSet:
@@ -510,17 +461,10 @@ Resources:
           cd /quickstart-linux-utilities && source quickstart-cfn-tools.source
           # Constants
           S3URI=https://${QSS3BucketName}.${S3Region}.amazonaws.com/${QSS3KeyPrefix}
-          REGISTER=${DDBTable}
           # Prep operating systems
           qs_update-os || qs_err
           qs_bootstrap_pip || qs_err
           qs_aws-cfn-bootstrap || qs_err
-          # Node Registeration
-          pip3 install noderegister 
-          echo "Register Node to $REGISTER" 
-          noderegister -r -D ${!REGISTER}
-          noderegister -a ${SeedType} -D ${!REGISTER}
-          noderegister -l -D ${!REGISTER}
           #Run cfn-init configsets
           cfn-init -v --stack ${AWS::StackName} --resource DDACSeedNode2 --configsets cs_install --region ${AWS::Region} || qs_err
           # Signal cfn-init (final check)
@@ -530,12 +474,11 @@ Resources:
           SeedType: 'seednode2'
 
 Outputs:
-  DDBTable :
-    Value: !Ref DDBTable
-    Description: NodeRegister DynamoDB table
   Seed1IpAddress :
     Value: !GetAtt DDACSeedNode1.PrivateIp
     Description: 1st Seed Ip
   Seed2IpAddress :
     Value: !GetAtt DDACSeedNode2.PrivateIp
     Description: 2nd Seed Ip
+  DDACSecGroup:
+    Value: !GetAtt DDACSecGroup.GroupId

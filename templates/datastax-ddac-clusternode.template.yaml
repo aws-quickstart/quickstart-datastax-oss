@@ -95,8 +95,8 @@ Parameters:
     Description: "The max number of DDAC nodes to auto scale."
     Type: String
     Default: "3"
-  SeedNodeIps:
-    Description: "csv IPs of the seedsnodes."
+  DDACSecGroup:
+    Description: "DDAC Security Group ID."
     Type: String
 Mappings:
   ClusterSizeMap:
@@ -211,13 +211,13 @@ Resources:
           - 'autoscaling:EC2_INSTANCE_TERMINATE_ERROR'
     CreationPolicy:
       ResourceSignal:
-        Timeout: PT30M
+        Timeout: PT10M
         Count: '1'
     UpdatePolicy:
       AutoScalingRollingUpdate:
         MinInstancesInService: 1
         MaxBatchSize: 1
-        PauseTime: PT30M
+        PauseTime: PT10M
         WaitOnResourceSignals: true
   ClusterNodeLaunchConfig:
     Type: 'AWS::AutoScaling::LaunchConfiguration'
@@ -315,7 +315,7 @@ Resources:
             05_install_ddac:
               command: "apt-get install -y jq"
             06_install_ddac:
-              command: !Sub '/home/ddac/deploy-dse.sh ddac-cluster ddac-dc0 ${SeedNodeIps}'              
+              command: "/home/ddac/deploy-dse.sh ddac-cluster ddac-dc0 10.0.128.5,10.0.144.5"
         post_install:
           commands:
             01_post_install_ddac:
@@ -334,7 +334,7 @@ Resources:
             VolumeSize: 20
             VolumeType: gp2
       SecurityGroups:
-        - !Ref ClusterNodeSecurityGroup
+        - !Ref DDACSecGroup
       UserData: 
         Fn::Base64: !Sub 
         - |
@@ -365,7 +365,6 @@ Resources:
           [ $(qs_status) == 0 ] && cfn_success || cfn_fail
 
         - S3Region: !If [ GovCloudCondition, s3-us-gov-west-1, s3 ]
-
   ClusterNodeScaleUpPolicy:
     Type: 'AWS::AutoScaling::ScalingPolicy'
     Properties:
@@ -373,13 +372,6 @@ Resources:
       AutoScalingGroupName: !Ref ClusterNodeGroup
       Cooldown: '60'
       ScalingAdjustment: 1    
-  # ClusterNodeScaleDownPolicy:
-  #   Type: 'AWS::AutoScaling::ScalingPolicy'
-  #   Properties:
-  #     AdjustmentType: ChangeInCapacity
-  #     AutoScalingGroupName: !Ref ClusterNodeGroup
-  #     Cooldown: '60'
-  #     ScalingAdjustment: -1
   ClusterNodeCPUAlarmHigh:
     Type: 'AWS::CloudWatch::Alarm'
     Properties:
@@ -396,33 +388,3 @@ Resources:
         - Name: AutoScalingGroupName
           Value: !Ref ClusterNodeGroup
       ComparisonOperator: GreaterThanThreshold
-  # ClusterNodeCPUAlarmLow:
-  #   Type: 'AWS::CloudWatch::Alarm'
-  #   Properties:
-  #     AlarmDescription: Scale-down if CPU < 70% for 10 minutes
-  #     MetricName: CPUUtilization
-  #     Namespace: AWS/EC2
-  #     Statistic: Average
-  #     Period: 300
-  #     EvaluationPeriods: 2
-  #     Threshold: 70
-  #     AlarmActions:
-  #       - !Ref ClusterNodeScaleDownPolicy
-  #     Dimensions:
-  #       - Name: AutoScalingGroupName
-  #         Value: !Ref ClusterNodeGroup
-  #     ComparisonOperator: LessThanThreshold
-  ClusterNodeSecurityGroup:
-    Type: 'AWS::EC2::SecurityGroup'
-    Properties:
-      GroupDescription: Enable SSH Access to DDAC Node.
-      SecurityGroupIngress:
-        - IpProtocol: tcp
-          FromPort: 22
-          ToPort: 22
-          CidrIp: !Ref RemoteAccessCIDR
-        - IpProtocol: tcp
-          FromPort: 0
-          ToPort: 65535
-          CidrIp: !Ref VPCCIDR      
-      VpcId: !Ref VPCID

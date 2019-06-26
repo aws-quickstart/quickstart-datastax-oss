@@ -145,7 +145,7 @@ Resources:
         VPCCIDR :
           Fn::GetAtt:
           - VPCStack
-          - Outputs.VPCCIDR
+          - Outputs.VPCCIDR        
         InstanceType:
           Ref: InstanceType
         KeyPairName:
@@ -168,18 +168,6 @@ Resources:
           Ref: InstanceType
         KeyPairName:
           Ref: KeyPairName
-        # DDTable:
-        #   Fn::GetAtt:
-        #   - SeedNodeStack
-        #   - Outputs.DDBTable
-        # PrivateSubnet1ID:
-        #   Fn::GetAtt:
-        #   - VPCStack
-        #   - Outputs.PrivateSubnet1AID
-        # PrivateSubnet2ID:
-        #   Fn::GetAtt:
-        #   - VPCStack
-        #   - Outputs.PrivateSubnet2AID
         PublicSubnet1ID:
           Fn::GetAtt:
           - VPCStack
@@ -210,12 +198,7 @@ Resources:
           Ref: ClusterAutoScaleMinSize
         ClusterAutoScaleMaxSize:
           Ref: ClusterAutoScaleMaxSize
-        SeedNodeIps: !Join 
-          - ','
-          - - !GetAtt
-              - SeedNodeStack
-              - Outputs.Seed1IpAddress
-            - !GetAtt
-              - SeedNodeStack
-              - Outputs.Seed2IpAddress
-
+        DDACSecGroup:
+          Fn::GetAtt:
+            - SeedNodeStack
+            - Outputs.DDACSecGroup
