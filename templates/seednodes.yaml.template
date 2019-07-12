@@ -1,19 +1,11 @@
 AWSTemplateFormatVersion: 2010-09-09
 Description: Create the seednodes
 Parameters:
-  HashKeyElementName:
-    Description: HashType PrimaryKey Name
-    Type: String
-    Default: hostname
-    AllowedPattern: '[a-zA-Z0-9]*'
-    MinLength: '1'
-    MaxLength: '2048'
-    ConstraintDescription: must contain only alphanumberic characters
-  PublicSubnet1ID:
-    Description: Public Subnet Id 1
+  PrivateSubnet1ID:
+    Description: Private Subnet Id 1
     Type: 'AWS::EC2::Subnet::Id'
-  PublicSubnet2ID:
-    Description: Public Subnet Id 2
+  PrivateSubnet2ID:
+    Description: Private Subnet Id 2
     Type: 'AWS::EC2::Subnet::Id'
   KeyPairName:
     Type: 'AWS::EC2::KeyPair::KeyName'
@@ -49,6 +41,9 @@ Parameters:
       S3 key prefix for the Quick Start assets. Quick Start key prefix can
       include numbers, lowercase letters, uppercase letters, hyphens (-), and
       forward slash (/).
+    Type: String
+  DDACSecGroup:
+    Description: "DDAC Security Group ID."
     Type: String
   InstanceType:
     AllowedValues:
@@ -144,20 +139,6 @@ Resources:
                Action:
                  - 's3:GetObject'
                Resource: !Sub arn:aws:s3:::${QSS3BucketName}/*
-  DDACSecGroup:
-    Type: 'AWS::EC2::SecurityGroup'
-    Properties:
-      GroupDescription: Enables SSH access to the DDAC Seed.
-      VpcId: !Ref VPCID
-      SecurityGroupIngress:
-        - IpProtocol: tcp
-          FromPort: 22
-          ToPort: 22
-          CidrIp: !Ref RemoteAccessCIDR
-        - IpProtocol: tcp
-          FromPort: 0
-          ToPort: 65535
-          CidrIp: !Ref VPCCIDR
   DDACSeedNode1:
     Type: 'AWS::EC2::Instance'
     CreationPolicy:
@@ -255,7 +236,7 @@ Resources:
             04_install_ddac:
               command: "apt-get install -y jq"
             05_install_ddac:
-              command: "/home/ddac/deploy-dse.sh ddac-cluster ddac-dc0 10.0.128.5"
+              command: "/home/ddac/deploy-dse.sh ddac-cluster ddac-dc0"
         post_install:
           commands:
             01_post_install_ddac:
@@ -265,9 +246,8 @@ Resources:
       IamInstanceProfile: !Ref InstanceProfile
       NetworkInterfaces:
         - DeleteOnTermination: true
-          PrivateIpAddress: "10.0.128.5"
-          DeviceIndex: '0'
-          SubnetId: !Ref PublicSubnet1ID
+          DeviceIndex: "0"
+          SubnetId: !Ref PrivateSubnet1ID
           GroupSet:
             - !Ref DDACSecGroup
       KeyName: !Ref KeyPairName
@@ -282,7 +262,7 @@ Resources:
             VolumeType: gp2
       Tags:
           - Key: Name
-            Value: seednode1
+            Value: DDAC_Seednode1
       UserData:
         Fn::Base64: !Sub
         - |
@@ -313,7 +293,6 @@ Resources:
           [ $(qs_status) == 0 ] && cfn_success || cfn_fail
 
         - S3Region: !If [ GovCloudCondition, s3-us-gov-west-1, s3 ]
-#          SeedType: 'seednode1'
   DDACSeedNode2:
     Type: 'AWS::EC2::Instance'
     CreationPolicy:
@@ -413,7 +392,7 @@ Resources:
             05_install_ddac:
               command: "apt-get install -y jq"
             06_install_ddac:
-              command: "/home/ddac/deploy-dse.sh ddac-cluster ddac-dc0 10.0.128.5,10.0.144.5"
+              command: !Sub "/home/ddac/deploy-dse.sh ddac-cluster ddac-dc0 ${DDACSeedNode1.PrivateIp}"              
         post_install:
           commands:
             01_post_install_ddac:
@@ -423,9 +402,8 @@ Resources:
       IamInstanceProfile: !Ref InstanceProfile
       NetworkInterfaces:
         - DeleteOnTermination: true
-          PrivateIpAddress: "10.0.144.5"
-          DeviceIndex: '0'
-          SubnetId: !Ref PublicSubnet2ID
+          DeviceIndex: "0"
+          SubnetId: !Ref PrivateSubnet2ID
           GroupSet:
             - !Ref DDACSecGroup
       KeyName: !Ref KeyPairName
@@ -440,7 +418,7 @@ Resources:
             VolumeType: gp2
       Tags:
           - Key: Name
-            Value: seednode2
+            Value: DDAC_Seednode2
       UserData:
         Fn::Base64: !Sub
         - |
@@ -471,14 +449,10 @@ Resources:
           [ $(qs_status) == 0 ] && cfn_success || cfn_fail
 
         - S3Region: !If [ GovCloudCondition, s3-us-gov-west-1, s3 ]
-          SeedType: 'seednode2'
-
 Outputs:
   Seed1IpAddress :
     Value: !GetAtt DDACSeedNode1.PrivateIp
-    Description: 1st Seed Ip
+    Description: 1st Seed IP
   Seed2IpAddress :
     Value: !GetAtt DDACSeedNode2.PrivateIp
-    Description: 2nd Seed Ip
-  DDACSecGroup:
-    Value: !GetAtt DDACSecGroup.GroupId
+    Description: 2nd Seed IP

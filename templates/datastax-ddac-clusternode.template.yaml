@@ -36,12 +36,6 @@ Parameters:
   KeyPairName:
     Type: 'AWS::EC2::KeyPair::KeyName'
     ConstraintDescription: Name of an existing EC2 KeyPair.
-  RemoteAccessCIDR:
-    AllowedPattern: >-
-      ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/([0-9]|[1-2][0-9]|3[0-2]))$
-    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/x
-    Description: Allowed CIDR block for external SSH access
-    Type: String
   QSS3BucketName:
     AllowedPattern: '^[0-9a-zA-Z]+([0-9a-zA-Z-]*[0-9a-zA-Z])*$'
     ConstraintDescription: >-
@@ -64,29 +58,15 @@ Parameters:
       include numbers, lowercase letters, uppercase letters, hyphens (-), and
       forward slash (/).
     Type: String
-  # PrivateSubnet1ID:
-  #   Description: Private Subnet Id 1
-  #   Type: 'AWS::EC2::Subnet::Id'
-  # PrivateSubnet2ID:
-  #   Description: Private Subnet Id 2
-  #   Type: 'AWS::EC2::Subnet::Id'
-  PublicSubnet1ID:
-    Description: Public Subnet Id 1
+  PrivateSubnet1ID:
+    Description: Private Subnet Id 1
     Type: 'AWS::EC2::Subnet::Id'
-  PublicSubnet2ID:
-    Description: Public Subnet Id 2
+  PrivateSubnet2ID:
+    Description: Private Subnet Id 2
     Type: 'AWS::EC2::Subnet::Id'
-  PublicSubnet3ID:
-    Description: Public Subnet Id 3
+  PrivateSubnet3ID:
+    Description: Private Subnet Id 3
     Type: 'AWS::EC2::Subnet::Id'
-  VPCID:
-    Description: 'ID of the VPC (e.g., vpc-0343606e)'
-    Type: 'AWS::EC2::VPC::Id'
-  VPCCIDR:
-    AllowedPattern: >-
-      ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/([0-9]|[1-2][0-9]|3[0-2]))$
-    Description: "CIDR Block for the VPC"
-    Type: String
   ClusterAutoScaleMinSize:
     Description: "The minimum number of DDAC nodes to create."
     Type: String
@@ -97,6 +77,9 @@ Parameters:
     Default: "3"
   DDACSecGroup:
     Description: "DDAC Security Group ID."
+    Type: 'List<AWS::EC2::SecurityGroup::Id>'
+  SeedNodeIps:
+    Description: "csv IPs of the seedsnodes."
     Type: String
 Mappings:
   ClusterSizeMap:
@@ -135,7 +118,7 @@ Mappings:
     "19":
       Value: "17"    
     "20":
-      Value: "18"        
+      Value: "18" 
   AWSAMIRegionMap:
     AMI:
       US1604HVM: ubuntu/images/hvm-ssd/ubuntu-xenial-16.04-amd64-server-20180405
@@ -214,9 +197,12 @@ Resources:
     Type: 'AWS::AutoScaling::AutoScalingGroup'
     Properties:
       VPCZoneIdentifier:
-        - !Ref PublicSubnet1ID
-        - !Ref PublicSubnet2ID
-        - !Ref PublicSubnet3ID
+        # - !Ref PublicSubnet1ID
+        # - !Ref PublicSubnet2ID
+        # - !Ref PublicSubnet3ID
+        - !Ref PrivateSubnet3ID
+        - !Ref PrivateSubnet1ID
+        - !Ref PrivateSubnet2ID
       LaunchConfigurationName: !Ref ClusterNodeLaunchConfig
       MinSize: !FindInMap 
         - ClusterSizeMap
@@ -233,6 +219,10 @@ Resources:
           - 'autoscaling:EC2_INSTANCE_LAUNCH_ERROR'
           - 'autoscaling:EC2_INSTANCE_TERMINATE'
           - 'autoscaling:EC2_INSTANCE_TERMINATE_ERROR'
+      Tags:
+      - Key: Name
+        PropagateAtLaunch: "true"
+        Value: DDAC_ASG_node
     CreationPolicy:
       ResourceSignal:
         Timeout: PT10M
@@ -339,7 +329,7 @@ Resources:
             05_install_ddac:
               command: "apt-get install -y jq"
             06_install_ddac:
-              command: "/home/ddac/deploy-dse.sh ddac-cluster ddac-dc0 10.0.128.5,10.0.144.5"
+              command: !Sub "/home/ddac/deploy-dse.sh ddac-cluster ddac-dc0 ${SeedNodeIps}"
         post_install:
           commands:
             01_post_install_ddac:
@@ -357,8 +347,7 @@ Resources:
           Ebs:
             VolumeSize: 20
             VolumeType: gp2
-      SecurityGroups:
-        - !Ref DDACSecGroup
+      SecurityGroups: !Ref DDACSecGroup
       UserData: 
         Fn::Base64: !Sub 
         - |
