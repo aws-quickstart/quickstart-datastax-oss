@@ -1,6 +1,14 @@
 AWSTemplateFormatVersion: 2010-09-09
 Description: Create the seednodes
 Parameters:
+  ClusterName:
+    Description: The name of the DDAC Cluster.
+    Type: String
+    Default: DDAC-Cluster
+  DatacenterName:
+    Description: The name of the DDAC Datacenter.
+    Type: String
+    Default: DDAC-dc0
   PrivateSubnet1ID:
     Description: Private Subnet Id 1
     Type: 'AWS::EC2::Subnet::Id'
@@ -10,20 +18,6 @@ Parameters:
   KeyPairName:
     Type: 'AWS::EC2::KeyPair::KeyName'
     ConstraintDescription: Name of an existing EC2 KeyPair.
-  RemoteAccessCIDR:
-    AllowedPattern: >-
-      ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/([0-9]|[1-2][0-9]|3[0-2]))$
-    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/x
-    Description: Allowed CIDR block for external SSH access
-    Type: String
-  VPCID:
-    Description: VPC ID
-    Type: 'AWS::EC2::VPC::Id'
-  VPCCIDR:
-    AllowedPattern: >-
-      ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/([0-9]|[1-2][0-9]|3[0-2]))$
-    Description: CIDR Block for the VPC
-    Type: String
   QSS3BucketName:
     AllowedPattern: '^[0-9a-zA-Z]+([0-9a-zA-Z-]*[0-9a-zA-Z])*$'
     ConstraintDescription: >-
@@ -236,7 +230,8 @@ Resources:
             04_install_ddac:
               command: "apt-get install -y jq"
             05_install_ddac:
-              command: "/home/ddac/deploy-dse.sh ddac-cluster ddac-dc0"
+              command: !Sub "/home/ddac/deploy-dse.sh ${ClusterName} ${DatacenterName}"
+
         post_install:
           commands:
             01_post_install_ddac:
@@ -392,7 +387,7 @@ Resources:
             05_install_ddac:
               command: "apt-get install -y jq"
             06_install_ddac:
-              command: !Sub "/home/ddac/deploy-dse.sh ddac-cluster ddac-dc0 ${DDACSeedNode1.PrivateIp}"              
+              command: !Sub "/home/ddac/deploy-dse.sh  ${ClusterName} ${DatacenterName} ${DDACSeedNode1.PrivateIp}"              
         post_install:
           commands:
             01_post_install_ddac:

@@ -15,6 +15,8 @@ Metadata:
       - Label:
           default: 'DDAC Cluster/Nodes Configuration'
         Parameters:
+          - ClusterName
+          - DatacenterName
           - PublicSubnet1Id
           - DDACInstanceType
           - ClusterAutoScaleMinSize
@@ -31,9 +33,13 @@ Metadata:
           - QSS3BucketName
           - QSS3KeyPrefix
     ParameterLabels:
+      ClusterName:
+        default: Name of the DDAC Cluster
+      DatacenterName:
+        default: Name of the Datacenter
       RemoteAccessCIDR:
         default: Permitted IP range
-      KeyName:
+      KeyPairName:
         default: Key Name
       DDACInstanceType:
         default: Instances Type for DDAC nodes
@@ -53,6 +59,14 @@ Parameters:
     ConstraintDescription: "Must be a valid email id."
     Description: "Email Address for notification"
     Type: String
+  ClusterName:
+    Description: The name of the DDAC Cluster.
+    Type: String
+    Default: DDAC-Cluster
+  DatacenterName:
+    Description: The name of the DDAC Datacenter.
+    Type: String
+    Default: DDAC-dc0
   DDACInstanceType:
     AllowedValues:
       - t2.micro
@@ -232,13 +246,12 @@ Resources:
           - https://${QSS3BucketName}.${S3Region}.amazonaws.com/${QSS3KeyPrefix}templates/seednodes.yaml.template
           - S3Region: !If [GovCloudCondition, s3-us-gov-west-1, s3]
       Parameters:
-        VPCID: !Ref VPCId
-        VPCCIDR: !Ref VPCCIDR
+        ClusterName: !Ref ClusterName
+        DatacenterName: !Ref DatacenterName
         PrivateSubnet1ID: !Ref PrivateSubnet1Id
         PrivateSubnet2ID: !Ref PrivateSubnet2Id
         InstanceType: !Ref DDACInstanceType
         KeyPairName: !Ref KeyPairName
-        RemoteAccessCIDR: !Ref RemoteAccessCIDR
         QSS3KeyPrefix: !Ref QSS3KeyPrefix
         QSS3BucketName: !Ref QSS3BucketName
         DDACSecGroup: !GetAtt DDACSecGroup.GroupId        
@@ -263,6 +276,8 @@ Resources:
           - https://${QSS3BucketName}.${S3Region}.amazonaws.com/${QSS3KeyPrefix}templates/datastax-ddac-clusternode.template.yaml
           - S3Region: !If [GovCloudCondition, s3-us-gov-west-1, s3]
       Parameters:
+        ClusterName: !Ref ClusterName
+        DatacenterName: !Ref DatacenterName
         EmailAddress: !Ref EmailAddress
         InstanceType: !Ref DDACInstanceType
         KeyPairName: !Ref KeyPairName

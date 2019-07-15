@@ -111,7 +111,7 @@ Resources:
             VolumeType: gp2
       Tags:
           - Key: Name
-            Value: dev_jumpbox
+            Value: devOps
 Outputs:
   DevIpAddress:
     Value: !GetAtt DevNode1.PublicIp

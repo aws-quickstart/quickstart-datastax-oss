@@ -2,6 +2,14 @@ AWSTemplateFormatVersion: 2010-09-09
 Description: >-
    DataStax ddac template
 Parameters:
+  ClusterName:
+    Description: The name of the DDAC Cluster.
+    Type: String
+    Default: DDAC-Cluster
+  DatacenterName:
+    Description: The name of the DDAC Datacenter.
+    Type: String
+    Default: DDAC-dc0
   InstanceType:
     Description: EC2 instance type
     Type: String
@@ -329,7 +337,7 @@ Resources:
             05_install_ddac:
               command: "apt-get install -y jq"
             06_install_ddac:
-              command: !Sub "/home/ddac/deploy-dse.sh ddac-cluster ddac-dc0 ${SeedNodeIps}"
+              command: !Sub "/home/ddac/deploy-dse.sh ${ClusterName} ${DatacenterName} ${SeedNodeIps}"              
         post_install:
           commands:
             01_post_install_ddac:
