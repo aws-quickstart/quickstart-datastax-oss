@@ -45,36 +45,36 @@ Parameters:
 Mappings:
   AWSAMIRegionMap:
     us-east-1:
-      DdacDev: ami-0aca942d5d27d12d0
+      DdacDev: ami-0a5c506f4c91b8e26
     us-east-2:
-      DdacDev: ami-0d7a9bd875b154021
+      DdacDev: ami-0f9671c7109a14342
     us-west-2:
-      DdacDev: ami-098286ad3f5924327
+      DdacDev: ami-0be809b77504eb1af
 Resources:
-  InstanceRole: 
+  InstanceRole:
     Type: 'AWS::IAM::Role'
-    Properties: 
-      AssumeRolePolicyDocument: 
-        Statement: 
-          - 
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          -
             Effect: 'Allow'
-            Principal: 
-              Service: 
+            Principal:
+              Service:
                 - 'ec2.amazonaws.com'
-            Action: 
+            Action:
               - 'sts:AssumeRole'
       Path: '/'
-  InstanceProfile: 
+  InstanceProfile:
     Type: 'AWS::IAM::InstanceProfile'
-    Properties: 
+    Properties:
       Path: '/'
-      Roles: 
+      Roles:
         - Ref: 'InstanceRole'
   AuthenticatedS3Policy:
     Type: AWS::IAM::Policy
     Properties:
         PolicyName: AuthenticatedS3GetObjects
-        Roles: 
+        Roles:
         - !Ref InstanceRole
         PolicyDocument:
            Statement:
@@ -100,7 +100,7 @@ Resources:
           SubnetId: !Ref PublicSubnet1ID
           GroupSet: !Ref DDACSecGroup
       KeyName: !Ref KeyPairName
-      ImageId: !FindInMap 
+      ImageId: !FindInMap
         - AWSAMIRegionMap
         - !Ref 'AWS::Region'
         - DdacDev
