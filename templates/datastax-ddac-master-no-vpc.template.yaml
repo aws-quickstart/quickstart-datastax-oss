@@ -254,7 +254,7 @@ Resources:
         KeyPairName: !Ref KeyPairName
         QSS3KeyPrefix: !Ref QSS3KeyPrefix
         QSS3BucketName: !Ref QSS3BucketName
-        DDACSecGroup: !GetAtt DDACSecGroup.GroupId        
+        DDACSecGroup: !GetAtt DDACSecGroup.GroupId
   DevNodeStack:
     Type: AWS::CloudFormation::Stack
     Properties:
@@ -297,3 +297,20 @@ Resources:
               !GetAtt SeedNodeStack.Outputs.Seed2IpAddress,
             ],
           ]
+Outputs:
+  Seed1IpAddress:
+    Value: !GetAtt
+      - SeedNodeStack
+      - Outputs.Seed1IpAddress
+    Description: 1st Seed IP
+  Seed2IpAddress:
+    Value: !GetAtt
+      - SeedNodeStack
+      - Outputs.Seed2IpAddress
+    Description: 2nd Seed IP
+  DevIpAddress:
+    Value: !GetAtt DevNodeStack.Outputs.DevIpAddress
+    Description: Dev Jump box Public IP
+  DDACUrl:
+    Value: !GetAtt DevNodeStack.Outputs.DDACUrl
+    Description: DDAC Url

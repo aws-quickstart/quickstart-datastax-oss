@@ -14,7 +14,7 @@ Metadata:
           - RemoteAccessCIDR
           - PublicSubnet1CIDR
           - PublicSubnet2CIDR
-          - PublicSubnet3CIDR          
+          - PublicSubnet3CIDR
       - Label:
           default: 'DDAC Cluster/Nodes Configuration'
         Parameters:
@@ -285,7 +285,7 @@ Resources:
         - IpProtocol: tcp
           FromPort: 8080
           ToPort: 8080
-          CidrIp: 0.0.0.0/0          
+          CidrIp: 0.0.0.0/0
   SeedNodeStack:
     Type: AWS::CloudFormation::Stack
     Properties:
@@ -302,7 +302,7 @@ Resources:
         KeyPairName: !Ref KeyPairName
         QSS3KeyPrefix: !Ref QSS3KeyPrefix
         QSS3BucketName: !Ref QSS3BucketName
-        DDACSecGroup: !GetAtt DDACSecGroup.GroupId        
+        DDACSecGroup: !GetAtt DDACSecGroup.GroupId
   DevNodeStack:
     Type: AWS::CloudFormation::Stack
     Properties:
@@ -315,7 +315,7 @@ Resources:
         InstanceType: !Ref DevInstanceType
         KeyPairName: !Ref KeyPairName
         QSS3BucketName: !Ref QSS3BucketName
-        DDACSecGroup: !GetAtt DDACSecGroup.GroupId        
+        DDACSecGroup: !GetAtt DDACSecGroup.GroupId
   ClusterNodeStack:
     Type: AWS::CloudFormation::Stack
     Properties:
@@ -332,7 +332,7 @@ Resources:
         PrivateSubnet2ID: !GetAtt VPCStack.Outputs.PrivateSubnet2AID
         ClusterAutoScaleMinSize: !Ref ClusterAutoScaleMinSize
         ClusterAutoScaleMaxSize: !Ref ClusterAutoScaleMaxSize
-        DDACSecGroup: !GetAtt DDACSecGroup.GroupId        
+        DDACSecGroup: !GetAtt DDACSecGroup.GroupId
         InstanceType: !Ref DDACInstanceType
         KeyPairName: !Ref KeyPairName
         QSS3KeyPrefix: !Ref QSS3KeyPrefix
@@ -345,3 +345,20 @@ Resources:
               !GetAtt SeedNodeStack.Outputs.Seed2IpAddress,
             ],
           ]
+Outputs:
+  Seed1IpAddress:
+    Value: !GetAtt
+      - SeedNodeStack
+      - Outputs.Seed1IpAddress
+    Description: 1st Seed IP
+  Seed2IpAddress:
+    Value: !GetAtt
+      - SeedNodeStack
+      - Outputs.Seed2IpAddress
+    Description: 2nd Seed IP
+  DevIpAddress:
+    Value: !GetAtt DevNodeStack.Outputs.DevIpAddress
+    Description: Dev Jump box Public IP
+  DDACUrl:
+    Value: !GetAtt DevNodeStack.Outputs.DDACUrl
+    Description: DDAC Url
