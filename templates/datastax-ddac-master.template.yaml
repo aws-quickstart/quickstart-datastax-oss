@@ -21,6 +21,7 @@ Metadata:
           - ClusterName
           - DatacenterName
           - DDACInstanceType
+          - VolumeSize
           - ClusterAutoScaleMinSize
           - ClusterAutoScaleMaxSize
           - EmailAddress
@@ -28,6 +29,7 @@ Metadata:
           default: 'Dev/Bastion Configuration'
         Parameters:
           - DevInstanceType
+          - DevVolumeSize
           - KeyPairName
       - Label:
           default: 'Quick Start Configuration'
@@ -99,27 +101,10 @@ Parameters:
     Default: t2.medium
     Description: "EC2 instance type"
     Type: String
-  KeyPairName:
-    ConstraintDescription: "Name of an existing EC2 KeyPair."
-    Type: "AWS::EC2::KeyPair::KeyName"
-  PrivateSubnet1CIDR:
-    AllowedPattern: ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/(1[6-9]|2[0-8]))$
-    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
-    Default: 10.0.0.0/19
-    Description: CIDR block for private subnet 1 located in Availability Zone 1
-    Type: String
-  PrivateSubnet2CIDR:
-    AllowedPattern: ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/(1[6-9]|2[0-8]))$
-    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
-    Default: 10.0.32.0/19
-    Description: CIDR block for private subnet 2 located in Availability Zone 2
-    Type: String
-  PrivateSubnet3CIDR:
-    AllowedPattern: ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/(1[6-9]|2[0-8]))$
-    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
-    Default: 10.0.64.0/19
-    Description: CIDR block for private subnet 3 located in Availability Zone 3
-    Type: String
+  DDACVolumeSize:
+      Type: Number
+      Description: "EBS volume size of the DDAC Cluster Nodes in GB"
+      Default: 1024
   DevInstanceType:
     AllowedValues:
       - t2.micro
@@ -144,6 +129,31 @@ Parameters:
     ConstraintDescription: "must be a valid EC2 instance type."
     Default: t2.micro
     Description: "EC2 instance type"
+    Type: String
+  DevVolumeSize:
+      Type: Number
+      Description: "EBS volume size of the DevOps Instance in GB"
+      Default: 16
+  KeyPairName:
+    ConstraintDescription: "Name of an existing EC2 KeyPair."
+    Type: "AWS::EC2::KeyPair::KeyName"
+  PrivateSubnet1CIDR:
+    AllowedPattern: ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/(1[6-9]|2[0-8]))$
+    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
+    Default: 10.0.0.0/19
+    Description: CIDR block for private subnet 1 located in Availability Zone 1
+    Type: String
+  PrivateSubnet2CIDR:
+    AllowedPattern: ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/(1[6-9]|2[0-8]))$
+    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
+    Default: 10.0.32.0/19
+    Description: CIDR block for private subnet 2 located in Availability Zone 2
+    Type: String
+  PrivateSubnet3CIDR:
+    AllowedPattern: ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/(1[6-9]|2[0-8]))$
+    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
+    Default: 10.0.64.0/19
+    Description: CIDR block for private subnet 3 located in Availability Zone 3
     Type: String
   PublicSubnet1CIDR:
     AllowedPattern: ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/(1[6-9]|2[0-8]))$
@@ -299,6 +309,7 @@ Resources:
         PrivateSubnet1ID: !GetAtt VPCStack.Outputs.PrivateSubnet1AID
         PrivateSubnet2ID: !GetAtt VPCStack.Outputs.PrivateSubnet2AID
         InstanceType: !Ref DDACInstanceType
+        VolumeSize: !Ref DDACVolumeSize
         KeyPairName: !Ref KeyPairName
         QSS3KeyPrefix: !Ref QSS3KeyPrefix
         QSS3BucketName: !Ref QSS3BucketName
@@ -313,6 +324,7 @@ Resources:
       Parameters:
         PublicSubnet1ID: !GetAtt VPCStack.Outputs.PublicSubnet1ID
         InstanceType: !Ref DevInstanceType
+        VolumeSize: !Ref DevVolumeSize
         KeyPairName: !Ref KeyPairName
         QSS3BucketName: !Ref QSS3BucketName
         DDACSecGroup: !GetAtt DDACSecGroup.GroupId
@@ -334,6 +346,7 @@ Resources:
         ClusterAutoScaleMaxSize: !Ref ClusterAutoScaleMaxSize
         DDACSecGroup: !GetAtt DDACSecGroup.GroupId
         InstanceType: !Ref DDACInstanceType
+        VolumeSize: !Ref DDACVolumeSize
         KeyPairName: !Ref KeyPairName
         QSS3KeyPrefix: !Ref QSS3KeyPrefix
         QSS3BucketName: !Ref QSS3BucketName

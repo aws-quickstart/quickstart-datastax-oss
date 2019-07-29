@@ -42,6 +42,10 @@ Parameters:
     Default: t2.medium
     Description: "EC2 instance type"
     Type: String
+  VolumeSize:
+    Type: Number
+    Description: "EBS volume size of the DevOps Instance in GB"
+    Default: 16
 Mappings:
   AWSAMIRegionMap:
     us-east-1:
@@ -107,7 +111,7 @@ Resources:
       BlockDeviceMappings:
         - DeviceName: /dev/sda1
           Ebs:
-            VolumeSize: 20
+            VolumeSize: !Ref VolumeSize
             VolumeType: gp2
       Tags:
           - Key: Name

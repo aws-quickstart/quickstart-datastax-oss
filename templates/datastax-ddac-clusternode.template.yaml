@@ -89,6 +89,10 @@ Parameters:
   SeedNodeIps:
     Description: "csv IPs of the seedsnodes."
     Type: String
+  VolumeSize:
+    Type: Number
+    Description: "EBS volume size of the DDAC Cluster Nodes in GB"
+    Default: 1024
 Mappings:
   ClusterSizeMap:
     "3":
@@ -102,7 +106,7 @@ Mappings:
     "7":
       Value: "5"
     "8":
-      Value: "6"    
+      Value: "6"
     "9":
       Value: "7"
     "10":
@@ -114,7 +118,7 @@ Mappings:
     "13":
       Value: "11"
     "14":
-      Value: "12"    
+      Value: "12"
     "15":
       Value: "13"
     "16":
@@ -124,9 +128,9 @@ Mappings:
     "18":
       Value: "16"
     "19":
-      Value: "17"    
+      Value: "17"
     "20":
-      Value: "18" 
+      Value: "18"
   AWSAMIRegionMap:
     AMI:
       US1604HVM: ubuntu/images/hvm-ssd/ubuntu-xenial-16.04-amd64-server-20180405
@@ -159,34 +163,34 @@ Mappings:
     us-west-2:
       US1604HVM: ami-ca89eeb2
 Conditions:
-  GovCloudCondition: !Equals 
+  GovCloudCondition: !Equals
     - !Ref 'AWS::Region'
     - us-gov-west-1
 Resources:
-  InstanceRole: 
+  InstanceRole:
     Type: 'AWS::IAM::Role'
-    Properties: 
-      AssumeRolePolicyDocument: 
-        Statement: 
-          - 
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          -
             Effect: 'Allow'
-            Principal: 
-              Service: 
+            Principal:
+              Service:
                 - 'ec2.amazonaws.com'
-            Action: 
+            Action:
               - 'sts:AssumeRole'
       Path: '/'
-  InstanceProfile: 
+  InstanceProfile:
     Type: 'AWS::IAM::InstanceProfile'
-    Properties: 
+    Properties:
       Path: '/'
-      Roles: 
+      Roles:
         - Ref: 'InstanceRole'
   AuthenticatedS3Policy:
     Type: AWS::IAM::Policy
     Properties:
         PolicyName: AuthenticatedS3GetObjects
-        Roles: 
+        Roles:
         - !Ref InstanceRole
         PolicyDocument:
            Statement:
@@ -212,11 +216,11 @@ Resources:
         - !Ref PrivateSubnet1ID
         - !Ref PrivateSubnet2ID
       LaunchConfigurationName: !Ref ClusterNodeLaunchConfig
-      MinSize: !FindInMap 
+      MinSize: !FindInMap
         - ClusterSizeMap
         - !Ref ClusterAutoScaleMinSize
         - Value
-      MaxSize: !FindInMap 
+      MaxSize: !FindInMap
         - ClusterSizeMap
         - !Ref ClusterAutoScaleMaxSize
         - Value
@@ -258,7 +262,7 @@ Resources:
         install_and_enable_cfn_hup:
           files:
             /etc/cfn/cfn-hup.conf:
-              content: !Join 
+              content: !Join
                 - ''
                 - - |
                     [main]
@@ -274,7 +278,7 @@ Resources:
               owner: root
               group: root
             /etc/cfn/hooks.d/cfn-auto-reloader.conf:
-              content: !Join 
+              content: !Join
                 - ''
                 - - |
                     [cfn-auto-reloader-hook]
@@ -294,7 +298,7 @@ Resources:
                   - |
                     runas=root
             /lib/systemd/system/cfn-hup.service:
-              content: !Join 
+              content: !Join
                 - ''
                 - - |
                     [Unit]
@@ -337,36 +341,36 @@ Resources:
             05_install_ddac:
               command: "apt-get install -y jq"
             06_install_ddac:
-              command: !Sub "/home/ddac/deploy-dse.sh ${ClusterName} ${DatacenterName} ${SeedNodeIps}"              
+              command: !Sub "/home/ddac/deploy-dse.sh ${ClusterName} ${DatacenterName} ${SeedNodeIps}"
         post_install:
           commands:
             01_post_install_ddac:
               command: "touch /tmp/01_post_install_ddac"
     Properties:
       InstanceType: !Ref InstanceType
-      IamInstanceProfile: !Ref InstanceProfile      
+      IamInstanceProfile: !Ref InstanceProfile
       KeyName: !Ref KeyPairName
-      ImageId: !FindInMap 
+      ImageId: !FindInMap
         - AWSAMIRegionMap
         - !Ref 'AWS::Region'
         - US1604HVM
       BlockDeviceMappings:
         - DeviceName: /dev/sda1
           Ebs:
-            VolumeSize: 20
+            VolumeSize: !Ref VolumeSize
             VolumeType: gp2
       SecurityGroups: !Ref DDACSecGroup
-      UserData: 
-        Fn::Base64: !Sub 
+      UserData:
+        Fn::Base64: !Sub
         - |
           #!/bin/bash -xe
-          #CFN Signaling fuctions (begin)          
-          function cfn_fail 
+          #CFN Signaling fuctions (begin)
+          function cfn_fail
           {
             cfn-signal -e 1 --stack ${AWS::StackName} --region ${AWS::Region} --resource ClusterNodeGroup
             exit 1
           }
-          function cfn_success 
+          function cfn_success
           {
             cfn-signal -e 0 --stack ${AWS::StackName} --region ${AWS::Region} --resource ClusterNodeGroup
             exit 0
@@ -392,7 +396,7 @@ Resources:
       AdjustmentType: ChangeInCapacity
       AutoScalingGroupName: !Ref ClusterNodeGroup
       Cooldown: '60'
-      ScalingAdjustment: 1    
+      ScalingAdjustment: 1
   ClusterNodeCPUAlarmHigh:
     Type: 'AWS::CloudWatch::Alarm'
     Properties:

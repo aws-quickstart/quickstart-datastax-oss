@@ -19,13 +19,15 @@ Metadata:
           - DatacenterName
           - PublicSubnet1Id
           - DDACInstanceType
+          - VolumeSize
           - ClusterAutoScaleMinSize
           - ClusterAutoScaleMaxSize
           - EmailAddress
       - Label:
-          default: 'Dev/Bastion Configuration'
+          default: 'DevOps/Bastion Configuration'
         Parameters:
           - DevInstanceType
+          - DevVolumeSize
           - KeyPairName
       - Label:
           default: 'Quick Start Configuration'
@@ -92,19 +94,10 @@ Parameters:
     Default: t2.medium
     Description: "EC2 instance type"
     Type: String
-  KeyPairName:
-    ConstraintDescription: "Name of an existing EC2 KeyPair."
-    Type: "AWS::EC2::KeyPair::KeyName"
-  VPCId:
-    Description: Id of existing VPC
-    Type: AWS::EC2::VPC::Id
-    Default: vpc-029d783ceaeadc765
-  VPCCIDR:
-    AllowedPattern: ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/(1[6-9]|2[0-8]))$
-    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
-    Default: 10.0.0.0/16
-    Description: CIDR block for the VPC
-    Type: String
+  DDACVolumeSize:
+      Type: Number
+      Description: "EBS volume size of the DDAC Cluster Nodes in GB"
+      Default: 1024
   DevInstanceType:
     AllowedValues:
       - t2.micro
@@ -129,6 +122,23 @@ Parameters:
     ConstraintDescription: "must be a valid EC2 instance type."
     Default: t2.micro
     Description: "EC2 instance type"
+    Type: String
+  DevVolumeSize:
+      Type: Number
+      Description: "EBS volume size of the DevOps Instance in GB"
+      Default: 16
+  KeyPairName:
+    ConstraintDescription: "Name of an existing EC2 KeyPair."
+    Type: "AWS::EC2::KeyPair::KeyName"
+  VPCId:
+    Description: Id of existing VPC
+    Type: AWS::EC2::VPC::Id
+    Default: vpc-029d783ceaeadc765
+  VPCCIDR:
+    AllowedPattern: ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/(1[6-9]|2[0-8]))$
+    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
+    Default: 10.0.0.0/16
+    Description: CIDR block for the VPC
     Type: String
   PublicSubnet1Id:
     Type: AWS::EC2::Subnet::Id
@@ -251,6 +261,7 @@ Resources:
         PrivateSubnet1ID: !Ref PrivateSubnet1Id
         PrivateSubnet2ID: !Ref PrivateSubnet2Id
         InstanceType: !Ref DDACInstanceType
+        VolumeSize: !Ref DDACVolumeSize
         KeyPairName: !Ref KeyPairName
         QSS3KeyPrefix: !Ref QSS3KeyPrefix
         QSS3BucketName: !Ref QSS3BucketName
@@ -265,6 +276,7 @@ Resources:
       Parameters:
         PublicSubnet1ID: !Ref PublicSubnet1Id
         InstanceType: !Ref DevInstanceType
+        VolumeSize: !Ref DevVolumeSize
         KeyPairName: !Ref KeyPairName
         QSS3BucketName: !Ref QSS3BucketName
         DDACSecGroup: !GetAtt DDACSecGroup.GroupId
@@ -280,6 +292,7 @@ Resources:
         DatacenterName: !Ref DatacenterName
         EmailAddress: !Ref EmailAddress
         InstanceType: !Ref DDACInstanceType
+        VolumeSize: !Ref DDACVolumeSize
         KeyPairName: !Ref KeyPairName
         PrivateSubnet1ID: !Ref PrivateSubnet1Id
         PrivateSubnet2ID: !Ref PrivateSubnet2Id

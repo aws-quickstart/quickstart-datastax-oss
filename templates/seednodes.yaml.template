@@ -64,6 +64,10 @@ Parameters:
     Default: t2.medium
     Description: "EC2 instance type"
     Type: String
+  VolumeSize:
+    Type: Number
+    Description: "EBS volume size of the DDAC Cluster Nodes in GB"
+    Default: 1024
 Conditions:
   GovCloudCondition: !Equals
     - !Ref AWS::Region
@@ -101,30 +105,30 @@ Mappings:
     us-west-2:
       US1604HVM: ami-ca89eeb2
 Resources:
-  InstanceRole: 
+  InstanceRole:
     Type: 'AWS::IAM::Role'
-    Properties: 
-      AssumeRolePolicyDocument: 
-        Statement: 
-          - 
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          -
             Effect: 'Allow'
-            Principal: 
-              Service: 
+            Principal:
+              Service:
                 - 'ec2.amazonaws.com'
-            Action: 
+            Action:
               - 'sts:AssumeRole'
       Path: '/'
-  InstanceProfile: 
+  InstanceProfile:
     Type: 'AWS::IAM::InstanceProfile'
-    Properties: 
+    Properties:
       Path: '/'
-      Roles: 
+      Roles:
         - Ref: 'InstanceRole'
   AuthenticatedS3Policy:
     Type: AWS::IAM::Policy
     Properties:
         PolicyName: AuthenticatedS3GetObjects
-        Roles: 
+        Roles:
         - !Ref InstanceRole
         PolicyDocument:
            Statement:
@@ -153,7 +157,7 @@ Resources:
         install_and_enable_cfn_hup:
           files:
             /etc/cfn/cfn-hup.conf:
-              content: !Join 
+              content: !Join
                 - ''
                 - - |
                     [main]
@@ -169,7 +173,7 @@ Resources:
               owner: root
               group: root
             /etc/cfn/hooks.d/cfn-auto-reloader.conf:
-              content: !Join 
+              content: !Join
                 - ''
                 - - |
                     [cfn-auto-reloader-hook]
@@ -189,7 +193,7 @@ Resources:
                   - |
                     runas=root
             /lib/systemd/system/cfn-hup.service:
-              content: !Join 
+              content: !Join
                 - ''
                 - - |
                     [Unit]
@@ -231,7 +235,6 @@ Resources:
               command: "apt-get install -y jq"
             05_install_ddac:
               command: !Sub "/home/ddac/deploy-dse.sh ${ClusterName} ${DatacenterName}"
-
         post_install:
           commands:
             01_post_install_ddac:
@@ -246,14 +249,14 @@ Resources:
           GroupSet:
             - !Ref DDACSecGroup
       KeyName: !Ref KeyPairName
-      ImageId: !FindInMap 
+      ImageId: !FindInMap
         - AWSAMIRegionMap
         - !Ref 'AWS::Region'
         - US1604HVM
       BlockDeviceMappings:
         - DeviceName: /dev/sda1
           Ebs:
-            VolumeSize: 20
+            VolumeSize: !Ref VolumeSize
             VolumeType: gp2
       Tags:
           - Key: Name
@@ -308,7 +311,7 @@ Resources:
         install_and_enable_cfn_hup:
           files:
             /etc/cfn/cfn-hup.conf:
-              content: !Join 
+              content: !Join
                 - ''
                 - - |
                     [main]
@@ -324,7 +327,7 @@ Resources:
               owner: root
               group: root
             /etc/cfn/hooks.d/cfn-auto-reloader.conf:
-              content: !Join 
+              content: !Join
                 - ''
                 - - |
                     [cfn-auto-reloader-hook]
@@ -344,7 +347,7 @@ Resources:
                   - |
                     runas=root
             /lib/systemd/system/cfn-hup.service:
-              content: !Join 
+              content: !Join
                 - ''
                 - - |
                     [Unit]
@@ -387,7 +390,7 @@ Resources:
             05_install_ddac:
               command: "apt-get install -y jq"
             06_install_ddac:
-              command: !Sub "/home/ddac/deploy-dse.sh  ${ClusterName} ${DatacenterName} ${DDACSeedNode1.PrivateIp}"              
+              command: !Sub "/home/ddac/deploy-dse.sh  ${ClusterName} ${DatacenterName} ${DDACSeedNode1.PrivateIp}"
         post_install:
           commands:
             01_post_install_ddac:
@@ -402,14 +405,14 @@ Resources:
           GroupSet:
             - !Ref DDACSecGroup
       KeyName: !Ref KeyPairName
-      ImageId: !FindInMap 
+      ImageId: !FindInMap
         - AWSAMIRegionMap
         - !Ref 'AWS::Region'
         - US1604HVM
       BlockDeviceMappings:
         - DeviceName: /dev/sda1
           Ebs:
-            VolumeSize: 20
+            VolumeSize: !Ref VolumeSize
             VolumeType: gp2
       Tags:
           - Key: Name
