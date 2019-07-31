@@ -66,23 +66,33 @@ Parameters:
       include numbers, lowercase letters, uppercase letters, hyphens (-), and
       forward slash (/).
     Type: String
-  PrivateSubnet1ID:
-    Description: Private Subnet Id 1
+  Subnet1ID:
+    Description: Subnet Id 1
     Type: 'AWS::EC2::Subnet::Id'
-  PrivateSubnet2ID:
-    Description: Private Subnet Id 2
+  Subnet2ID:
+    Description: Subnet Id 2
     Type: 'AWS::EC2::Subnet::Id'
-  PrivateSubnet3ID:
-    Description: Private Subnet Id 3
+  Subnet3ID:
+    Description: Subnet Id 3
     Type: 'AWS::EC2::Subnet::Id'
   ClusterAutoScaleMinSize:
     Description: "The minimum number of DDAC nodes to create."
     Type: String
-    Default: "3"
+    Default: 3
+    AllowedValues:
+      - 3
+      - 4
+      - 5
+      - 6
   ClusterAutoScaleMaxSize:
     Description: "The max number of DDAC nodes to auto scale."
     Type: String
-    Default: "3"
+    Default: 3
+    AllowedValues:
+      - 3
+      - 4
+      - 5
+      - 6
   DDACSecGroup:
     Description: "DDAC Security Group ID."
     Type: 'List<AWS::EC2::SecurityGroup::Id>'
@@ -209,12 +219,9 @@ Resources:
     Type: 'AWS::AutoScaling::AutoScalingGroup'
     Properties:
       VPCZoneIdentifier:
-        # - !Ref PublicSubnet1ID
-        # - !Ref PublicSubnet2ID
-        # - !Ref PublicSubnet3ID
-        - !Ref PrivateSubnet3ID
-        - !Ref PrivateSubnet1ID
-        - !Ref PrivateSubnet2ID
+        - !Ref Subnet3ID
+        - !Ref Subnet1ID
+        - !Ref Subnet2ID
       LaunchConfigurationName: !Ref ClusterNodeLaunchConfig
       MinSize: !FindInMap
         - ClusterSizeMap

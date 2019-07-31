@@ -5,15 +5,22 @@ Parameters:
     Description: The name of the DDAC Cluster.
     Type: String
     Default: DDAC-Cluster
+  CreateClusterWithPublicIP:
+    Description: "Whether to create the DDAC Cluster nodes in public subnet"
+    Type: String
+    Default: "false"
+    AllowedValues:
+      - "false"
+      - "true"
   DatacenterName:
     Description: The name of the DDAC Datacenter.
     Type: String
     Default: DDAC-dc0
-  PrivateSubnet1ID:
-    Description: Private Subnet Id 1
+  Subnet1ID:
+    Description: Private Subnet Id 1 for Seednode1
     Type: 'AWS::EC2::Subnet::Id'
-  PrivateSubnet2ID:
-    Description: Private Subnet Id 2
+  Subnet2ID:
+    Description: Private Subnet Id 1 for Seednode1
     Type: 'AWS::EC2::Subnet::Id'
   KeyPairName:
     Type: 'AWS::EC2::KeyPair::KeyName'
@@ -72,6 +79,9 @@ Conditions:
   GovCloudCondition: !Equals
     - !Ref AWS::Region
     - us-gov-west-1
+  CreateInPublicSubnet: !Equals
+    - !Ref CreateClusterWithPublicIP
+    - true
 Mappings:
   AWSAMIRegionMap:
     AMI:
@@ -245,7 +255,8 @@ Resources:
       NetworkInterfaces:
         - DeleteOnTermination: true
           DeviceIndex: "0"
-          SubnetId: !Ref PrivateSubnet1ID
+#          SubnetId: !If [CreateInPublicSubnet, !Ref PublicSubnet1ID, !Ref PrivateSubnet1ID]
+          SubnetId: !Ref Subnet1ID
           GroupSet:
             - !Ref DDACSecGroup
       KeyName: !Ref KeyPairName
@@ -401,7 +412,8 @@ Resources:
       NetworkInterfaces:
         - DeleteOnTermination: true
           DeviceIndex: "0"
-          SubnetId: !Ref PrivateSubnet2ID
+          # SubnetId: !If [CreateInPublicSubnet, !Ref PublicSubnet2ID, !Ref PrivateSubnet2ID]
+          SubnetId: !Ref Subnet2ID
           GroupSet:
             - !Ref DDACSecGroup
       KeyName: !Ref KeyPairName
@@ -448,9 +460,15 @@ Resources:
 
         - S3Region: !If [ GovCloudCondition, s3-us-gov-west-1, s3 ]
 Outputs:
-  Seed1IpAddress :
+  Seed1PrivateIpAddress:
     Value: !GetAtt DDACSeedNode1.PrivateIp
-    Description: 1st Seed IP
-  Seed2IpAddress :
+    Description: 1st Seed Private IP
+  Seed1PublicIpAddress:
+    Value: !If [CreateInPublicSubnet, !GetAtt DDACSeedNode1.PublicIp, ""]
+    Description: 1st Seed Public IP
+  Seed2PrivateIpAddress:
     Value: !GetAtt DDACSeedNode2.PrivateIp
-    Description: 2nd Seed IP
+    Description: 2nd Seed Private IP
+  Seed2PublicIpAddress :
+    Value: !If [CreateInPublicSubnet, !GetAtt DDACSeedNode2.PublicIp, ""]
+    Description: 2nd Seed Public IP

@@ -20,8 +20,9 @@ Metadata:
         Parameters:
           - ClusterName
           - DatacenterName
+          - CreateClusterWithPublicIP
           - DDACInstanceType
-          - VolumeSize
+          - DDACVolumeSize
           - ClusterAutoScaleMinSize
           - ClusterAutoScaleMaxSize
           - EmailAddress
@@ -210,23 +211,9 @@ Parameters:
         "3",
         "4",
         "5",
-        "6",
-        "7",
-        "8",
-        "9",
-        "10",
-        "11",
-        "12",
-        "13",
-        "14",
-        "15",
-        "16",
-        "17",
-        "18",
-        "19",
-        "20",
+        "6"
       ]
-    ConstraintDescription: "Value must be between 3-20"
+    ConstraintDescription: "Value must be between 3-6"
   ClusterAutoScaleMaxSize:
     Description: "The maximum number of DDAC nodes to auto scale (including 2 seed nodes)."
     Type: String
@@ -236,27 +223,23 @@ Parameters:
         "3",
         "4",
         "5",
-        "6",
-        "7",
-        "8",
-        "9",
-        "10",
-        "11",
-        "12",
-        "13",
-        "14",
-        "15",
-        "16",
-        "17",
-        "18",
-        "19",
-        "20",
+        "6"
       ]
-    ConstraintDescription: "Value must be an between 3-20"
+    ConstraintDescription: "Value must be an between 3-6"
+  CreateClusterWithPublicIP:
+    Description: "Whether to create the DDAC Cluster nodes in public subnet"
+    Type: String
+    Default: "false"
+    AllowedValues:
+      - "false"
+      - "true"
 Conditions:
   GovCloudCondition: !Equals
     - !Ref "AWS::Region"
     - us-gov-west-1
+  CreateInPublicSubnet: !Equals
+    - !Ref CreateClusterWithPublicIP
+    - true
 Resources:
   VPCStack:
     Type: AWS::CloudFormation::Stack
@@ -306,8 +289,9 @@ Resources:
       Parameters:
         ClusterName: !Ref ClusterName
         DatacenterName: !Ref DatacenterName
-        PrivateSubnet1ID: !GetAtt VPCStack.Outputs.PrivateSubnet1AID
-        PrivateSubnet2ID: !GetAtt VPCStack.Outputs.PrivateSubnet2AID
+        CreateClusterWithPublicIP: !Ref CreateClusterWithPublicIP
+        Subnet1ID: !If [CreateInPublicSubnet, !GetAtt VPCStack.Outputs.PublicSubnet1ID, !GetAtt VPCStack.Outputs.PrivateSubnet1AID]
+        Subnet2ID: !If [CreateInPublicSubnet, !GetAtt VPCStack.Outputs.PublicSubnet2ID, !GetAtt VPCStack.Outputs.PrivateSubnet2AID]
         InstanceType: !Ref DDACInstanceType
         VolumeSize: !Ref DDACVolumeSize
         KeyPairName: !Ref KeyPairName
@@ -339,9 +323,9 @@ Resources:
         ClusterName: !Ref ClusterName
         DatacenterName: !Ref DatacenterName
         EmailAddress: !Ref EmailAddress
-        PrivateSubnet3ID: !GetAtt VPCStack.Outputs.PrivateSubnet3AID
-        PrivateSubnet1ID: !GetAtt VPCStack.Outputs.PrivateSubnet1AID
-        PrivateSubnet2ID: !GetAtt VPCStack.Outputs.PrivateSubnet2AID
+        Subnet1ID: !If [CreateInPublicSubnet, !GetAtt VPCStack.Outputs.PublicSubnet1ID, !GetAtt VPCStack.Outputs.PrivateSubnet1AID]
+        Subnet2ID: !If [CreateInPublicSubnet, !GetAtt VPCStack.Outputs.PublicSubnet2ID, !GetAtt VPCStack.Outputs.PrivateSubnet2AID]
+        Subnet3ID: !If [CreateInPublicSubnet, !GetAtt VPCStack.Outputs.PublicSubnet3ID, !GetAtt VPCStack.Outputs.PrivateSubnet3AID]
         ClusterAutoScaleMinSize: !Ref ClusterAutoScaleMinSize
         ClusterAutoScaleMaxSize: !Ref ClusterAutoScaleMaxSize
         DDACSecGroup: !GetAtt DDACSecGroup.GroupId
@@ -354,21 +338,31 @@ Resources:
           !Join [
             ",",
             [
-              !GetAtt SeedNodeStack.Outputs.Seed1IpAddress,
-              !GetAtt SeedNodeStack.Outputs.Seed2IpAddress,
+              !GetAtt SeedNodeStack.Outputs.Seed1PrivateIpAddress,
+              !GetAtt SeedNodeStack.Outputs.Seed2PrivateIpAddress,
             ],
           ]
 Outputs:
-  Seed1IpAddress:
+  Seed1PrivateIpAddress:
     Value: !GetAtt
       - SeedNodeStack
-      - Outputs.Seed1IpAddress
+      - Outputs.Seed1PrivateIpAddress
+    Description: 1st Seed Private IP
+  Seed1PublicIpAddress:
+    Value: !GetAtt
+      - SeedNodeStack
+      - Outputs.Seed1PublicIpAddress
     Description: 1st Seed IP
-  Seed2IpAddress:
+  Seed2PrivateIpAddress:
     Value: !GetAtt
       - SeedNodeStack
-      - Outputs.Seed2IpAddress
-    Description: 2nd Seed IP
+      - Outputs.Seed2PrivateIpAddress
+    Description: 2nd Seed Private IP
+  Seed2PublicIpAddress:
+    Value: !GetAtt
+      - SeedNodeStack
+      - Outputs.Seed2PublicIpAddress
+    Description: 2nd Seed Public IP
   DevIpAddress:
     Value: !GetAtt DevNodeStack.Outputs.DevIpAddress
     Description: Dev Jump box Public IP

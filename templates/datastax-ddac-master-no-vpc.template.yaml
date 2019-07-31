@@ -8,24 +8,25 @@ Metadata:
         Parameters:
           - VPCId
           - VPCCIDR
-          - PrivateSubnet1Id
-          - PrivateSubnet2Id
-          - PrivateSubnet3Id
+          - PrivateSubnet1ID
+          - PrivateSubnet2ID
+          - PrivateSubnet3ID
           - RemoteAccessCIDR
       - Label:
           default: 'DDAC Cluster/Nodes Configuration'
         Parameters:
           - ClusterName
           - DatacenterName
-          - PublicSubnet1Id
+          - CreateClusterWithPublicIP
           - DDACInstanceType
-          - VolumeSize
+          - DDACVolumeSize
           - ClusterAutoScaleMinSize
           - ClusterAutoScaleMaxSize
           - EmailAddress
       - Label:
           default: 'DevOps/Bastion Configuration'
         Parameters:
+          - PublicSubnet1ID
           - DevInstanceType
           - DevVolumeSize
           - KeyPairName
@@ -49,12 +50,6 @@ Metadata:
         default: Quick Start S3 Bucket Name
       QSS3KeyPrefix:
         default: Quick Start S3 Key Prefix
-      PrivateSubnet1CIDR:
-        default: CIDR for 1st private subnet
-      PrivateSubnet2CIDR:
-        default: CIDR for 2nd private subnet
-      PrivateSubnet3CIDR:
-        default: CIDR for 3rd private subnet
 Parameters:
   EmailAddress:
     AllowedPattern: "([a-zA-Z0-9_\\-\\.]+)@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.)|(([a-zA-Z0-9\\-]+\\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\\]?)"
@@ -140,19 +135,27 @@ Parameters:
     Default: 10.0.0.0/16
     Description: CIDR block for the VPC
     Type: String
-  PublicSubnet1Id:
+  PublicSubnet1ID:
     Type: AWS::EC2::Subnet::Id
     Default: subnet-00ce98dfa31f7754a
-    Description: Public subnet id
-  PrivateSubnet1Id:
+    Description: Public subnet id 1
+  PublicSubnet2ID:
+    Type: AWS::EC2::Subnet::Id
+    Default: subnet-0559e23084761f2d6
+    Description: Public subnet id 2
+  PublicSubnet3ID:
+    Type: AWS::EC2::Subnet::Id
+    Default: subnet-0ba670afbcc2dddbf
+    Description: Public subnet id 3
+  PrivateSubnet1ID:
     Type: AWS::EC2::Subnet::Id
     Default: subnet-0fa5cb58014342bb8
     Description: Private subnet id 1
-  PrivateSubnet2Id:
+  PrivateSubnet2ID:
     Type: AWS::EC2::Subnet::Id
     Default: subnet-055e606fa49f4cbbd
     Description: Private subnet id 2
-  PrivateSubnet3Id:
+  PrivateSubnet3ID:
     Type: AWS::EC2::Subnet::Id
     Default: subnet-05697c5984fe76116
     Description: Private subnet id 3
@@ -182,23 +185,9 @@ Parameters:
         "3",
         "4",
         "5",
-        "6",
-        "7",
-        "8",
-        "9",
-        "10",
-        "11",
-        "12",
-        "13",
-        "14",
-        "15",
-        "16",
-        "17",
-        "18",
-        "19",
-        "20",
+        "6"
       ]
-    ConstraintDescription: "Value must be between 3-20"
+    ConstraintDescription: "Value must be between 3-6"
   ClusterAutoScaleMaxSize:
     Description: "The maximum number of DDAC nodes to auto scale (including 2 seed nodes)."
     Type: String
@@ -208,27 +197,23 @@ Parameters:
         "3",
         "4",
         "5",
-        "6",
-        "7",
-        "8",
-        "9",
-        "10",
-        "11",
-        "12",
-        "13",
-        "14",
-        "15",
-        "16",
-        "17",
-        "18",
-        "19",
-        "20",
+        "6"
       ]
-    ConstraintDescription: "Value must be an between 3-20"
+    ConstraintDescription: "Value must be an between 3-6"
+  CreateClusterWithPublicIP:
+    Description: "Whether to create the DDAC Cluster nodes in public subnet"
+    Type: String
+    Default: "false"
+    AllowedValues:
+      - "false"
+      - "true"
 Conditions:
   GovCloudCondition: !Equals
     - !Ref "AWS::Region"
     - us-gov-west-1
+  CreateInPublicSubnet: !Equals
+    - !Ref CreateClusterWithPublicIP
+    - true
 Resources:
   DDACSecGroup:
     Type: 'AWS::EC2::SecurityGroup'
@@ -258,8 +243,9 @@ Resources:
       Parameters:
         ClusterName: !Ref ClusterName
         DatacenterName: !Ref DatacenterName
-        PrivateSubnet1ID: !Ref PrivateSubnet1Id
-        PrivateSubnet2ID: !Ref PrivateSubnet2Id
+        CreateClusterWithPublicIP: !Ref CreateClusterWithPublicIP
+        Subnet1ID: !If [CreateInPublicSubnet, !Ref PublicSubnet1ID, !Ref PrivateSubnet1ID]
+        Subnet2ID: !If [CreateInPublicSubnet, !Ref PublicSubnet2ID, !Ref PrivateSubnet2ID]
         InstanceType: !Ref DDACInstanceType
         VolumeSize: !Ref DDACVolumeSize
         KeyPairName: !Ref KeyPairName
@@ -274,7 +260,7 @@ Resources:
           - https://${QSS3BucketName}.${S3Region}.amazonaws.com/${QSS3KeyPrefix}templates/dev.yaml.template
           - S3Region: !If [GovCloudCondition, s3-us-gov-west-1, s3]
       Parameters:
-        PublicSubnet1ID: !Ref PublicSubnet1Id
+        PublicSubnet1ID: !Ref PublicSubnet1ID
         InstanceType: !Ref DevInstanceType
         VolumeSize: !Ref DevVolumeSize
         KeyPairName: !Ref KeyPairName
@@ -294,9 +280,9 @@ Resources:
         InstanceType: !Ref DDACInstanceType
         VolumeSize: !Ref DDACVolumeSize
         KeyPairName: !Ref KeyPairName
-        PrivateSubnet1ID: !Ref PrivateSubnet1Id
-        PrivateSubnet2ID: !Ref PrivateSubnet2Id
-        PrivateSubnet3ID: !Ref PrivateSubnet3Id
+        Subnet1ID: !If [CreateInPublicSubnet, !Ref PublicSubnet1ID, !Ref PrivateSubnet1ID]
+        Subnet2ID: !If [CreateInPublicSubnet, !Ref PublicSubnet2ID, !Ref PrivateSubnet2ID]
+        Subnet3ID: !If [CreateInPublicSubnet, !Ref PublicSubnet3ID, !Ref PrivateSubnet3ID]
         QSS3BucketName: !Ref QSS3BucketName
         QSS3KeyPrefix: !Ref QSS3KeyPrefix
         ClusterAutoScaleMinSize: !Ref ClusterAutoScaleMinSize
@@ -306,21 +292,31 @@ Resources:
           !Join [
             ",",
             [
-              !GetAtt SeedNodeStack.Outputs.Seed1IpAddress,
-              !GetAtt SeedNodeStack.Outputs.Seed2IpAddress,
+              !GetAtt SeedNodeStack.Outputs.Seed1PrivateIpAddress,
+              !GetAtt SeedNodeStack.Outputs.Seed2PrivateIpAddress,
             ],
           ]
 Outputs:
-  Seed1IpAddress:
+  Seed1PrivateIpAddress:
     Value: !GetAtt
       - SeedNodeStack
-      - Outputs.Seed1IpAddress
+      - Outputs.Seed1PrivateIpAddress
+    Description: 1st Seed Private IP
+  Seed1PublicIpAddress:
+    Value: !GetAtt
+      - SeedNodeStack
+      - Outputs.Seed1PublicIpAddress
     Description: 1st Seed IP
-  Seed2IpAddress:
+  Seed2PrivateIpAddress:
     Value: !GetAtt
       - SeedNodeStack
-      - Outputs.Seed2IpAddress
-    Description: 2nd Seed IP
+      - Outputs.Seed2PrivateIpAddress
+    Description: 2nd Seed Private IP
+  Seed2PublicIpAddress:
+    Value: !GetAtt
+      - SeedNodeStack
+      - Outputs.Seed2PublicIpAddress
+    Description: 2nd Seed Public IP
   DevIpAddress:
     Value: !GetAtt DevNodeStack.Outputs.DevIpAddress
     Description: Dev Jump box Public IP

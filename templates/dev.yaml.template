@@ -49,11 +49,11 @@ Parameters:
 Mappings:
   AWSAMIRegionMap:
     us-east-1:
-      DdacDev: ami-0a5c506f4c91b8e26
+      DdacDev: ami-0b625b223796b7750
     us-east-2:
-      DdacDev: ami-0f9671c7109a14342
+      DdacDev: ami-044932f4b0f7b2e68
     us-west-2:
-      DdacDev: ami-0be809b77504eb1af
+      DdacDev: ami-03d9278ad30c18e32
 Resources:
   InstanceRole:
     Type: 'AWS::IAM::Role'
