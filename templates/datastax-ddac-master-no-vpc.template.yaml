@@ -310,5 +310,6 @@ Outputs:
     Value: !GetAtt DevNodeStack.Outputs.DevIpAddress
     Description: Dev Jump box Public IP
   DDACUrl:
-    Value: !GetAtt DevNodeStack.Outputs.DDACUrl
+#    Value: !GetAtt DevNodeStack.Outputs.DDACUrl
+    Value: "http://ddac-web.us-east-2.elasticbeanstalk.com/"
     Description: DDAC Url
