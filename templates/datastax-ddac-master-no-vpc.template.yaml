@@ -295,7 +295,7 @@ Outputs:
     Value: !GetAtt
       - SeedNodeStack
       - Outputs.Seed1PublicIpAddress
-    Description: 1st Seed IP
+    Description: 1st Seed Public IP
   Seed2PrivateIpAddress:
     Value: !GetAtt
       - SeedNodeStack
