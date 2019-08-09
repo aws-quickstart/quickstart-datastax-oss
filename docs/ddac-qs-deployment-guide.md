@@ -20,10 +20,9 @@
 - [Deployment Options](#deployment-options)
 - [Deployment Steps](#deployment-steps)
   - [Step 1. Prepare Your AWS Account](#step-1-prepare-your-aws-account)
-  - [Step 2. Create a DataStax Academy Account (Optional)](#step-2-create-a-datastax-academy-account-optional)
-  - [Step 3. Launch the Quick Start](#step-3-launch-the-quick-start)
-  - [Step 4. Test the Deployment](#step-4-test-the-deployment)
-  - [Step 5. Back up Your Data](#step-5-back-up-your-data)
+  - [Step 2. Launch the Quick Start](#step-2-launch-the-quick-start)
+  - [Step 3. Test the Deployment](#step-3-test-the-deployment)
+  - [Step 4. Back up Your Data](#step-4-back-up-your-data)
 - [Troubleshooting](#troubleshooting)
 - [Additional Resources](#additional-resources)
   - [Send Us Feedback](#send-us-feedback)
@@ -74,7 +73,7 @@ The Quick Start sets up the following components. (The template that deploys the
 
 ## DDAC Data Centers and Nodes
 
-DDAC data centers are logical groupings of individual nodes and can be either physical or virtual. This Quick Start supports 1 data center with 2 seednodes and autoscaled nodes upto a maximum of total 6 nodes.
+DDAC data centers are groups of nodes, related and configured within a cluster for replication purposes. The Quick Start supports 1 data center  with 3 nodes that can scale to 6.
 
 DDAC stores data replicas on multiple nodes to ensure reliability and fault tolerance. A replication strategy determines the nodes where replicas are placed. The replication strategy is defined per keyspace, and is set during keyspace creation. This Quick Start places nodes in each AWS Availability Zone.
 &nbsp;
@@ -116,11 +115,7 @@ The Quick Start provides separate templates for these options. It also lets you 
 3. Create a [key pair](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html) in your preferred region.
 4. If necessary, [request a service limit increase](https://console.aws.amazon.com/support/home#/case/create?issueType=service-limit-increase&amp;limitType=service-code-) for the Amazon EC2 **m4.large** instance type. You might need to do this if you already have an existing deployment that uses this instance type, and you think you might exceed the [default limit](http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-resource-limits.html) with this reference deployment.
 
-## Step 2. Create a DataStax Academy Account (Optional)
-
-- Sign up for an account on [academy.datastax.com](http://academy.datastax.com). This gives you access to certification, learning & training content and resources.
-
-## Step 3. Launch the Quick Start
+## Step 2. Launch the Quick Start
 
 > **Note**    You are responsible for the cost of the AWS services used while running this Quick Start reference deployment. There is no additional cost for using this Quick Start. For full details, see the pricing pages for each AWS service you will be using in this Quick Start. Prices are subject to change.
 
@@ -171,12 +166,12 @@ _**DDAC Cluster/Nodes Configuration:**_
 | ASG Max Size (ClusterAutoScaleMaxSize) | 6 | The maximum number of DDAC nodes to auto scale (including 2 seed nodes). |
 | Email Address (EmailAddress) | _Requires input_ | Email Address for cloudwatch notifications. |
 
-_**DevOps/Bastion Configuration:**_
+_**DevOps Configuration:**_
 
 | Parameter label (name) | Default | Description |
 | ---------------------- | :-----: | ----------- |
-| Instance Type (DevInstanceType) | t2.medium | EC2 instance type for the DevOps/Bastion Host.  |
-| Volume Sizes (DevVolumeSize) | 1024 | The EBS volume size, in GiB, for the DevOps/Bastion Host. |
+| Instance Type (DevInstanceType) | t2.medium | EC2 instance type for the DevOps Host.  |
+| Volume Sizes (DevVolumeSize) | 1024 | The EBS volume size, in GiB, for the DevOps Host. |
 | Key Name (KeyPairName) | _Requires input_ | Public/private key pair, which allows you to connect securely to your instance after it launches. When you created an AWS account, this is the key pair you created in your preferred region. |
 
 _**AWS Quick Start Configuration:**_
@@ -219,12 +214,12 @@ _**DDAC Cluster/Nodes Configuration:**_
 | ASG Max Size (ClusterAutoScaleMaxSize) | 6 | The maximum number of DDAC nodes to auto scale (including 2 seed nodes). |
 | Email Address (EmailAddress) | _Requires input_ | Email Address for cloudwatch notifications. |
 
-_**DevOps/Bastion Configuration:**_
+_**DevOps Configuration:**_
 
 | Parameter label (name) | Default | Description |
 | ---------------------- | :-----: | ----------- |
-| Instance Type (DevInstanceType) | t2.medium | EC2 instance type for the DevOps/Bastion Host.  |
-| Volume Sizes (DevVolumeSize) | 1024 | The EBS volume size, in GiB, for the DevOps/Bastion Host. |
+| Instance Type (DevInstanceType) | t2.medium | EC2 instance type for the DevOps Host.  |
+| Volume Sizes (DevVolumeSize) | 1024 | The EBS volume size, in GiB, for the DevOps Host. |
 | Key Name (KeyPairName) | _Requires input_ | Public/private key pair, which allows you to connect securely to your instance after it launches. When you created an AWS account, this is the key pair you created in your preferred region. |
 
 _**AWS Quick Start Configuration:**_
@@ -245,9 +240,9 @@ This deployment uses nested stacks. In addition to the root stack, you&#39;ll se
 
 ![DDAC Url](./assets/ddac-stack-output-ddac-url.png)
 
-> **Important**    For production environments, we recommend that you dont place the cluster in public subnet.
+> **Important:** We recommend deployment into a new VPC (Option 1). For production environments, we recommend that you place the cluster in private subnet (CreateClusterWithPublicIP=false).
 
-## Step 4. Test the Deployment
+## Step 3. Test the Deployment
 
 After you deploy the DDAC cluster, the quickest way to begin using the cluster is to use SSH to connect to the DevOps instance and then to one of the node instances. You can use [SSH agent forwarding](https://aws.amazon.com/blogs/security/securely-connect-to-linux-instances-running-in-a-private-amazon-vpc/) using the key pair (replacing the KEY_FILE and DevIpAddress values for those of your cluster):
 
@@ -280,7 +275,7 @@ For the default 3 node cluster, the nodetool status should be like
 
 The Developer resource web site is accessible at DDACUrl shown in the outputs.
 
-## Step 5. Back up Your Data
+## Step 4. Back up Your Data
 
 DDAC backs up data by taking a snapshot of all on-disk data files (SSTable files) stored in the data directory. You can take a snapshot of all keyspaces, a single keyspace, or a single table while the system is online. See [Backing up and Restoring data](https://docs.datastax.com/en/ddac/doc/datastax_enterprise/operations/opsBackupRestoreTOC.html).
 For storing the backups in AWS S3, see [Backup to S3](https://aws.amazon.com/getting-started/tutorials/backup-to-s3-cli/)
