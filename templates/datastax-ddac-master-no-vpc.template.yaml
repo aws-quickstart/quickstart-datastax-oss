@@ -279,6 +279,7 @@ Resources:
         QSS3KeyPrefix: !Ref QSS3KeyPrefix
         QSS3BucketName: !Ref QSS3BucketName
         DDACSecGroup: !GetAtt DDACSecGroup.GroupId
+        DDACDevInstallNodeCount: !Ref DDACDevInstallNodeCount
   DevNodeStack:
     Type: AWS::CloudFormation::Stack
     Properties:
