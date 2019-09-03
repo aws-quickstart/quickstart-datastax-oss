@@ -20,7 +20,7 @@ Parameters:
     Description: Private Subnet Id 1 for Seednode1
     Type: 'AWS::EC2::Subnet::Id'
   Subnet2ID:
-    Description: Private Subnet Id 1 for Seednode1
+    Description: Private Subnet Id 2 for Seednode2
     Type: 'AWS::EC2::Subnet::Id'
   KeyPairName:
     Type: 'AWS::EC2::KeyPair::KeyName'
@@ -48,20 +48,41 @@ Parameters:
     Type: String
   InstanceType:
     AllowedValues:
+      - t2.medium
+      - t2.large
       - m4.large
       - m4.xlarge
       - m4.2xlarge
       - m4.4xlarge
       - m4.10xlarge
       - m4.16xlarge
+      - c4.large
+      - c4.xlarge
+      - c4.2xlarge
+      - c4.4xlarge
+      - c4.8xlarge
+      - r4.large
+      - r4.xlarge
+      - r4.2xlarge
+      - r4.4xlarge
+      - r4.8xlarge
+      - r4.16xlarge
     ConstraintDescription: "Must be a valid EC2 instance type."
-    Default: m4.large
+    Default: t2.medium
     Description: "EC2 instance type"
     Type: String
   VolumeSize:
     Type: Number
     Description: "EBS volume size of the DDAC Cluster Nodes in GB"
     Default: 1024
+  DDACDevInstallNodeCount:
+    AllowedValues:
+      - 1
+      - 2
+    ConstraintDescription: "Choose 1 / 2."
+    Default: 1
+    Description: "Number of nodes for Dev Install"
+    Type: Number
 Conditions:
   GovCloudCondition: !Equals
     - !Ref AWS::Region
@@ -69,6 +90,9 @@ Conditions:
   CreateInPublicSubnet: !Equals
     - !Ref CreateClusterWithPublicIP
     - true
+  Create2ndNode: !Equals
+    - !Ref DDACDevInstallNodeCount
+    - 2
 Mappings:
   AWSAMIRegionMap:
     AMI:
@@ -291,6 +315,7 @@ Resources:
         - S3Region: !If [ GovCloudCondition, s3-us-gov-west-1, s3 ]
   DDACSeedNode2:
     Type: 'AWS::EC2::Instance'
+    Condition: Create2ndNode
     CreationPolicy:
       ResourceSignal:
         Timeout: PT15M
@@ -454,8 +479,10 @@ Outputs:
     Value: !If [CreateInPublicSubnet, !GetAtt DDACSeedNode1.PublicIp, ""]
     Description: 1st Seed Public IP
   Seed2PrivateIpAddress:
+    Condition: Create2ndNode
     Value: !GetAtt DDACSeedNode2.PrivateIp
     Description: 2nd Seed Private IP
   Seed2PublicIpAddress :
+    Condition: Create2ndNode
     Value: !If [CreateInPublicSubnet, !GetAtt DDACSeedNode2.PublicIp, ""]
     Description: 2nd Seed Public IP
