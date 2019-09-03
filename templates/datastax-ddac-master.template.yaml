@@ -18,6 +18,7 @@ Metadata:
       - Label:
           default: 'DDAC Cluster/Nodes Configuration'
         Parameters:
+          - DDACInstallType
           - ClusterName
           - DatacenterName
           - CreateClusterWithPublicIP
@@ -61,10 +62,26 @@ Metadata:
       PrivateSubnet3CIDR:
         default: CIDR for 3rd private subnet
 Parameters:
+  DDACInstallType:
+    AllowedValues:
+      - Dev
+      - Standard
+    ConstraintDescription: "Choose Dev / Standard."
+    Default: Dev
+    Description: "type of install"
+    Type: String
+  DDACDevInstallNodeCount:
+    AllowedValues:
+      - 1
+      - 2
+    ConstraintDescription: "Choose 1 / 2."
+    Default: 1
+    Description: "Number of nodes for Dev Install"
+    Type: Number
   EmailAddress:
     AllowedPattern: "([a-zA-Z0-9_\\-\\.]+)@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.)|(([a-zA-Z0-9\\-]+\\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\\]?)"
     ConstraintDescription: "Must be a valid email id."
-    Description: "Email Address for cloudwatch notification"
+    Description: "Email Address for notification of ASG events"
     Type: String
   AvailabilityZones:
     Description: List of Availability Zones to use for the subnets in the VPC. The logical order of your selections is preserved.
@@ -79,14 +96,27 @@ Parameters:
     Default: DDAC-dc0
   DDACInstanceType:
     AllowedValues:
+      - t2.medium
+      - t2.large
       - m4.large
       - m4.xlarge
       - m4.2xlarge
       - m4.4xlarge
       - m4.10xlarge
       - m4.16xlarge
+      - c4.large
+      - c4.xlarge
+      - c4.2xlarge
+      - c4.4xlarge
+      - c4.8xlarge
+      - r4.large
+      - r4.xlarge
+      - r4.2xlarge
+      - r4.4xlarge
+      - r4.8xlarge
+      - r4.16xlarge
     ConstraintDescription: "must be a valid EC2 instance type."
-    Default: m4.large
+    Default: t2.medium
     Description: "EC2 instance type"
     Type: String
   DDACVolumeSize:
@@ -104,6 +134,7 @@ Parameters:
       - m4.2xlarge
       - m4.4xlarge
       - m4.10xlarge
+      - m4.16xlarge
       - c4.large
       - c4.xlarge
       - c4.2xlarge
@@ -114,6 +145,7 @@ Parameters:
       - r4.2xlarge
       - r4.4xlarge
       - r4.8xlarge
+      - r4.16xlarge
     ConstraintDescription: "must be a valid EC2 instance type."
     Default: t2.medium
     Description: "EC2 instance type"
@@ -222,6 +254,12 @@ Conditions:
   CreateInPublicSubnet: !Equals
     - !Ref CreateClusterWithPublicIP
     - true
+  CreateASG: !Equals
+    - !Ref DDACInstallType
+    - Standard
+  Create2ndNode: !Equals
+    - !Ref DDACDevInstallNodeCount
+    - 2
 Resources:
   VPCStack:
     Type: AWS::CloudFormation::Stack
@@ -296,6 +334,7 @@ Resources:
         DDACSecGroup: !GetAtt DDACSecGroup.GroupId
   ClusterNodeStack:
     Type: AWS::CloudFormation::Stack
+    Condition: CreateASG
     Properties:
       TemplateURL:
         Fn::Sub:
@@ -336,11 +375,13 @@ Outputs:
       - Outputs.Seed1PublicIpAddress
     Description: 1st Seed IP
   Seed2PrivateIpAddress:
+    Condition: Create2ndNode
     Value: !GetAtt
       - SeedNodeStack
       - Outputs.Seed2PrivateIpAddress
     Description: 2nd Seed Private IP
   Seed2PublicIpAddress:
+    Condition: Create2ndNode
     Value: !GetAtt
       - SeedNodeStack
       - Outputs.Seed2PublicIpAddress

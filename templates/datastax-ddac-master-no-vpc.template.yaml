@@ -238,6 +238,9 @@ Conditions:
   CreateASG: !Equals
     - !Ref DDACInstallType
     - Standard
+  Create2ndNode: !Equals
+    - !Ref DDACDevInstallNodeCount
+    - 2
 Resources:
   DDACSecGroup:
     Type: 'AWS::EC2::SecurityGroup'
@@ -333,11 +336,13 @@ Outputs:
       - Outputs.Seed1PublicIpAddress
     Description: 1st Seed Public IP
   Seed2PrivateIpAddress:
+    Condition: Create2ndNode
     Value: !GetAtt
       - SeedNodeStack
       - Outputs.Seed2PrivateIpAddress
     Description: 2nd Seed Private IP
   Seed2PublicIpAddress:
+    Condition: Create2ndNode
     Value: !GetAtt
       - SeedNodeStack
       - Outputs.Seed2PublicIpAddress
