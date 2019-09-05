@@ -24,8 +24,8 @@ Metadata:
           - CreateClusterWithPublicIP
           - DDACInstanceType
           - DDACVolumeSize
-          - ClusterAutoScaleMinSize
-          - ClusterAutoScaleMaxSize
+          # - ClusterAutoScaleMinSize
+          # - ClusterAutoScaleMaxSize
           - EmailAddress
       - Label:
           default: 'Dev/Bastion Configuration'
@@ -66,17 +66,17 @@ Parameters:
     AllowedValues:
       - Dev
       - Standard
-    ConstraintDescription: "Choose Dev / Standard."
+    ConstraintDescription: "Choose Dev or Standard."
     Default: Dev
-    Description: "type of install"
+    Description: "Dev install creates 1 or 2 Nodes. Standard install creates a cluster with 3 nodes autoscaleable to 6 nodes."
     Type: String
   DDACDevInstallNodeCount:
     AllowedValues:
       - 1
       - 2
-    ConstraintDescription: "Choose 1 / 2."
+    ConstraintDescription: "Choose 1 or 2."
     Default: 1
-    Description: "Number of nodes for Dev Install"
+    Description: "Number of nodes for DDACInstallType = Dev. If DDACInstallType = Standard, then this parameter is ignored."
     Type: Number
   EmailAddress:
     AllowedPattern: "([a-zA-Z0-9_\\-\\.]+)@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.)|(([a-zA-Z0-9\\-]+\\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\\]?)"
@@ -216,30 +216,30 @@ Parameters:
     ConstraintDescription: "CIDR block parameter must be in the form x.x.x.x/x"
     Description: "Allowed CIDR block for external SSH access"
     Type: String
-  ClusterAutoScaleMinSize:
-    Description: "The minimum number of DDAC nodes to create (including 2 seed nodes)."
-    Type: String
-    Default: "3"
-    AllowedValues:
-      [
-        "3",
-        "4",
-        "5",
-        "6"
-      ]
-    ConstraintDescription: "Value must be between 3-6"
-  ClusterAutoScaleMaxSize:
-    Description: "The maximum number of DDAC nodes to auto scale (including 2 seed nodes)."
-    Type: String
-    Default: "6"
-    AllowedValues:
-      [
-        "3",
-        "4",
-        "5",
-        "6"
-      ]
-    ConstraintDescription: "Value must be an between 3-6"
+  # ClusterAutoScaleMinSize:
+  #   Description: "The minimum number of DDAC nodes to create (including 2 seed nodes)."
+  #   Type: String
+  #   Default: "3"
+  #   AllowedValues:
+  #     [
+  #       "3",
+  #       "4",
+  #       "5",
+  #       "6"
+  #     ]
+  #   ConstraintDescription: "Value must be between 3-6"
+  # ClusterAutoScaleMaxSize:
+  #   Description: "The maximum number of DDAC nodes to auto scale (including 2 seed nodes)."
+  #   Type: String
+  #   Default: "6"
+  #   AllowedValues:
+  #     [
+  #       "3",
+  #       "4",
+  #       "5",
+  #       "6"
+  #     ]
+  #   ConstraintDescription: "Value must be an between 3-6"
   CreateClusterWithPublicIP:
     Description: "Whether to create the DDAC Cluster nodes in public subnet"
     Type: String
@@ -257,9 +257,8 @@ Conditions:
   CreateASG: !Equals
     - !Ref DDACInstallType
     - Standard
-  Create2ndNode: !Equals
-    - !Ref DDACDevInstallNodeCount
-    - 2
+  Create2ndNode:
+    !Or [!Equals [!Ref DDACDevInstallNodeCount, 2], Condition: CreateASG]
 Resources:
   VPCStack:
     Type: AWS::CloudFormation::Stack
@@ -348,8 +347,8 @@ Resources:
         Subnet1ID: !If [CreateInPublicSubnet, !GetAtt VPCStack.Outputs.PublicSubnet1ID, !GetAtt VPCStack.Outputs.PrivateSubnet1AID]
         Subnet2ID: !If [CreateInPublicSubnet, !GetAtt VPCStack.Outputs.PublicSubnet2ID, !GetAtt VPCStack.Outputs.PrivateSubnet2AID]
         Subnet3ID: !If [CreateInPublicSubnet, !GetAtt VPCStack.Outputs.PublicSubnet3ID, !GetAtt VPCStack.Outputs.PrivateSubnet3AID]
-        ClusterAutoScaleMinSize: !Ref ClusterAutoScaleMinSize
-        ClusterAutoScaleMaxSize: !Ref ClusterAutoScaleMaxSize
+        # ClusterAutoScaleMinSize: !Ref ClusterAutoScaleMinSize
+        # ClusterAutoScaleMaxSize: !Ref ClusterAutoScaleMaxSize
         DDACSecGroup: !GetAtt DDACSecGroup.GroupId
         InstanceType: !Ref DDACInstanceType
         VolumeSize: !Ref DDACVolumeSize

@@ -75,6 +75,14 @@ Parameters:
     Type: Number
     Description: "EBS volume size of the DDAC Cluster Nodes in GB"
     Default: 1024
+  DDACInstallType:
+    AllowedValues:
+      - Dev
+      - Standard
+    ConstraintDescription: "Choose Dev / Standard."
+    Default: Dev
+    Description: "type of install"
+    Type: String
   DDACDevInstallNodeCount:
     AllowedValues:
       - 1
@@ -90,9 +98,8 @@ Conditions:
   CreateInPublicSubnet: !Equals
     - !Ref CreateClusterWithPublicIP
     - true
-  Create2ndNode: !Equals
-    - !Ref DDACDevInstallNodeCount
-    - 2
+  Create2ndNode:
+    !Or [!Equals [!Ref DDACDevInstallNodeCount, 2], !Equals [!Ref DDACInstallType, Standard]]
 Mappings:
   AWSAMIRegionMap:
     AMI:
