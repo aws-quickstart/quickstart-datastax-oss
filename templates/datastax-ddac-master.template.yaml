@@ -258,7 +258,7 @@ Conditions:
     - !Ref DDACInstallType
     - Standard
   Create2ndNode:
-    !Or [!Equals [!Ref DDACDevInstallNodeCount, 2], Condition: CreateASG]
+    !Or [!Equals [!Ref DDACDevInstallNodeCount, 2], !Equals [!Ref DDACInstallType, Standard]]
 Resources:
   VPCStack:
     Type: AWS::CloudFormation::Stack
@@ -317,6 +317,7 @@ Resources:
         QSS3KeyPrefix: !Ref QSS3KeyPrefix
         QSS3BucketName: !Ref QSS3BucketName
         DDACSecGroup: !GetAtt DDACSecGroup.GroupId
+        DDACInstallType: !Ref DDACInstallType
         DDACDevInstallNodeCount: !Ref DDACDevInstallNodeCount
   DevNodeStack:
     Type: AWS::CloudFormation::Stack
