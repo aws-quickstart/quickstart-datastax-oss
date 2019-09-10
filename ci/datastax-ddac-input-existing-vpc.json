@@ -1,9 +1,5 @@
 [
     {
-        "ParameterKey": "AvailabilityZones",
-        "ParameterValue": "$[taskcat_getaz_3]"
-    },
-    {
         "ParameterKey": "EmailAddress",
         "ParameterValue": "raks.krishna@datastax.com"
     },
@@ -22,5 +18,9 @@
     {
         "ParameterKey": "QSS3BucketName",
         "ParameterValue": "$[taskcat_autobucket]"
-    }
+    },
+    {
+        "ParameterKey": "CreateClusterWithPublicIP",
+        "ParameterValue": "true"
+      }
 ]
