@@ -19,3 +19,8 @@ tests:
     template_file: datastax-ddac-master.template.yaml
     regions:
     - us-east-2
+  datastax-ddac-new-vpc-standard:
+    parameter_input: datastax-ddac-input-standard.json
+    template_file: datastax-ddac-master.template.yaml
+    regions:
+    - us-west-2

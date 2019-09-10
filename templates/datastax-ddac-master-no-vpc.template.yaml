@@ -19,13 +19,12 @@ Metadata:
           default: 'DDAC Cluster/Nodes Configuration'
         Parameters:
           - DDACInstallType
+          - DDACDevInstallNodeCount
           - ClusterName
           - DatacenterName
           - CreateClusterWithPublicIP
           - DDACInstanceType
           - DDACVolumeSize
-          # - ClusterAutoScaleMinSize
-          # - ClusterAutoScaleMaxSize
           - EmailAddress
       - Label:
           default: 'DevOps/Bastion Configuration'
@@ -197,30 +196,6 @@ Parameters:
     ConstraintDescription: "CIDR block parameter must be in the form x.x.x.x/x"
     Description: "Allowed CIDR block for external SSH access"
     Type: String
-  # ClusterAutoScaleMinSize:
-  #   Description: "The minimum number of DDAC nodes to create (including 2 seed nodes)."
-  #   Type: String
-  #   Default: "3"
-  #   AllowedValues:
-  #     [
-  #       "3",
-  #       "4",
-  #       "5",
-  #       "6"
-  #     ]
-  #   ConstraintDescription: "Value must be between 3-6"
-  # ClusterAutoScaleMaxSize:
-  #   Description: "The maximum number of DDAC nodes to auto scale (including 2 seed nodes)."
-  #   Type: String
-  #   Default: "6"
-  #   AllowedValues:
-  #     [
-  #       "3",
-  #       "4",
-  #       "5",
-  #       "6"
-  #     ]
-  #   ConstraintDescription: "Value must be an between 3-6"
   CreateClusterWithPublicIP:
     Description: "Whether to create the DDAC Cluster nodes in public subnet"
     Type: String
@@ -315,8 +290,6 @@ Resources:
         Subnet3ID: !If [CreateInPublicSubnet, !Ref PublicSubnet3ID, !Ref PrivateSubnet3ID]
         QSS3BucketName: !Ref QSS3BucketName
         QSS3KeyPrefix: !Ref QSS3KeyPrefix
-        # ClusterAutoScaleMinSize: !Ref ClusterAutoScaleMinSize
-        # ClusterAutoScaleMaxSize: !Ref ClusterAutoScaleMaxSize
         DDACSecGroup: !GetAtt DDACSecGroup.GroupId
         SeedNodeIps:
           !Join [

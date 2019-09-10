@@ -1,0 +1,30 @@
+[
+    {
+        "ParameterKey": "AvailabilityZones",
+        "ParameterValue": "$[taskcat_getaz_3]"
+    },
+    {
+        "ParameterKey": "EmailAddress",
+        "ParameterValue": "raks.krishna@datastax.com"
+    },
+    {
+        "ParameterKey": "KeyPairName",
+        "ParameterValue": "raks-aws"
+    },
+    {
+        "ParameterKey": "RemoteAccessCIDR",
+        "ParameterValue": "0.0.0.0/0"
+    },
+    {
+        "ParameterKey": "QSS3KeyPrefix",
+        "ParameterValue": "quickstart-datastax-ddac/"
+    },
+    {
+        "ParameterKey": "QSS3BucketName",
+        "ParameterValue": "$[taskcat_autobucket]"
+    },
+    {
+        "ParameterKey": "DDACInstallType",
+        "ParameterValue": "Standard"
+    }
+]
