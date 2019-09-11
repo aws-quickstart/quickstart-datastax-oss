@@ -157,13 +157,13 @@ _**DDAC Cluster/Nodes Configuration:**_
 
 | Parameter label (name) | Default | Description |
 | ---------------------- | :-----: | ----------- |
-| Cluster Name (ClusterName) | DDAC Cluster | The name of the DDAC cluster. |
+| DDAC Install Type (DDACInstallType) | Dev | Choose "Dev" or "Standard". <br> Dev allows 1 or 2 nodes. <br>Standard installs 3 nodes in an autoscaling group with a max of 6. |
+| DDAC Number of nodes to install (DDACDevInstallNodeCount) | 1 | Choose "1" or "2". <br>If DDACInstallType=Standard, then this parameter is ignored|
+| Cluster Name (ClusterName) | DDAC-Cluster | The name of the DDAC cluster. |
 | Data Center Name (DatacenterName) | DDAC-dc0 | Name of the DDAC data center. |
 | Create Cluster in Public Subnet (CreateClusterWithPublicIP) | false | Should create the DDAC Cluster nodes in public subnet. |
 | DDAC Instance Type (DDACInstanceType) | m4.large | EC2 instance type for DDAC nodes. |
 | DDAC Volume Size (DDACVolumeSize) | 1024 | EBS volume size of the DDAC Cluster Nodes in GB. |
-| ASG Min Size (ClusterAutoScaleMinSize) | 3 | The minimum number of DDAC nodes to create (including 2 seed nodes). |
-| ASG Max Size (ClusterAutoScaleMaxSize) | 6 | The maximum number of DDAC nodes to auto scale (including 2 seed nodes). |
 | Email Address (EmailAddress) | _Requires input_ | Email Address for cloudwatch notifications. |
 
 _**DevOps Configuration:**_
@@ -205,13 +205,13 @@ _**DDAC Cluster/Nodes Configuration:**_
 
 | Parameter label (name) | Default | Description |
 | ---------------------- | :-----: | ----------- |
+| DDAC Install Type (DDACInstallType) | Dev | Choose "Dev" or "Standard". <br> Dev allows 1 or 2 nodes. <br>Standard installs 3 nodes in an autoscaling group with a max of 6. |
+| DDAC Number of nodes to install (DDACDevInstallNodeCount) | 1 | Choose "1" or "2". <br>If DDACInstallType=Standard, then this parameter is ignored|
 | Cluster Name (ClusterName) | DDAC Cluster | The name of the DDAC cluster. |
 | Data Center Name (DatacenterName) | DDAC-dc0 | Name of the DDAC data center. |
 | Create Cluster in Public Subnet (CreateClusterWithPublicIP) | false | Should create the DDAC Cluster nodes in public subnet. |
 | DDAC Instance Type (DDACInstanceType) | m4.large | EC2 instance type for DDAC nodes. |
 | DDAC Volume Size (DDACVolumeSize) | 1024 | EBS volume size of the DDAC Cluster Nodes in GB. |
-| ASG Min Size (ClusterAutoScaleMinSize) | 3 | The minimum number of DDAC nodes to create (including 2 seed nodes). |
-| ASG Max Size (ClusterAutoScaleMaxSize) | 6 | The maximum number of DDAC nodes to auto scale (including 2 seed nodes). |
 | Email Address (EmailAddress) | _Requires input_ | Email Address for cloudwatch notifications. |
 
 _**DevOps Configuration:**_

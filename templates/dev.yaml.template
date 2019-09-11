@@ -23,21 +23,6 @@ Parameters:
       - t2.small
       - t2.medium
       - t2.large
-      - m4.large
-      - m4.xlarge
-      - m4.2xlarge
-      - m4.4xlarge
-      - m4.10xlarge
-      - c4.large
-      - c4.xlarge
-      - c4.2xlarge
-      - c4.4xlarge
-      - c4.8xlarge
-      - r4.large
-      - r4.xlarge
-      - r4.2xlarge
-      - r4.4xlarge
-      - r4.8xlarge
     ConstraintDescription: "must be a valid EC2 instance type."
     Default: t2.medium
     Description: "EC2 instance type"
@@ -49,11 +34,11 @@ Parameters:
 Mappings:
   AWSAMIRegionMap:
     us-east-1:
-      DdacDev: ami-0fe0772ee9607e662
+      DdacDev: ami-05a573748d969677c
     us-east-2:
-      DdacDev: ami-036e462da4ad4bf87
+      DdacDev: ami-0c12f4a7cee928ec9
     us-west-2:
-      DdacDev: ami-011127636984a45ab
+      DdacDev: ami-06ed28fbae4d3aff1
 Resources:
   InstanceRole:
     Type: 'AWS::IAM::Role'
