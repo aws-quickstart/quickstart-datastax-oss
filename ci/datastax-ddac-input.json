@@ -1,15 +1,15 @@
 [
     {
         "ParameterKey": "AvailabilityZones",
-        "ParameterValue": "$[taskcat_getaz_2]"
+        "ParameterValue": "$[taskcat_getaz_3]"
     },
     {
         "ParameterKey": "EmailAddress",
-        "ParameterValue": "tonynv@amazon.com"
+        "ParameterValue": "raks.krishna@datastax.com"
     },
     {
         "ParameterKey": "KeyPairName",
-        "ParameterValue": "tonynv"
+        "ParameterValue": "raks-aws"
     },
     {
         "ParameterKey": "RemoteAccessCIDR",
