@@ -1,26 +1,26 @@
 global:
   marketplace-ami: false
-  owner: quickstart-eng@amazon.com
+  owner: raks.krishna@datastax.com
   qsname: quickstart-datastax-ddac
   regions:
-    - ap-northeast-1
-    - ap-northeast-2
-    - ap-south-1
-    - ap-southeast-1
-    - ap-southeast-2
-    - ca-central-1
-    - eu-central-1
-    - eu-west-1
-    - sa-east-1
     - us-east-1
     - us-east-2
-    - us-west-1
     - us-west-2
   reporting: true
- 
+
 tests:
   datastax-ddac:
+    parameter_input: datastax-ddac-input-existing-vpc.json
+    template_file: datastax-ddac-master-no-vpc.template.yaml
+    regions:
+    - us-east-1
+  datastax-ddac-new-vpc:
     parameter_input: datastax-ddac-input.json
     template_file: datastax-ddac-master.template.yaml
     regions:
-    - us-east-1
+    - us-east-2
+  datastax-ddac-new-vpc-standard:
+    parameter_input: datastax-ddac-input-standard.json
+    template_file: datastax-ddac-master.template.yaml
+    regions:
+    - us-west-2
