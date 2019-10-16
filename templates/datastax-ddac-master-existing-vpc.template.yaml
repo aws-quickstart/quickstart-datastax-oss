@@ -6,7 +6,7 @@ Metadata:
       - Label:
           default: ' VPC Network Configuration'
         Parameters:
-          - VPCId
+          - VPCID
           - VPCCIDR
           - PrivateSubnet1ID
           - PrivateSubnet2ID
@@ -128,10 +128,9 @@ Parameters:
   KeyPairName:
     ConstraintDescription: "Name of an existing EC2 KeyPair."
     Type: "AWS::EC2::KeyPair::KeyName"
-  VPCId:
+  VPCID:
     Description: Id of existing VPC
     Type: AWS::EC2::VPC::Id
-    Default: vpc-029d783ceaeadc765
   VPCCIDR:
     AllowedPattern: ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/(1[6-9]|2[0-8]))$
     ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
@@ -140,27 +139,21 @@ Parameters:
     Type: String
   PublicSubnet1ID:
     Type: AWS::EC2::Subnet::Id
-    Default: subnet-00ce98dfa31f7754a
     Description: Public subnet id 1
   PublicSubnet2ID:
     Type: AWS::EC2::Subnet::Id
-    Default: subnet-0559e23084761f2d6
     Description: Public subnet id 2
   PublicSubnet3ID:
     Type: AWS::EC2::Subnet::Id
-    Default: subnet-0ba670afbcc2dddbf
     Description: Public subnet id 3
   PrivateSubnet1ID:
     Type: AWS::EC2::Subnet::Id
-    Default: subnet-0fa5cb58014342bb8
     Description: Private subnet id 1
   PrivateSubnet2ID:
     Type: AWS::EC2::Subnet::Id
-    Default: subnet-055e606fa49f4cbbd
     Description: Private subnet id 2
   PrivateSubnet3ID:
     Type: AWS::EC2::Subnet::Id
-    Default: subnet-05697c5984fe76116
     Description: Private subnet id 3
   QSS3BucketName:
     AllowedPattern: "^[0-9a-zA-Z]+([0-9a-zA-Z-]*[0-9a-zA-Z])*$"
@@ -204,7 +197,7 @@ Resources:
     Type: 'AWS::EC2::SecurityGroup'
     Properties:
       GroupDescription: Enables SSH access and 8080.
-      VpcId: !Ref VPCId
+      VpcId: !Ref VPCID
       SecurityGroupIngress:
         - IpProtocol: tcp
           FromPort: 22
@@ -223,7 +216,7 @@ Resources:
     Properties:
       TemplateURL:
         Fn::Sub:
-          - https://${QSS3BucketName}.${S3Region}.amazonaws.com/${QSS3KeyPrefix}templates/seednodes.yaml.template
+          - https://${QSS3BucketName}.${S3Region}.amazonaws.com/${QSS3KeyPrefix}templates/datastax-ddac-seednodes.template.yaml
           - S3Region: !If [GovCloudCondition, s3-us-gov-west-1, s3]
       Parameters:
         ClusterName: !Ref ClusterName
@@ -244,7 +237,7 @@ Resources:
     Properties:
       TemplateURL:
         Fn::Sub:
-          - https://${QSS3BucketName}.${S3Region}.amazonaws.com/${QSS3KeyPrefix}templates/dev.yaml.template
+          - https://${QSS3BucketName}.${S3Region}.amazonaws.com/${QSS3KeyPrefix}templates/datastax-ddac-devops.template.yaml
           - S3Region: !If [GovCloudCondition, s3-us-gov-west-1, s3]
       Parameters:
         PublicSubnet1ID: !Ref PublicSubnet1ID

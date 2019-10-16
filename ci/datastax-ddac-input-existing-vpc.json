@@ -20,7 +20,11 @@
         "ParameterValue": "$[taskcat_autobucket]"
     },
     {
+        "ParameterKey": "DDACInstallType",
+        "ParameterValue": "Standard"
+    },
+    {
         "ParameterKey": "CreateClusterWithPublicIP",
         "ParameterValue": "true"
-      }
+    }
 ]
