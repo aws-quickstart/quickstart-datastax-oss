@@ -473,7 +473,6 @@ Resources:
           qs_bootstrap_pip || qs_err
           qs_aws-cfn-bootstrap || qs_err
           #Run cfn-init configsets
-          echo ${DDACSeedNode1IP} >/tmp/node
           cfn-init -v --stack ${AWS::StackName} --resource DDACSeedNode2 --configsets cs_install --region ${AWS::Region} || qs_err
           # Signal cfn-init (final check)
           [ $(qs_status) == 0 ] && cfn_success || cfn_fail
