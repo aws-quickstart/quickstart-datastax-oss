@@ -9,8 +9,14 @@ global:
   reporting: true
 
 tests:
+  # datastax-ddac:
+  #   parameter_input: datastax-ddac-input-existing-vpc.json
+  #   template_file: datastax-ddac-master-existing-vpc.template.yaml
+  #   regions:
+  #   - us-east-1
   datastax-ddac-new-vpc:
     parameter_input: datastax-ddac-input.json
-    template_file: datastax-ddac-master.template.yaml
+    template_file: datastax-ddac-master-new-vpc.template.yaml
     regions:
     - us-east-2
+    - us-west-2
