@@ -192,9 +192,11 @@ Resources:
                   - stack=
                   - !Ref 'AWS::StackId'
                   - |+
+
                   - region=
                   - !Ref 'AWS::Region'
                   - |+
+
               mode: '000400'
               owner: root
               group: root
@@ -215,6 +217,7 @@ Resources:
                   - '         --region '
                   - !Ref 'AWS::Region'
                   - |+
+
                   - |
                     runas=root
             /lib/systemd/system/cfn-hup.service:
@@ -224,6 +227,7 @@ Resources:
                     [Unit]
                   - |+
                     Description=cfn-hup daemon
+
                   - |
                     [Service]
                   - |
@@ -314,6 +318,7 @@ Resources:
           cfn-init -v --stack ${AWS::StackName} --resource DDACSeedNode1 --configsets cs_install --region ${AWS::Region} || qs_err
           # Signal cfn-init (final check)
           [ $(qs_status) == 0 ] && cfn_success || cfn_fail
+
         - S3Region: !If [ GovCloudCondition, s3-us-gov-west-1, s3 ]
   DDACSeedNode2:
     Type: 'AWS::EC2::Instance'
@@ -323,10 +328,10 @@ Resources:
         Timeout: PT15M
     Metadata:
       'AWS::CloudFormation::Authentication':
-      S3AccessCreds:
-        type: S3
-        roleName: !Ref InstanceRole
-        buckets: !Ref QSS3BucketName
+        S3AccessCreds:
+          type: S3
+          roleName: !Ref InstanceRole
+          buckets: !Ref QSS3BucketName
       'AWS::CloudFormation::Init':
         configSets:
           cs_install:
@@ -343,9 +348,11 @@ Resources:
                   - stack=
                   - !Ref 'AWS::StackId'
                   - |+
+
                   - region=
                   - !Ref 'AWS::Region'
                   - |+
+
               mode: '000400'
               owner: root
               group: root
