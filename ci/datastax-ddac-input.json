@@ -16,6 +16,10 @@
         "ParameterValue": "0.0.0.0/0"
     },
     {
+        "ParameterKey": "DDACInstallType",
+        "ParameterValue": "Standard"
+    },
+    {
         "ParameterKey": "QSS3KeyPrefix",
         "ParameterValue": "quickstart-datastax-ddac/"
     },

@@ -239,7 +239,7 @@ Resources:
           - 'autoscaling:EC2_INSTANCE_TERMINATE_ERROR'
       Tags:
       - Key: Name
-        PropagateAtLaunch: "true"
+        PropagateAtLaunch: true
         Value: DDAC_ASG_node
     CreationPolicy:
       ResourceSignal:
