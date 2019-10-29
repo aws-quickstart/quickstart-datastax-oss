@@ -144,33 +144,33 @@ Mappings:
     AMI:
       US1604HVM: ubuntu/images/hvm-ssd/ubuntu-xenial-16.04-amd64-server-20180405
     ap-northeast-1:
-      US1604HVM: ami-60a4b21c
+      US1604HVM: ami-0cca812282dd2fc0d
     ap-northeast-2:
-      US1604HVM: ami-633d920d
+      US1604HVM: ami-0f6a0c2e905062388
     ap-south-1:
-      US1604HVM: ami-dba580b4
+      US1604HVM: ami-0a943aa1c727d4c63
     ap-southeast-1:
-      US1604HVM: ami-82c9ecfe
+      US1604HVM: ami-0568159dd0c65b9b6
     ap-southeast-2:
-      US1604HVM: ami-2b12dc49
+      US1604HVM: ami-05b67b91e1f703ebf
     ca-central-1:
-      US1604HVM: ami-9d7afcf9
+      US1604HVM: ami-0b632b55517980f65
     eu-central-1:
-      US1604HVM: ami-cd491726
+      US1604HVM: ami-0fd4fe10cea7264a7
     eu-west-1:
-      US1604HVM: ami-74e6b80d
+      US1604HVM: ami-0c224e30f7a997d9f
     eu-west-2:
-      US1604HVM: ami-506e8f37
+      US1604HVM: ami-00b21efcf155178c4
     sa-east-1:
-      US1604HVM: ami-5782d43b
+      US1604HVM: ami-0f227e142db829b50
     us-east-1:
-      US1604HVM: ami-6dfe5010
+      US1604HVM: ami-092546daafcc8bc0d
     us-east-2:
-      US1604HVM: ami-e82a1a8d
+      US1604HVM: ami-02073f7bb66c4c56f
     us-west-1:
-      US1604HVM: ami-493f2f29
+      US1604HVM: ami-0bc498f1207abb85c
     us-west-2:
-      US1604HVM: ami-ca89eeb2
+      US1604HVM: ami-017e1dd35b94fb074
 Conditions:
   GovCloudCondition: !Equals
     - !Ref 'AWS::Region'
