@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: 2010-09-09
-Description: Create Seednodes. - cicd test 2
+Description: Create Seednodes.
 Parameters:
   ClusterName:
     Description: The name of the DDAC Cluster.
@@ -159,12 +159,12 @@ Resources:
         Roles:
         - !Ref InstanceRole
         PolicyDocument:
-           Statement:
-             - Sid: BucketAccess
-               Effect: Allow
-               Action:
-                 - 's3:GetObject'
-               Resource: !Sub arn:aws:s3:::${QSS3BucketName}/*
+          Statement:
+            - Sid: BucketAccess
+              Effect: Allow
+              Action:
+                - 's3:GetObject'
+              Resource: !Sub arn:aws:s3:::${QSS3BucketName}/*
   DDACSeedNode1:
     Type: 'AWS::EC2::Instance'
     CreationPolicy:
@@ -172,14 +172,15 @@ Resources:
         Timeout: PT15M
     Metadata:
       'AWS::CloudFormation::Authentication':
-       S3AccessCreds:
-         type: S3
-         roleName: !Ref InstanceRole
-         buckets: !Ref QSS3BucketName
+        S3AccessCreds:
+          type: S3
+          roleName: !Ref InstanceRole
+          buckets: !Ref QSS3BucketName
       'AWS::CloudFormation::Init':
         configSets:
           cs_install:
             - install_and_enable_cfn_hup
+            - setup_disk
             - install_ddac
             - post_install
         install_and_enable_cfn_hup:
@@ -244,6 +245,35 @@ Resources:
               command: systemctl enable cfn-hup.service
             02start_cfn_hup:
               command: systemctl start cfn-hup.service
+        setup_disk:
+          commands:
+            01_setup_disk:
+              command: !Join
+                - ''
+                - - |
+                    #!/bin/bash -xe
+                  - |
+                    mkfs -t ext4 /dev/sda1
+                  - |
+                    mkdir -p /data/cassandra
+                  - |
+                    mount /dev/sda1 /data/cassandra
+                  - |
+                    mkdir /data/cassandra/data
+                  - |
+                    mkdir /data/cassandra/commitlog
+                  - |
+                    mkdir /data/cassandra/saved_caches
+                  - |
+                    mkdir /data/cassandra/dsefs
+                  - |
+                    useradd cassandra
+                  - |
+                    chown -R cassandra:cassandra /data/cassandra
+                  - |
+                    cp /etc/fstab /etc/fstab.bak
+                  - >
+                    echo "/dev/sda1     /data/cassandra     ext4      defaults,nofail     0     2" >> /etc/fstab
         install_ddac:
           sources:
             /home/ubuntu: !Sub
@@ -273,7 +303,6 @@ Resources:
       NetworkInterfaces:
         - DeleteOnTermination: true
           DeviceIndex: "0"
-#          SubnetId: !If [CreateInPublicSubnet, !Ref PublicSubnet1ID, !Ref PrivateSubnet1ID]
           SubnetId: !Ref Subnet1ID
           GroupSet:
             - !Ref DDACSecGroup
@@ -328,14 +357,15 @@ Resources:
         Timeout: PT15M
     Metadata:
       'AWS::CloudFormation::Authentication':
-       S3AccessCreds:
-         type: S3
-         roleName: !Ref InstanceRole
-         buckets: !Ref QSS3BucketName
+        S3AccessCreds:
+          type: S3
+          roleName: !Ref InstanceRole
+          buckets: !Ref QSS3BucketName
       'AWS::CloudFormation::Init':
         configSets:
           cs_install:
             - install_and_enable_cfn_hup
+            - setup_disk
             - install_ddac
             - post_install
         install_and_enable_cfn_hup:
@@ -400,6 +430,35 @@ Resources:
               command: systemctl enable cfn-hup.service
             02start_cfn_hup:
               command: systemctl start cfn-hup.service
+        setup_disk:
+          commands:
+            01_setup_disk:
+              command: !Join
+                - ''
+                - - |
+                    #!/bin/bash -xe
+                  - |
+                    mkfs -t ext4 /dev/sda1
+                  - |
+                    mkdir -p /data/cassandra
+                  - |
+                    mount /dev/sda1 /data/cassandra
+                  - |
+                    mkdir /data/cassandra/data
+                  - |
+                    mkdir /data/cassandra/commitlog
+                  - |
+                    mkdir /data/cassandra/saved_caches
+                  - |
+                    mkdir /data/cassandra/dsefs
+                  - |
+                    useradd cassandra
+                  - |
+                    chown -R cassandra:cassandra /data/cassandra
+                  - |
+                    cp /etc/fstab /etc/fstab.bak
+                  - >
+                    echo "/dev/sda1     /data/cassandra     ext4      defaults,nofail     0     2" >> /etc/fstab
         install_ddac:
           sources:
             /home/ubuntu: !Sub
