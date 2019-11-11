@@ -336,11 +336,11 @@ Resources:
                 - - |
                     #!/bin/bash -xe
                   - |
-                    mkfs -t ext4 /dev/sda1
+                    mkfs -t ext4 /dev/xvdf
                   - |
                     mkdir -p /data/cassandra
                   - |
-                    mount /dev/sda1 /data/cassandra
+                    mount /dev/xvdf /data/cassandra
                   - |
                     mkdir /data/cassandra/data
                   - |
@@ -356,7 +356,7 @@ Resources:
                   - |
                     cp /etc/fstab /etc/fstab.bak
                   - >
-                    echo "/dev/sda1     /data/cassandra     ext4      defaults,nofail     0     2" >> /etc/fstab
+                    echo "/dev/xvdf     /data/cassandra     ext4      defaults,nofail     0     2" >> /etc/fstab
         install_ddac:
           sources:
             /home/ubuntu: !Sub
@@ -391,7 +391,7 @@ Resources:
         - !Ref 'AWS::Region'
         - US1604HVM
       BlockDeviceMappings:
-        - DeviceName: /dev/sda1
+        - DeviceName: /dev/xvdf
           Ebs:
             VolumeSize: !Ref VolumeSize
             VolumeType: gp2
