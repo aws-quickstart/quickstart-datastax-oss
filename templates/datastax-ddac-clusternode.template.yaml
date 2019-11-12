@@ -202,12 +202,12 @@ Resources:
         Roles:
         - !Ref InstanceRole
         PolicyDocument:
-           Statement:
-             - Sid: BucketAccess
-               Effect: Allow
-               Action:
-                 - 's3:GetObject'
-               Resource: !Sub arn:aws:s3:::${QSS3BucketName}/*
+          Statement:
+            - Sid: BucketAccess
+              Effect: Allow
+              Action:
+                - 's3:GetObject'
+              Resource: !Sub arn:aws:s3:::${QSS3BucketName}/*
   NotificationTopic:
     Type: 'AWS::SNS::Topic'
     Properties:
@@ -231,8 +231,8 @@ Resources:
         - !Ref ClusterAutoScaleMaxSize
         - Value
       NotificationConfigurations:
-      -  TopicARN: !Ref NotificationTopic
-         NotificationTypes:
+      - TopicARN: !Ref NotificationTopic
+        NotificationTypes:
           - 'autoscaling:EC2_INSTANCE_LAUNCH'
           - 'autoscaling:EC2_INSTANCE_LAUNCH_ERROR'
           - 'autoscaling:EC2_INSTANCE_TERMINATE'
@@ -255,14 +255,15 @@ Resources:
     Type: 'AWS::AutoScaling::LaunchConfiguration'
     Metadata:
       'AWS::CloudFormation::Authentication':
-       S3AccessCreds:
-         type: S3
-         roleName: !Ref InstanceRole
-         buckets: !Ref QSS3BucketName
+        S3AccessCreds:
+          type: S3
+          roleName: !Ref InstanceRole
+          buckets: !Ref QSS3BucketName
       'AWS::CloudFormation::Init':
         configSets:
           cs_install:
             - install_and_enable_cfn_hup
+            - setup_disk
             - install_ddac
             - post_install
         install_and_enable_cfn_hup:
@@ -327,6 +328,35 @@ Resources:
               command: systemctl enable cfn-hup.service
             02start_cfn_hup:
               command: systemctl start cfn-hup.service
+        setup_disk:
+          commands:
+            01_setup_disk:
+              command: !Join
+                - ''
+                - - |
+                    #!/bin/bash -xe
+                  - |
+                    mkfs -t ext4 /dev/xvdf
+                  - |
+                    mkdir -p /data/cassandra
+                  - |
+                    mount /dev/xvdf /data/cassandra
+                  - |
+                    mkdir /data/cassandra/data
+                  - |
+                    mkdir /data/cassandra/commitlog
+                  - |
+                    mkdir /data/cassandra/saved_caches
+                  - |
+                    mkdir /data/cassandra/dsefs
+                  - |
+                    useradd cassandra
+                  - |
+                    chown -R cassandra:cassandra /data/cassandra
+                  - |
+                    cp /etc/fstab /etc/fstab.bak
+                  - >
+                    echo "/dev/xvdf     /data/cassandra     ext4      defaults,nofail     0     2" >> /etc/fstab
         install_ddac:
           sources:
             /home/ubuntu: !Sub
@@ -361,7 +391,7 @@ Resources:
         - !Ref 'AWS::Region'
         - US1604HVM
       BlockDeviceMappings:
-        - DeviceName: /dev/sda1
+        - DeviceName: /dev/xvdf
           Ebs:
             VolumeSize: !Ref VolumeSize
             VolumeType: gp2
