@@ -11,7 +11,7 @@ tests:
   # datastax-ddac-existing-vpc:
   #   parameters:
   #     AvailabilityZones: $[taskcat_getaz_3]
-  #     DDACInstallType: Standard
+  #     DDACInstallType: Dev
   #     EmailAddress: raks.krishna@datastax.com
   #     KeyPairName: raks-aws
   #     QSS3BucketName: $[taskcat_autobucket]
