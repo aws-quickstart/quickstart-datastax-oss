@@ -266,24 +266,24 @@ Outputs:
     Description: DDAC Url
   Seed1PrivateIpAddress:
     Value: !GetAtt
-      - SeedNodeStack
+      - DDACStack
       - Outputs.Seed1PrivateIpAddress
     Description: 1st Seed Private IP
   Seed1PublicIpAddress:
     Value: !GetAtt
-      - SeedNodeStack
+      - DDACStack
       - Outputs.Seed1PublicIpAddress
     Description: 1st Seed Public IP
   Seed2PrivateIpAddress:
     Condition: Create2ndNode
     Value: !GetAtt
-      - SeedNodeStack
+      - DDACStack
       - Outputs.Seed2PrivateIpAddress
     Description: 2nd Seed Private IP
   Seed2PublicIpAddress:
     Condition: Create2ndNode
     Value: !GetAtt
-      - SeedNodeStack
+      - DDACStack
       - Outputs.Seed2PublicIpAddress
     Description: 2nd Seed Public IP
   DevIpAddress:
