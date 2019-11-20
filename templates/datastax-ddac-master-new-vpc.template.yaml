@@ -209,6 +209,9 @@ Conditions:
   GovCloudCondition: !Equals
     - !Ref "AWS::Region"
     - us-gov-west-1
+  Create2ndNode:
+    # !Or [!Equals [!Ref DDACDevInstallNodeCount, 2], Condition: CreateASG]
+    !Or [!Equals [!Ref DDACDevInstallNodeCount, 2], !Equals [!Ref DDACInstallType, Standard]]
 Resources:
   VPCStack:
     Type: AWS::CloudFormation::Stack
@@ -287,5 +290,5 @@ Outputs:
       - Outputs.Seed2PublicIpAddress
     Description: 2nd Seed Public IP
   DevIpAddress:
-    Value: !GetAtt DevNodeStack.Outputs.DevIpAddress
+    Value: !GetAtt DDACStack.Outputs.DevIpAddress
     Description: Dev Jump box Public IP
