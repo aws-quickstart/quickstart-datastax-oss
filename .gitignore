@@ -1,5 +1,1 @@
-./run-east2.sh
-./run-west2.sh
-./minimal-west.json
-./minimal.json
-./validate.sh
+/taskcat_outputs/
