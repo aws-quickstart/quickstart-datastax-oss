@@ -33,10 +33,36 @@ Parameters:
     Default: 16
 Mappings:
   AWSAMIRegionMap:
+    ap-northeast-1:
+      DdacDev: ami-0f08eedd87ca72b0d
+    ap-northeast-2:
+      DdacDev: ami-06f4c7415303a91a4
+    ap-south-1:
+      DdacDev: ami-0f887015e0fc837ee
+    ap-southeast-1:
+      DdacDev: ami-0ae6394bf101ea6a3
+    ap-southeast-2:
+      DdacDev: ami-0d8f20552589557f9
+    ca-central-1:
+      DdacDev: ami-03b114f47f155f87a
+    eu-central-1:
+      DdacDev: ami-09eed0eee2ae0469d
+    eu-north-1:
+      DdacDev: ami-099a0660f74e7a50b
+    eu-west-1:
+      DdacDev: ami-01ff73ad66f851c3a
+    eu-west-2:
+      DdacDev: ami-0150aa68dddea4dc4
+    eu-west-3:
+      DdacDev: ami-0063aa2d55b64fb0c
+    sa-east-1:
+      DdacDev: ami-0fe7845e649bd94c9
     us-east-1:
       DdacDev: ami-05a573748d969677c
     us-east-2:
       DdacDev: ami-0c12f4a7cee928ec9
+    us-west-1:
+      DdacDev: ami-0e95d029e44715fe9
     us-west-2:
       DdacDev: ami-06ed28fbae4d3aff1
 Resources:

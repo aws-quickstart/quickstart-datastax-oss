@@ -141,8 +141,6 @@ Mappings:
     "20":
       Value: "18"
   AWSAMIRegionMap:
-    AMI:
-      US1804HVM: ubuntu/images/hvm-ssd/ubuntu-xenial-18.04-amd64-server-20180814
     ap-northeast-1:
       US1804HVM: ami-0ca1c035b9349cd0f
     ap-northeast-2:
