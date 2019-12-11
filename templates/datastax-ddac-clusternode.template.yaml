@@ -142,37 +142,37 @@ Mappings:
       Value: "18"
   AWSAMIRegionMap:
     ap-northeast-1:
-      US1804HVM: ami-0f6b4f4104d26f399
+      US1804HVM: ami-0ca1c035b9349cd0f
     ap-northeast-2:
-      US1804HVM: ami-02b4a5559ce53a570
+      US1804HVM: ami-0e08e34dad3150f5f
     ap-south-1:
-      US1804HVM: ami-0245841fc4b40e22f
+      US1804HVM: ami-0d79bffaef0a7edd3
     ap-southeast-1:
-      US1804HVM: ami-07febfdfb4080320e
+      US1804HVM: ami-04e67f81b2e119dc1
     ap-southeast-2:
-      US1804HVM: ami-04a0f7552cff370ba
+      US1804HVM: ami-0fc875aae085f3a10
     ca-central-1:
-      US1804HVM: ami-0972a0d3135cf1fc0
+      US1804HVM: ami-0db5df6f6ada4e725
     eu-central-1:
-      US1804HVM: ami-09356619876445425
+      US1804HVM: ami-09c703584514dc7e3
     eu-north-1:
-      US1804HVM: ami-005bc7d72deb72a3d
+      US1804HVM: ami-0ed50b520dc532397
     eu-west-1:
-      US1804HVM: ami-04c58523038d79132
+      US1804HVM: ami-0349d92d0523b78d5
     eu-west-2:
-      US1804HVM: ami-00622b440d92e55c0
+      US1804HVM: ami-0d533e62fdb7051b9
     eu-west-3:
-      US1804HVM: ami-0b70d1460d5c7a299
+      US1804HVM: ami-0b2364bb326f3933d
     sa-east-1:
-      US1804HVM: ami-049f5d88d2d436431
+      US1804HVM: ami-02d1cc5c468d90a53
     us-east-1:
-      US1804HVM: ami-00a208c7cdba991ea
+      US1804HVM: ami-0f9dead18f90f44e0
     us-east-2:
-      US1804HVM: ami-059d836af932792c3
+      US1804HVM: ami-0b8ef506cca65e70f
     us-west-1:
-      US1804HVM: ami-0f42d8c4eb586ccf7
+      US1804HVM: ami-0e0c415d94fce8e7c
     us-west-2:
-      US1804HVM: ami-0a7d051a1c4b54f65
+      US1804HVM: ami-07419071c57137539
 Conditions:
   GovCloudCondition: !Equals
     - !Ref 'AWS::Region'
