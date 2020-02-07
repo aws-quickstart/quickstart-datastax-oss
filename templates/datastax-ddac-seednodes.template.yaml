@@ -103,37 +103,37 @@ Conditions:
 Mappings:
   AWSAMIRegionMap:
     ap-northeast-1:
-      US1804HVM: ami-07f4cb4629342979c
+      US1804HVM: ami-01f90b0460589991e
     ap-northeast-2:
-      US1804HVM: ami-0cd7b0de75f5a35d1
+      US1804HVM: ami-096e3ded41e3bda6a
     ap-south-1:
-      US1804HVM: ami-0620d12a9cf777c87
+      US1804HVM: ami-0d11056c10bfdde69
     ap-southeast-1:
-      US1804HVM: ami-09a4a9ce71ff3f20b
+      US1804HVM: ami-07ce5f60a39f1790e
     ap-southeast-2:
-      US1804HVM: ami-02a599eb01e3b3c5b
+      US1804HVM: ami-04c7af7de7ad468f0
     ca-central-1:
-      US1804HVM: ami-098dce2d49ef14294
+      US1804HVM: ami-064efdb82ae15e93f
     eu-central-1:
-      US1804HVM: ami-0b418580298265d5c
+      US1804HVM: ami-0718a1ae90971ce4d
     eu-north-1:
-      US1804HVM: ami-0b7937aeb16a7eb94
+      US1804HVM: ami-0e850e0e9c20d9deb
     eu-west-1:
-      US1804HVM: ami-035966e8adab4aaad
+      US1804HVM: ami-07042e91d04b1c30d
     eu-west-2:
-      US1804HVM: ami-006a0174c6c25ac06
+      US1804HVM: ami-04cc79dd5df3bffca
     eu-west-3:
-      US1804HVM: ami-096b8af6e7e8fb927
+      US1804HVM: ami-0c367ebddcf279dc6
     sa-east-1:
-      US1804HVM: ami-05494b93950efa2fd
+      US1804HVM: ami-0cb1ddea3786f6c0d
     us-east-1:
-      US1804HVM: ami-07ebfd5b3428b6f4d
+      US1804HVM: ami-046842448f9e74e7d
     us-east-2:
-      US1804HVM: ami-0fc20dd1da406780b
+      US1804HVM: ami-0367b500fdcac0edc
     us-west-1:
-      US1804HVM: ami-03ba3948f6c37a4b0
+      US1804HVM: ami-0d58800f291760030
     us-west-2:
-      US1804HVM: ami-0d1cd67c26f5fca19
+      US1804HVM: ami-0edf3b95e26a682df
 Resources:
   InstanceRole:
     Type: 'AWS::IAM::Role'
