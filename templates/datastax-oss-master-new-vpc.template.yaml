@@ -1,0 +1,372 @@
+AWSTemplateFormatVersion: 2010-09-09
+Metadata:
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      - Label:
+          default: ' VPC Network Configuration'
+        Parameters:
+          - AvailabilityZones
+          - VPCCIDR
+          - PrivateSubnet1CIDR
+          - PrivateSubnet2CIDR
+          - PrivateSubnet3CIDR
+          - PublicSubnet1CIDR
+          - PublicSubnet2CIDR
+          - PublicSubnet3CIDR
+      - Label:
+          default: 'Cassandra Cluster/Nodes Configuration'
+        Parameters:
+          - OSSVersion
+          - ClusterSize
+          - ClusterName
+          - DatacenterName
+          - NodeInstanceType
+          - NodeVolumeSize
+      - Label:
+          default: 'Cassandra Cluster Access'
+        Parameters:
+          - CreateClusterWithPublicIP
+          - RemoteAccessCIDR
+          - KeyPairName
+      - Label:
+          default: 'DevOps/Bastion Configuration'
+        Parameters:
+          - DevInstanceType
+          - DevVolumeSize
+Parameters:
+  S3BucketName:
+    AllowedPattern: '^[0-9a-zA-Z]+([0-9a-zA-Z-]*[0-9a-zA-Z])*$'
+    ConstraintDescription: >-
+      Bucket name can include numbers, lowercase letters, uppercase
+      letters, and hyphens (-). It cannot start or end with a hyphen (-).
+    Default: aws-quickstart
+    Description: >-
+      S3 bucket name for the Quick Start assets. Quick Start bucket name can
+      include numbers, lowercase letters, uppercase letters, and hyphens (-). It
+      cannot start or end with a hyphen (-).
+    Type: String
+  S3KeyPrefix:
+    AllowedPattern: '^[0-9a-zA-Z-/]*$'
+    ConstraintDescription: >-
+      Quick Start key prefix can include numbers, lowercase letters, uppercase
+      letters, hyphens (-), and forward slash (/).
+    Default: quickstart-examples/samples/hugo-pipeline/
+    Description: >-
+      S3 key prefix for the Quick Start assets. Quick Start key prefix can include
+      numbers, lowercase letters, uppercase letters, hyphens (-), and forward slash (/).
+    Type: String
+  OSSVersion:
+    AllowedValues:
+      # - 3.11.5
+      # - 3.11.6
+      - 4.0
+    Default: 4.0
+    Description: "Apache Cassandra version to install."
+    Type: String
+  ClusterSize:
+    Description: "Number of Cassandra nodes to create."
+    Type: String
+    Default: 3
+    AllowedValues:
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+      - 6
+      - 7
+      - 8
+      - 9
+      - 10
+      - 11
+      - 12
+      - 13
+      - 14
+      - 15
+      - 16
+      - 17
+      - 18
+      - 19
+      - 20
+      - 21
+      - 22
+      - 23
+      - 24
+      - 25
+      - 26
+      - 27
+      - 28
+      - 29
+      - 30
+      - 31
+      - 32
+  AvailabilityZones:
+    Description: Select 3 AZs from this List of Availability Zones to use for the subnets in the VPC. The logical order of your selections is preserved.
+    Type: List<AWS::EC2::AvailabilityZone::Name>
+  ClusterName:
+    Description: The name of the Cassandra Cluster.
+    Type: String
+    Default: Cassandra-Cluster
+  DatacenterName:
+    Description: The name of the Cassandra Datacenter.
+    Type: String
+    Default: OSS-dc0
+  NodeInstanceType:
+    AllowedValues:
+      - t2.medium
+      - t2.large
+      - t2.xlarge
+      - t2.2xlarge
+      - m4.large
+      - m4.xlarge
+      - m4.2xlarge
+      - m4.4xlarge
+      - m4.10xlarge
+      - m4.16xlarge
+      - c4.large
+      - c4.xlarge
+      - c4.2xlarge
+      - c4.4xlarge
+      - c4.8xlarge
+      - r4.large
+      - r4.xlarge
+      - r4.2xlarge
+      - r4.4xlarge
+      - r4.8xlarge
+      - r4.16xlarge
+    ConstraintDescription: "must be a valid EC2 instance type."
+    Default: m4.large
+    Description: "EC2 instance type of each node in the Cassandra Cluster"
+    Type: String
+  NodeVolumeSize:
+      Type: Number
+      Description: "EBS volume size of each node in the Cassandra Cluster in GB"
+      Default: 512
+  DevInstanceType:
+    AllowedValues:
+      - t2.micro
+      - t2.small
+      - t2.medium
+      - t2.large
+      - t2.xlarge
+      - t2.2xlarge
+      - t3.micro
+      - t3.small
+      - t3.medium
+      - t3.large
+      - t3.xlarge
+      - t3.2xlarge
+    ConstraintDescription: "must be a valid EC2 instance type."
+    Default: t3.medium
+    Description: "EC2 instance type of the DevOps Instance"
+    Type: String
+  DevVolumeSize:
+      Type: Number
+      Description: "EBS volume size of the DevOps Instance in GB"
+      Default: 16
+  KeyPairName:
+    Type: "AWS::EC2::KeyPair::KeyName"
+    AllowedPattern : ".+"
+    Description: "Select an existing KeyPair."
+    ConstraintDescription: "Name of an existing EC2 KeyPair."
+  PrivateSubnet1CIDR:
+    AllowedPattern: ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/(1[6-9]|2[0-8]))$
+    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
+    Default: 10.0.0.0/19
+    Description: CIDR block for private subnet 1 located in Availability Zone 1
+    Type: String
+  PrivateSubnet2CIDR:
+    AllowedPattern: ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/(1[6-9]|2[0-8]))$
+    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
+    Default: 10.0.32.0/19
+    Description: CIDR block for private subnet 2 located in Availability Zone 2
+    Type: String
+  PrivateSubnet3CIDR:
+    AllowedPattern: ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/(1[6-9]|2[0-8]))$
+    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
+    Default: 10.0.64.0/19
+    Description: CIDR block for private subnet 3 located in Availability Zone 3
+    Type: String
+  PublicSubnet1CIDR:
+    AllowedPattern: ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/(1[6-9]|2[0-8]))$
+    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
+    Default: 10.0.128.0/20
+    Description: CIDR block for the public (DMZ) subnet 1 located in Availability Zone 1
+    Type: String
+  PublicSubnet2CIDR:
+    AllowedPattern: ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/(1[6-9]|2[0-8]))$
+    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
+    Default: 10.0.144.0/20
+    Description: CIDR block for the public (DMZ) subnet 2 located in Availability Zone 2
+    Type: String
+  PublicSubnet3CIDR:
+    AllowedPattern: ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/(1[6-9]|2[0-8]))$
+    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
+    Default: 10.0.160.0/20
+    Description: CIDR block for the public (DMZ) subnet 3 located in Availability Zone 3
+    Type: String
+  VPCCIDR:
+    AllowedPattern: ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/(1[6-9]|2[0-8]))$
+    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
+    Default: 10.0.0.0/16
+    Description: CIDR block for the VPC
+    Type: String
+  RemoteAccessCIDR:
+    AllowedPattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$"
+    ConstraintDescription: "CIDR block parameter must be in the form x.x.x.x/x"
+    Description: "Allowed CIDR block for external SSH access and for application access to the cassandra cluster, if the cluster is created with CreateClusterWithPublicIP=true"
+    Type: String
+  CreateClusterWithPublicIP:
+    Description: "Whether to create the Cassandra Cluster nodes in public subnet"
+    Type: String
+    Default: "false"
+    AllowedValues:
+      - "false"
+      - "true"
+Conditions:
+  Create2ndNode: !Or
+    - !Equals [!Ref ClusterSize, 2]
+    - !Not [!Equals [!Ref ClusterSize, 1]]
+# Mappings:
+#   AWSAMIRegionMapNode:
+#     # OSS-MP-NODE-AMI-1.1
+#     ap-northeast-1:
+#       1804HVM: ami-052c7090a5d3460d7
+#     ap-northeast-2:
+#       1804HVM: ami-058c81f0a435bf2eb
+#     ap-south-1:
+#       1804HVM: ami-0462e38d16a4b87ac
+#     ap-southeast-1:
+#       1804HVM: ami-0b0f171bdf1d81992
+#     ap-southeast-2:
+#       1804HVM: ami-0b60f2d0dd1f226e1
+#     ca-central-1:
+#       1804HVM: ami-0b361288dd8219b13
+#     eu-central-1:
+#       1804HVM: ami-01c8a9f71828c1825
+#     eu-north-1:
+#       1804HVM: ami-0dd3958d04ea38523
+#     eu-west-1:
+#       1804HVM: ami-07d56daf87207ac5f
+#     eu-west-2:
+#       1804HVM: ami-027b7f929e3547f5f
+#     eu-west-3:
+#       1804HVM: ami-00034279acf87eb22
+#     sa-east-1:
+#       1804HVM: ami-04fc334f8cf4a273c
+#     us-east-1:
+#       1804HVM: ami-07e000f494465b020
+#     us-east-2:
+#       1804HVM: ami-0ca1391808ddcfbb4
+#     us-west-1:
+#       1804HVM: ami-094f09f3e4584e6a1
+#     us-west-2:
+#       1804HVM: ami-008577998caf68b5e
+#   AWSAMIRegionMapDevOps:
+#     ap-northeast-1:
+#       DevOps: ami-0aa261691d6ea2a33
+#     ap-northeast-2:
+#       DevOps: ami-0fddf3d9ac8338006
+#     ap-south-1:
+#       DevOps: ami-0833bbf36194139d9
+#     ap-southeast-1:
+#       DevOps: ami-0adc94c77b8b96882
+#     ap-southeast-2:
+#       DevOps: ami-067df23b9a35c666a
+#     ca-central-1:
+#       DevOps: ami-0cf8b858658304976
+#     eu-central-1:
+#       DevOps: ami-071eb55e4d03b55c4
+#     eu-north-1:
+#       DevOps: ami-0f430b432d6db27cd
+#     eu-west-1:
+#       DevOps: ami-07fad6b5b9599d8a3
+#     eu-west-2:
+#       DevOps: ami-0382a2829d036f2f3
+#     eu-west-3:
+#       DevOps: ami-03e3ccad6a8c2184a
+#     sa-east-1:
+#       DevOps: ami-043b177ff7006c52c
+#     us-east-1:
+#       DevOps: ami-0ad803069914859d7
+#     us-east-2:
+#       DevOps: ami-02985814fc7182bdb
+#     us-west-1:
+#       DevOps: ami-0806a6d260819379b
+#     us-west-2:
+#       DevOps: ami-046131ed9fc58b70f
+Resources:
+  VPCStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: !Sub >-
+        https://${S3BucketName}.s3.amazonaws.com/${S3KeyPrefix}/submodules/quickstart-aws-vpc/templates/aws-vpc.template.yaml
+      Parameters:
+        AvailabilityZones: !Join
+          - ","
+          - !Ref AvailabilityZones
+        KeyPairName: !Ref KeyPairName
+        NumberOfAZs: "3"
+        PrivateSubnet1ACIDR: !Ref PrivateSubnet1CIDR
+        PrivateSubnet2ACIDR: !Ref PrivateSubnet2CIDR
+        PrivateSubnet3ACIDR: !Ref PrivateSubnet3CIDR
+        PublicSubnet1CIDR: !Ref PublicSubnet1CIDR
+        PublicSubnet2CIDR: !Ref PublicSubnet2CIDR
+        PublicSubnet3CIDR: !Ref PublicSubnet3CIDR
+        VPCCIDR: !Ref VPCCIDR
+  CassandraStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: !Sub >-
+        https://${S3BucketName}.s3.amazonaws.com/${S3KeyPrefix}/templates/datastax-oss-existing-vpc.template.yaml
+      Parameters:
+        ClusterName: !Ref ClusterName
+        CreateClusterWithPublicIP: !Ref CreateClusterWithPublicIP
+        DatacenterName: !Ref DatacenterName
+        ClusterSize: !Ref ClusterSize
+        NodeInstanceType: !Ref NodeInstanceType
+        NodeVolumeSize: !Ref NodeVolumeSize
+        DevInstanceType: !Ref DevInstanceType
+        DevVolumeSize: !Ref DevVolumeSize
+        KeyPairName: !Ref KeyPairName
+        PublicSubnet1ID: !GetAtt VPCStack.Outputs.PublicSubnet1ID
+        PublicSubnet2ID: !GetAtt VPCStack.Outputs.PublicSubnet2ID
+        PublicSubnet3ID: !GetAtt VPCStack.Outputs.PublicSubnet3ID
+        PrivateSubnet1ID: !GetAtt VPCStack.Outputs.PrivateSubnet1AID
+        PrivateSubnet2ID: !GetAtt VPCStack.Outputs.PrivateSubnet2AID
+        PrivateSubnet3ID: !GetAtt VPCStack.Outputs.PrivateSubnet3AID
+        RemoteAccessCIDR: !Ref RemoteAccessCIDR
+        VPCID: !GetAtt VPCStack.Outputs.VPCID
+        OSSVersion: !Ref OSSVersion
+Outputs:
+  DevUrl:
+    Value: "http://oss-getting-started.s3-website-us-east-1.amazonaws.com"
+    Description: Dev Url
+  ApacheCassandraVersion:
+    Value: !Ref OSSVersion
+    Description: Apache Cassandra Cluster Version.
+  DevIpAddress:
+    Value: !GetAtt CassandraStack.Outputs.DevIpAddress
+    Description: Dev Jump box Public IP
+  Seed1PrivateIpAddress:
+    Value: !GetAtt
+      - CassandraStack
+      - Outputs.Seed1PrivateIpAddress
+    Description: 1st Seed Private IP
+  Seed1PublicIpAddress:
+    Value: !GetAtt
+      - CassandraStack
+      - Outputs.Seed1PublicIpAddress
+    Description: 1st Seed Public IP
+  Seed2PrivateIpAddress:
+    Condition: Create2ndNode
+    Value: !GetAtt
+      - CassandraStack
+      - Outputs.Seed2PrivateIpAddress
+    Description: 2nd Seed Private IP
+  Seed2PublicIpAddress:
+    Condition: Create2ndNode
+    Value: !GetAtt
+      - CassandraStack
+      - Outputs.Seed2PublicIpAddress
+    Description: 2nd Seed Public IP
