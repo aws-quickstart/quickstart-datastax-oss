@@ -1,0 +1,124 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Creates DevOps / jump box
+Parameters:
+  S3BucketName:
+    AllowedPattern: '^[0-9a-zA-Z]+([0-9a-zA-Z-]*[0-9a-zA-Z])*$'
+    ConstraintDescription: >-
+      Bucket name can include numbers, lowercase letters, uppercase
+      letters, and hyphens (-). It cannot start or end with a hyphen (-).
+    Default: aws-quickstart
+    Description: >-
+      S3 bucket name for the Quick Start assets. Quick Start bucket name can
+      include numbers, lowercase letters, uppercase letters, and hyphens (-). It
+      cannot start or end with a hyphen (-).
+    Type: String
+  PublicSubnet1ID:
+    Description: Public Subnet Id 1
+    Type: 'AWS::EC2::Subnet::Id'
+  KeyPairName:
+    Type: 'AWS::EC2::KeyPair::KeyName'
+    ConstraintDescription: Name of an existing EC2 KeyPair.
+  SecGroup:
+    Description: "Security Group ID."
+    Type: 'List<AWS::EC2::SecurityGroup::Id>'
+  InstanceType:
+    AllowedValues:
+      - t2.micro
+      - t2.small
+      - t2.medium
+      - t2.large
+      - t2.xlarge
+      - t2.2xlarge
+      - t3.micro
+      - t3.small
+      - t3.medium
+      - t3.large
+      - t3.xlarge
+      - t3.2xlarge
+    ConstraintDescription: "must be a valid EC2 instance type."
+    Default: t3.medium
+    Description: "EC2 instance type"
+    Type: String
+  VolumeSize:
+    Type: Number
+    Description: "EBS volume size of the DevOps Instance in GB"
+    Default: 16
+Mappings:
+  AWSAMIRegionMapDevOps:
+    us-east-1:
+      DevOps: ami-0ad803069914859d7
+    us-east-2:
+      DevOps: ami-02985814fc7182bdb
+    us-west-1:
+      DevOps: ami-0806a6d260819379b
+    us-west-2:
+      DevOps: ami-046131ed9fc58b70f
+Resources:
+  InstanceRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          -
+            Effect: 'Allow'
+            Principal:
+              Service:
+                - 'ec2.amazonaws.com'
+            Action:
+              - 'sts:AssumeRole'
+      Path: '/'
+  InstanceProfile:
+    Type: 'AWS::IAM::InstanceProfile'
+    Properties:
+      Path: '/'
+      Roles:
+        - Ref: 'InstanceRole'
+  AuthenticatedS3Policy:
+    Type: AWS::IAM::Policy
+    Properties:
+        PolicyName: AuthenticatedS3GetObjects
+        Roles:
+        - !Ref InstanceRole
+        PolicyDocument:
+          Statement:
+            - Sid: BucketAccess
+              Effect: Allow
+              Action:
+                - 's3:GetObject'
+              Resource: !Sub arn:aws:s3:::${S3BucketName}/*
+  DevNode1:
+    Type: 'AWS::EC2::Instance'
+    Metadata:
+      'AWS::CloudFormation::Authentication':
+        S3AccessCreds:
+          type: S3
+          roleName: !Ref InstanceRole
+          buckets: !Ref S3BucketName
+    Properties:
+      InstanceType: !Ref InstanceType
+      IamInstanceProfile: !Ref InstanceProfile
+      NetworkInterfaces:
+        - DeleteOnTermination: true
+          DeviceIndex: '0'
+          SubnetId: !Ref PublicSubnet1ID
+          GroupSet: !Ref SecGroup
+      KeyName: !Ref KeyPairName
+      ImageId: !FindInMap
+        - AWSAMIRegionMapDevOps
+        - !Ref 'AWS::Region'
+        - DevOps
+      BlockDeviceMappings:
+        - DeviceName: /dev/sda1
+          Ebs:
+            VolumeSize: !Ref VolumeSize
+            VolumeType: gp2
+      Tags:
+          - Key: Name
+            Value: DevOps
+Outputs:
+  DevIpAddress:
+    Value: !GetAtt DevNode1.PublicIp
+    Description: Dev Jump box Public IP
+  DevUrl:
+    Value: "http://oss-getting-started.s3-website-us-east-1.amazonaws.com"
+    Description: Dev Url

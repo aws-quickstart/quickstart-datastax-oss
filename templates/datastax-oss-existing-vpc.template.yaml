@@ -1,0 +1,375 @@
+AWSTemplateFormatVersion: 2010-09-09
+Metadata:
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      - Label:
+          default: ' VPC Network Configuration'
+        Parameters:
+          - VPCID
+          - VPCCIDR
+          - PrivateSubnet1ID
+          - PrivateSubnet2ID
+          - PrivateSubnet3ID
+          - PublicSubnet1ID
+          - PublicSubnet2ID
+          - PublicSubnet3ID
+      - Label:
+          default: 'Cassandra Cluster/Nodes Configuration'
+        Parameters:
+          - OSSVersion
+          - ClusterSize
+          - ClusterName
+          - DatacenterName
+          - NodeInstanceType
+          - NodeVolumeSize
+      - Label:
+          default: 'Cassandra Cluster Access'
+        Parameters:
+          - CreateClusterWithPublicIP
+          - RemoteAccessCIDR
+          - KeyPairName
+      - Label:
+          default: 'DevOps/Bastion Configuration'
+        Parameters:
+          - DevInstanceType
+          - DevVolumeSize
+Parameters:
+  S3BucketName:
+    AllowedPattern: '^[0-9a-zA-Z]+([0-9a-zA-Z-]*[0-9a-zA-Z])*$'
+    ConstraintDescription: >-
+      Bucket name can include numbers, lowercase letters, uppercase
+      letters, and hyphens (-). It cannot start or end with a hyphen (-).
+    Default: aws-quickstart
+    Description: >-
+      S3 bucket name for the Quick Start assets. Quick Start bucket name can
+      include numbers, lowercase letters, uppercase letters, and hyphens (-). It
+      cannot start or end with a hyphen (-).
+    Type: String
+  S3KeyPrefix:
+    AllowedPattern: '^[0-9a-zA-Z-/]*$'
+    ConstraintDescription: >-
+      Quick Start key prefix can include numbers, lowercase letters, uppercase
+      letters, hyphens (-), and forward slash (/).
+    Default: quickstart-examples/samples/hugo-pipeline/
+    Description: >-
+      S3 key prefix for the Quick Start assets. Quick Start key prefix can include
+      numbers, lowercase letters, uppercase letters, hyphens (-), and forward slash (/).
+    Type: String
+  OSSVersion:
+    AllowedValues:
+      # - 3.11.5
+      # - 3.11.6
+      - 4.0
+    Default: 4.0
+    Description: "Apache Cassandra version to install."
+    Type: String
+  ClusterSize:
+    Description: "Number of Cassandra nodes to create."
+    Type: String
+    Default: 3
+    AllowedValues:
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+      - 6
+      - 7
+      - 8
+      - 9
+      - 10
+      - 11
+      - 12
+      - 13
+      - 14
+      - 15
+      - 16
+      - 17
+      - 18
+      - 19
+      - 20
+      - 21
+      - 22
+      - 23
+      - 24
+      - 25
+      - 26
+      - 27
+      - 28
+      - 29
+      - 30
+      - 31
+      - 32
+  ClusterName:
+    Description: The name of the Cluster.
+    Type: String
+    Default: Cassandra-Cluster
+  DatacenterName:
+    Description: The name of the Datacenter.
+    Type: String
+    Default: OSS-dc0
+  NodeInstanceType:
+    AllowedValues:
+      - t2.medium
+      - t2.large
+      - t2.xlarge
+      - t2.2xlarge
+      - m4.large
+      - m4.xlarge
+      - m4.2xlarge
+      - m4.4xlarge
+      - m4.10xlarge
+      - m4.16xlarge
+      - c4.large
+      - c4.xlarge
+      - c4.2xlarge
+      - c4.4xlarge
+      - c4.8xlarge
+      - r4.large
+      - r4.xlarge
+      - r4.2xlarge
+      - r4.4xlarge
+      - r4.8xlarge
+      - r4.16xlarge
+    ConstraintDescription: "must be a valid EC2 instance type."
+    Default: m4.large
+    Description: "EC2 instance type of each node in the Cassandra Cluster"
+    Type: String
+  NodeVolumeSize:
+      Type: Number
+      Description: "EBS volume size of each node in the Cassandra Cluster in GB"
+      Default: 512
+  DevInstanceType:
+    AllowedValues:
+      - t2.micro
+      - t2.small
+      - t2.medium
+      - t2.large
+      - t2.xlarge
+      - t2.2xlarge
+      - t3.micro
+      - t3.small
+      - t3.medium
+      - t3.large
+      - t3.xlarge
+      - t3.2xlarge
+    ConstraintDescription: "must be a valid EC2 instance type."
+    Default: t3.medium
+    Description: "EC2 instance type of the DevOps Instance"
+    Type: String
+  DevVolumeSize:
+      Type: Number
+      Description: "EBS volume size of the DevOps Instance in GB"
+      Default: 16
+  KeyPairName:
+    Type: "AWS::EC2::KeyPair::KeyName"
+    AllowedPattern : ".+"
+    Description: "Select an existing KeyPair."
+    ConstraintDescription: "Name of an existing EC2 KeyPair."
+  VPCID:
+    Description: Id of existing VPC
+    Type: AWS::EC2::VPC::Id
+  VPCCIDR:
+    AllowedPattern: ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/(1[6-9]|2[0-8]))$
+    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
+    Default: 10.0.0.0/16
+    Description: CIDR block for the VPC
+    Type: String
+  PublicSubnet1ID:
+    Type: AWS::EC2::Subnet::Id
+    Description: Public subnet id 1
+  PublicSubnet2ID:
+    Type: AWS::EC2::Subnet::Id
+    Description: Public subnet id 2
+  PublicSubnet3ID:
+    Type: AWS::EC2::Subnet::Id
+    Description: Public subnet id 3
+  PrivateSubnet1ID:
+    Type: AWS::EC2::Subnet::Id
+    Description: Private subnet id 1
+  PrivateSubnet2ID:
+    Type: AWS::EC2::Subnet::Id
+    Description: Private subnet id 2
+  PrivateSubnet3ID:
+    Type: AWS::EC2::Subnet::Id
+    Description: Private subnet id 3
+  RemoteAccessCIDR:
+    AllowedPattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$"
+    ConstraintDescription: "CIDR block parameter must be in the form x.x.x.x/x"
+    Description: "Allowed CIDR block for external SSH access and for application access to the cluster if the cluster is created with CreateClusterWithPublicIP=true"
+    Type: String
+  CreateClusterWithPublicIP:
+    Description: "Whether to create the Cassandra Cluster nodes in public subnet"
+    Type: String
+    Default: "false"
+    AllowedValues:
+      - "false"
+      - "true"
+Conditions:
+  CreateInPublicSubnet: !Equals
+    - !Ref CreateClusterWithPublicIP
+    - true
+  # Create1stNode:
+  #   !Equals [!Ref ClusterSize, 1]
+  Create2ndNode: !Or
+    - !Equals [!Ref ClusterSize, 2]
+    - !Not [!Equals [!Ref ClusterSize, 1]]
+  Create3rdNode: !Or
+    - !Equals [!Ref ClusterSize, 3]
+    - !And [!Not [!Equals [!Ref ClusterSize, 1]], !Not [!Equals [!Ref ClusterSize, 2]]]
+  CreateASG: !And
+    - !Not [!Equals [!Ref ClusterSize, 1]]
+    - !Not [!Equals [!Ref ClusterSize, 2]]
+    - !Not [!Equals [!Ref ClusterSize, 3]]
+Resources:
+  SecGroup:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties:
+      GroupDescription: Enables SSH access and 8080.
+      VpcId: !Ref VPCID
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: !Ref RemoteAccessCIDR
+        - IpProtocol: tcp
+          FromPort: 0
+          ToPort: 65535
+          CidrIp: !Ref VPCCIDR
+        - IpProtocol: tcp
+          FromPort: 8080
+          ToPort: 8080
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 9042
+          ToPort: 9042
+          CidrIp: !If [CreateInPublicSubnet, !Ref RemoteAccessCIDR, !Ref VPCCIDR]
+  SeedNode1Stack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: !Sub >-
+        https://${S3BucketName}.s3.amazonaws.com/${S3KeyPrefix}/templates/datastax-oss-c-node.template.yaml
+      Parameters:
+        OSSVersion: !Ref OSSVersion
+        ClusterName: !Ref ClusterName
+        DatacenterName: !Ref DatacenterName
+        CreateClusterWithPublicIP: !Ref CreateClusterWithPublicIP
+        SubnetID: !If [CreateInPublicSubnet, !Ref PublicSubnet1ID, !Ref PrivateSubnet1ID]
+        InstanceType: !Ref NodeInstanceType
+        VolumeSize: !Ref NodeVolumeSize
+        KeyPairName: !Ref KeyPairName
+        SecGroup: !GetAtt SecGroup.GroupId
+        NodeNumber: "1"
+  SeedNode2Stack:
+    Condition: Create2ndNode
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: !Sub >-
+        https://${S3BucketName}.s3.amazonaws.com/${S3KeyPrefix}/templates/datastax-oss-c-node.template.yaml
+      Parameters:
+        OSSVersion: !Ref OSSVersion
+        ClusterName: !Ref ClusterName
+        DatacenterName: !Ref DatacenterName
+        CreateClusterWithPublicIP: !Ref CreateClusterWithPublicIP
+        SubnetID: !If [CreateInPublicSubnet, !Ref PublicSubnet2ID, !Ref PrivateSubnet2ID]
+        InstanceType: !Ref NodeInstanceType
+        VolumeSize: !Ref NodeVolumeSize
+        KeyPairName: !Ref KeyPairName
+        SecGroup: !GetAtt SecGroup.GroupId
+        NodeNumber: "2"
+        SeedNodeIps: !GetAtt SeedNode1Stack.Outputs.Seed1PrivateIpAddress
+  3rdNodeStack:
+    Condition: Create3rdNode
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: !Sub >-
+        https://${S3BucketName}.s3.amazonaws.com/${S3KeyPrefix}/templates/datastax-oss-c-node.template.yaml
+      Parameters:
+        OSSVersion: !Ref OSSVersion
+        ClusterName: !Ref ClusterName
+        DatacenterName: !Ref DatacenterName
+        CreateClusterWithPublicIP: !Ref CreateClusterWithPublicIP
+        SubnetID: !If [CreateInPublicSubnet, !Ref PublicSubnet3ID, !Ref PrivateSubnet3ID]
+        InstanceType: !Ref NodeInstanceType
+        VolumeSize: !Ref NodeVolumeSize
+        KeyPairName: !Ref KeyPairName
+        SecGroup: !GetAtt SecGroup.GroupId
+        NodeNumber: "3"
+        SeedNodeIps:
+          !Join [
+            ",",
+            [
+              !GetAtt SeedNode1Stack.Outputs.Seed1PrivateIpAddress,
+              !GetAtt SeedNode2Stack.Outputs.Seed2PrivateIpAddress,
+            ],
+          ]
+  ClusterNodeStack:
+    Condition: CreateASG
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: !Sub >-
+        https://${S3BucketName}.s3.amazonaws.com/${S3KeyPrefix}/templates/datastax-oss-clusternode.template.yaml
+      Parameters:
+        OSSVersion: !Ref OSSVersion
+        ClusterName: !Ref ClusterName
+        ClusterSize: !Ref ClusterSize
+        CreateClusterWithPublicIP: !Ref CreateClusterWithPublicIP
+        DatacenterName: !Ref DatacenterName
+        InstanceType: !Ref NodeInstanceType
+        VolumeSize: !Ref NodeVolumeSize
+        KeyPairName: !Ref KeyPairName
+        Subnet1ID: !If [CreateInPublicSubnet, !Ref PublicSubnet1ID, !Ref PrivateSubnet1ID]
+        Subnet2ID: !If [CreateInPublicSubnet, !Ref PublicSubnet2ID, !Ref PrivateSubnet2ID]
+        Subnet3ID: !If [CreateInPublicSubnet, !Ref PublicSubnet3ID, !Ref PrivateSubnet3ID]
+        SecGroup: !GetAtt SecGroup.GroupId
+        SeedNodeIps:
+          !Join [
+            ",",
+            [
+              !GetAtt SeedNode1Stack.Outputs.Seed1PrivateIpAddress,
+              !GetAtt SeedNode2Stack.Outputs.Seed2PrivateIpAddress,
+            ],
+          ]
+  # DevNodeStack:
+  #   Type: AWS::CloudFormation::Stack
+  #   Properties:
+  #     TemplateURL: !Sub >-
+  #       https://${S3BucketName}.s3.amazonaws.com/${S3KeyPrefix}/templates/datastax-oss-devops.template.yaml
+  #     Parameters:
+  #       PublicSubnet1ID: !Ref PublicSubnet1ID
+  #       InstanceType: !Ref DevInstanceType
+  #       VolumeSize: !Ref DevVolumeSize
+  #       KeyPairName: !Ref KeyPairName
+  #       SecGroup: !GetAtt SecGroup.GroupId
+Outputs:
+  Seed1PrivateIpAddress:
+    Value: !GetAtt
+      - SeedNode1Stack
+      - Outputs.Seed1PrivateIpAddress
+    Description: 1st Seed Private IP
+  Seed1PublicIpAddress:
+    Value: !GetAtt
+      - SeedNode1Stack
+      - Outputs.Seed1PublicIpAddress
+    Description: 1st Seed Public IP
+  Seed2PrivateIpAddress:
+    Condition: Create2ndNode
+    Value: !GetAtt
+      - SeedNode2Stack
+      - Outputs.Seed2PrivateIpAddress
+    Description: C* 2nd Seed Node Private IP
+  Seed2PublicIpAddress :
+    Condition: Create2ndNode
+    Value: !GetAtt
+      - SeedNode2Stack
+      - Outputs.Seed2PublicIpAddress
+    Description: C* 2nd Seed Node Public IP
+  # DevIpAddress:
+  #   Value: !GetAtt DevNodeStack.Outputs.DevIpAddress
+  #   Description: Dev Jump box Public IP
+  DevUrl:
+    Value: "http://oss-getting-started.s3-website-us-east-1.amazonaws.com"
+    Description: Dev Url
+  ApacheCassandraVersion:
+    Value: !Ref OSSVersion
+    Description: Apache Cassandra Cluster Version.
