@@ -45,7 +45,7 @@
 },
 {
     "ParameterKey": "ClusterSize",
-    "ParameterValue": "2"
+    "ParameterValue": "1"
 },
 {
     "ParameterKey": "DatacenterName",
