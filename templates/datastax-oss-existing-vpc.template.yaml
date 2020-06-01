@@ -31,6 +31,7 @@ Metadata:
       - Label:
           default: 'DevOps/Bastion Configuration'
         Parameters:
+          - CreateDevInstance
           - DevInstanceType
           - DevVolumeSize
 Parameters:
@@ -139,6 +140,13 @@ Parameters:
       Type: Number
       Description: "EBS volume size of each node in the Cassandra Cluster in GB"
       Default: 512
+  CreateDevInstance:
+    Description: "Whether to create the jumpbox"
+    Type: String
+    Default: "true"
+    AllowedValues:
+      - "false"
+      - "true"
   DevInstanceType:
     AllowedValues:
       - t2.micro
@@ -206,6 +214,9 @@ Parameters:
       - "false"
       - "true"
 Conditions:
+  CreateDev: !Equals
+    - !Ref CreateDevInstance
+    - true
   CreateInPublicSubnet: !Equals
     - !Ref CreateClusterWithPublicIP
     - true
@@ -330,17 +341,18 @@ Resources:
               !GetAtt SeedNode2Stack.Outputs.Seed2PrivateIpAddress,
             ],
           ]
-  # DevNodeStack:
-  #   Type: AWS::CloudFormation::Stack
-  #   Properties:
-  #     TemplateURL: !Sub >-
-  #       https://${S3BucketName}.s3.amazonaws.com/${S3KeyPrefix}/templates/datastax-oss-devops.template.yaml
-  #     Parameters:
-  #       PublicSubnet1ID: !Ref PublicSubnet1ID
-  #       InstanceType: !Ref DevInstanceType
-  #       VolumeSize: !Ref DevVolumeSize
-  #       KeyPairName: !Ref KeyPairName
-  #       SecGroup: !GetAtt SecGroup.GroupId
+  DevNodeStack:
+    Condition: CreateDev
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: !Sub >-
+        https://${S3BucketName}.s3.amazonaws.com/${S3KeyPrefix}/templates/datastax-oss-devops.template.yaml
+      Parameters:
+        PublicSubnet1ID: !Ref PublicSubnet1ID
+        InstanceType: !Ref DevInstanceType
+        VolumeSize: !Ref DevVolumeSize
+        KeyPairName: !Ref KeyPairName
+        SecGroup: !GetAtt SecGroup.GroupId
 Outputs:
   Seed1PrivateIpAddress:
     Value: !GetAtt
@@ -364,9 +376,10 @@ Outputs:
       - SeedNode2Stack
       - Outputs.Seed2PublicIpAddress
     Description: C* 2nd Seed Node Public IP
-  # DevIpAddress:
-  #   Value: !GetAtt DevNodeStack.Outputs.DevIpAddress
-  #   Description: Dev Jump box Public IP
+  DevIpAddress:
+    Condition: CreateDev
+    Value: !GetAtt DevNodeStack.Outputs.DevIpAddress
+    Description: Dev Jump box Public IP
   DevUrl:
     Value: "http://oss-getting-started.s3-website-us-east-1.amazonaws.com"
     Description: Dev Url
