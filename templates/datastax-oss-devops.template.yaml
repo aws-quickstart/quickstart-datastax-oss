@@ -45,14 +45,40 @@ Parameters:
     Default: 16
 Mappings:
   AWSAMIRegionMapDevOps:
+    AMI:
+      US1604HVM: ubuntu/images/hvm-ssd/ubuntu-xenial-16.04-amd64-server-*
+    eu-north-1:
+      US1604HVM: ami-004baf4bebfc60e00
+    ap-south-1:
+      US1604HVM: ami-050d142d4db023b60
+    eu-west-3:
+      US1604HVM: ami-05dbde73d870dde1d
+    eu-west-2:
+      US1604HVM: ami-0a614b729ef585e96
+    eu-west-1:
+      US1604HVM: ami-04533969992547875
+    ap-northeast-2:
+      US1604HVM: ami-0761dd1f89936259e
+    ap-northeast-1:
+      US1604HVM: ami-058c6e5b73b074cd2
+    sa-east-1:
+      US1604HVM: ami-0b105ed6ad5255125
+    ca-central-1:
+      US1604HVM: ami-09a79257f435d556a
+    ap-southeast-1:
+      US1604HVM: ami-0bd999ddca2c8ba67
+    ap-southeast-2:
+      US1604HVM: ami-0a81041a48bbbbd69
+    eu-central-1:
+      US1604HVM: ami-074a2642e2a3737d2
     us-east-1:
-      DevOps: ami-0ad803069914859d7
+      US1604HVM: ami-0edfed9d6e9a4031b
     us-east-2:
-      DevOps: ami-02985814fc7182bdb
+      US1604HVM: ami-0735e22e032b35e38
     us-west-1:
-      DevOps: ami-0806a6d260819379b
+      US1604HVM: ami-0b91a410940e82c54
     us-west-2:
-      DevOps: ami-046131ed9fc58b70f
+      US1604HVM: ami-00a0cf500e59c9f7c
 Resources:
   InstanceRole:
     Type: 'AWS::IAM::Role'
@@ -106,7 +132,7 @@ Resources:
       ImageId: !FindInMap
         - AWSAMIRegionMapDevOps
         - !Ref 'AWS::Region'
-        - DevOps
+        - US1604HVM
       BlockDeviceMappings:
         - DeviceName: /dev/sda1
           Ebs:

@@ -45,11 +45,15 @@
 },
 {
     "ParameterKey": "ClusterSize",
-    "ParameterValue": "2"
+    "ParameterValue": "4"
 },
 {
     "ParameterKey": "DatacenterName",
     "ParameterValue": "OSS-dc0"
+},
+{
+    "ParameterKey": "CreateDevInstance",
+    "ParameterValue": "true"
 },
 {
     "ParameterKey": "CreateClusterWithPublicIP",

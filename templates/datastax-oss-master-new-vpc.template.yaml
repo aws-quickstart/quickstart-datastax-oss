@@ -31,6 +31,7 @@ Metadata:
       - Label:
           default: 'DevOps/Bastion Configuration'
         Parameters:
+          - CreateDevInstance
           - DevInstanceType
           - DevVolumeSize
 Parameters:
@@ -50,7 +51,7 @@ Parameters:
     ConstraintDescription: >-
       Quick Start key prefix can include numbers, lowercase letters, uppercase
       letters, hyphens (-), and forward slash (/).
-    Default: quickstart-examples/samples/hugo-pipeline/
+    Default: quickstart-datastax-oss
     Description: >-
       S3 key prefix for the Quick Start assets. Quick Start key prefix can include
       numbers, lowercase letters, uppercase letters, hyphens (-), and forward slash (/).
@@ -142,6 +143,13 @@ Parameters:
       Type: Number
       Description: "EBS volume size of each node in the Cassandra Cluster in GB"
       Default: 512
+  CreateDevInstance:
+    Description: "Whether to create the jumpbox"
+    Type: String
+    Default: "true"
+    AllowedValues:
+      - "false"
+      - "true"
   DevInstanceType:
     AllowedValues:
       - t2.micro
@@ -227,74 +235,6 @@ Conditions:
   Create2ndNode: !Or
     - !Equals [!Ref ClusterSize, 2]
     - !Not [!Equals [!Ref ClusterSize, 1]]
-# Mappings:
-#   AWSAMIRegionMapNode:
-#     # OSS-MP-NODE-AMI-1.1
-#     ap-northeast-1:
-#       1804HVM: ami-052c7090a5d3460d7
-#     ap-northeast-2:
-#       1804HVM: ami-058c81f0a435bf2eb
-#     ap-south-1:
-#       1804HVM: ami-0462e38d16a4b87ac
-#     ap-southeast-1:
-#       1804HVM: ami-0b0f171bdf1d81992
-#     ap-southeast-2:
-#       1804HVM: ami-0b60f2d0dd1f226e1
-#     ca-central-1:
-#       1804HVM: ami-0b361288dd8219b13
-#     eu-central-1:
-#       1804HVM: ami-01c8a9f71828c1825
-#     eu-north-1:
-#       1804HVM: ami-0dd3958d04ea38523
-#     eu-west-1:
-#       1804HVM: ami-07d56daf87207ac5f
-#     eu-west-2:
-#       1804HVM: ami-027b7f929e3547f5f
-#     eu-west-3:
-#       1804HVM: ami-00034279acf87eb22
-#     sa-east-1:
-#       1804HVM: ami-04fc334f8cf4a273c
-#     us-east-1:
-#       1804HVM: ami-07e000f494465b020
-#     us-east-2:
-#       1804HVM: ami-0ca1391808ddcfbb4
-#     us-west-1:
-#       1804HVM: ami-094f09f3e4584e6a1
-#     us-west-2:
-#       1804HVM: ami-008577998caf68b5e
-#   AWSAMIRegionMapDevOps:
-#     ap-northeast-1:
-#       DevOps: ami-0aa261691d6ea2a33
-#     ap-northeast-2:
-#       DevOps: ami-0fddf3d9ac8338006
-#     ap-south-1:
-#       DevOps: ami-0833bbf36194139d9
-#     ap-southeast-1:
-#       DevOps: ami-0adc94c77b8b96882
-#     ap-southeast-2:
-#       DevOps: ami-067df23b9a35c666a
-#     ca-central-1:
-#       DevOps: ami-0cf8b858658304976
-#     eu-central-1:
-#       DevOps: ami-071eb55e4d03b55c4
-#     eu-north-1:
-#       DevOps: ami-0f430b432d6db27cd
-#     eu-west-1:
-#       DevOps: ami-07fad6b5b9599d8a3
-#     eu-west-2:
-#       DevOps: ami-0382a2829d036f2f3
-#     eu-west-3:
-#       DevOps: ami-03e3ccad6a8c2184a
-#     sa-east-1:
-#       DevOps: ami-043b177ff7006c52c
-#     us-east-1:
-#       DevOps: ami-0ad803069914859d7
-#     us-east-2:
-#       DevOps: ami-02985814fc7182bdb
-#     us-west-1:
-#       DevOps: ami-0806a6d260819379b
-#     us-west-2:
-#       DevOps: ami-046131ed9fc58b70f
 Resources:
   VPCStack:
     Type: AWS::CloudFormation::Stack
@@ -338,6 +278,9 @@ Resources:
         RemoteAccessCIDR: !Ref RemoteAccessCIDR
         VPCID: !GetAtt VPCStack.Outputs.VPCID
         OSSVersion: !Ref OSSVersion
+        CreateDevInstance: !Ref CreateDevInstance
+        S3BucketName: !Ref S3BucketName
+        S3KeyPrefix: !Ref S3KeyPrefix
 Outputs:
   DevUrl:
     Value: "http://oss-getting-started.s3-website-us-east-1.amazonaws.com"

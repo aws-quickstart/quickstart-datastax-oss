@@ -5,7 +5,7 @@
   },
   {
   "ParameterKey": "S3KeyPrefix",
-  "ParameterValue": "dspn/aws-qs-oss"
+  "ParameterValue": "dspn/quickstart-datastax-oss"
   },
   {
     "ParameterKey": "KeyPairName",
