@@ -279,6 +279,8 @@ Resources:
         VPCID: !GetAtt VPCStack.Outputs.VPCID
         OSSVersion: !Ref OSSVersion
         CreateDevInstance: !Ref CreateDevInstance
+        S3BucketName: !Ref S3BucketName
+        S3KeyPrefix: !Ref S3KeyPrefix
 Outputs:
   DevUrl:
     Value: "http://oss-getting-started.s3-website-us-east-1.amazonaws.com"
