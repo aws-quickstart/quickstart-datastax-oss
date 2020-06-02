@@ -28,10 +28,10 @@ tests:
     regions:
     - us-east-1
     template: templates/datastax-oss-existing-vpc.template.yaml
-  # quickstart-datastax-oss-new-vpc:
-  #   parameters:
-  #     RemoteAccessCIDR: 0.0.0.0/0
-  #   regions:
-  #   - us-east-2
-  #   - us-west-2
-  #   template: templates/datastax-oss-master-new-vpc.template.yaml
+  quickstart-datastax-oss-new-vpc:
+    parameters:
+      RemoteAccessCIDR: 0.0.0.0/0
+    regions:
+    - us-east-2
+    - us-west-2
+    template: templates/datastax-oss-master-new-vpc.template.yaml

@@ -45,7 +45,7 @@
 },
 {
     "ParameterKey": "ClusterSize",
-    "ParameterValue": "4"
+    "ParameterValue": "1"
 },
 {
     "ParameterKey": "DatacenterName",
@@ -53,7 +53,7 @@
 },
 {
     "ParameterKey": "CreateDevInstance",
-    "ParameterValue": "true"
+    "ParameterValue": "false"
 },
 {
     "ParameterKey": "CreateClusterWithPublicIP",
