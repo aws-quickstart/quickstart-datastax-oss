@@ -161,9 +161,11 @@ _**Apache Cassandra Cluster/Nodes Configuration:**_
 | Cluster Name (ClusterName) | Cassandra-Cluster | The name of the Apache Cassandra cluster. |
 | Data Center Name (DatacenterName) | OSS-dc0 | Name of the Apache Cassandra data center. |
 | Node Instance Type (NodeInstanceType) | m4.large | EC2 instance type for Apache Cassandra nodes. |
-| Node Volume Size (NodeVolumeSize) | 1024 | EBS volume size of the Apache Cassandra Cluster Nodes in GB. |
+| Node Volume Size (NodeVolumeSize) | 512 | EBS volume size of the Apache Cassandra Cluster Nodes in GB. |
 
 _**Cassandra Cluster Access:**_
+| Parameter label (name) | Default | Description |
+| ---------------------- | :-----: | ----------- |
 | Create Cluster in Public Subnet (CreateClusterWithPublicIP) | false | Should create the Apache Cassandra Cluster nodes in public subnet. |
 | Permitted IP range (RemoteAccessCIDR) | _Requires input_ | The CIDR IP range that is permitted to SSH to the DevOps EC2 instance for the console. We recommend that you set this value to a trusted IP range. For example, you might want to grant only your corporate network access to the software. |
 | Key Name (KeyPairName) | _Requires input_ | Public/private key pair, which allows you to connect securely to your instance after it launches. When you created an AWS account, this is the key pair you created in your preferred region. |
@@ -171,8 +173,8 @@ _**Cassandra Cluster Access:**_
 _**DevOps Configuration:**_
 | Parameter label (name) | Default | Description |
 | ---------------------- | :-----: | ----------- |
-| Instance Type (DevInstanceType) | t2.medium | EC2 instance type for the DevOps Host.  |
-| Volume Sizes (DevVolumeSize) | 1024 | The EBS volume size, in GiB, for the DevOps Host. |
+| Instance Type (DevInstanceType) | t3.medium | EC2 instance type for the DevOps Host.  |
+| Volume Sizes (DevVolumeSize) | 16 | The EBS volume size, in GiB, for the DevOps Host. |
 
 _**AWS Quick Start Configuration:**_
 
@@ -196,7 +198,6 @@ _**VPC Network Configuration:**_
 | Private Subnet 1 ID (PrivateSubnet1ID) | _Requires input_ | Subnet ID for private subnet 1 located in Availability Zone 1. |
 | Private Subnet 2 ID (PrivateSubnet2ID) | _Requires input_ | Subnet ID for private subnet 2 located in Availability Zone 2. |
 | Private Subnet 3 ID (PrivateSubnet3ID) | _Requires input_ | Subnet ID for private subnet 3 located in Availability Zone 3. |
-DevOps EC2 instance for the console. We recommend that you set this value to a trusted IP range. For example, you might want to grant only your corporate network access to the software. |
 | Public Subnet 1 ID (PublicSubnet1CIDR) | _Requires input_ | Subnet ID for the public (DMZ) subnet 1 located in Availability Zone 1. |
 | Public Subnet 2 ID (PublicSubnet2CIDR) | _Requires input_ | Subnet ID for the public (DMZ) subnet 2 located in Availability Zone 2. |
 | Public Subnet 3 ID (PublicSubnet3CIDR) | _Requires input_ | Subnet ID for the public (DMZ) subnet 3 located in Availability Zone 3. |
@@ -210,9 +211,11 @@ _**Apache Cassandra Cluster/Nodes Configuration:**_
 | Cluster Name (ClusterName) | Cassandra-Cluster | The name of the Apache Cassandra cluster. |
 | Data Center Name (DatacenterName) | OSS-dc0 | Name of the Apache Cassandra data center. |
 | Node Instance Type (NodeInstanceType) | m4.large | EC2 instance type for Apache Cassandra nodes. |
-| Node Volume Size (NodeVolumeSize) | 1024 | EBS volume size of the Apache Cassandra Cluster Nodes in GB. |
+| Node Volume Size (NodeVolumeSize) | 512 | EBS volume size of the Apache Cassandra Cluster Nodes in GB. |
 
 _**Cassandra Cluster Access:**_
+| Parameter label (name) | Default | Description |
+| ---------------------- | :-----: | ----------- |
 | Create Cluster in Public Subnet (CreateClusterWithPublicIP) | false | Should create the Apache Cassandra Cluster nodes in public subnet. |
 | Permitted IP range (RemoteAccessCIDR) | _Requires input_ | The CIDR IP range that is permitted to SSH to the DevOps EC2 instance for the console. We recommend that you set this value to a trusted IP range. For example, you might want to grant only your corporate network access to the software. |
 | Key Name (KeyPairName) | _Requires input_ | Public/private key pair, which allows you to connect securely to your instance after it launches. When you created an AWS account, this is the key pair you created in your preferred region. |
@@ -220,8 +223,8 @@ _**Cassandra Cluster Access:**_
 _**DevOps Configuration:**_
 | Parameter label (name) | Default | Description |
 | ---------------------- | :-----: | ----------- |
-| Instance Type (DevInstanceType) | t2.medium | EC2 instance type for the DevOps Host.  |
-| Volume Sizes (DevVolumeSize) | 1024 | The EBS volume size, in GiB, for the DevOps Host. |
+| Instance Type (DevInstanceType) | t3.medium | EC2 instance type for the DevOps Host.  |
+| Volume Sizes (DevVolumeSize) | 16 | The EBS volume size, in GiB, for the DevOps Host. |
 
 _**AWS Quick Start Configuration:**_
 
@@ -270,7 +273,7 @@ You can then view the status of the Apache Cassandra Cluster:
 ~$ nodetool status
 ~~~
 
-For the default 3 node cluster, the nodetool status should be like
+For a 6 node cluster, the nodetool status should be like
 
 ![nodetool-status](./assets/nodetool_status.png)
 
