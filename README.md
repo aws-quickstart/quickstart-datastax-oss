@@ -1,1 +1,1 @@
-# ddac-quickstart
+quikstart-datastax-oss
