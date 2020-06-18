@@ -1,45 +1,37 @@
 project:
-  name: quickstart-datastax-ddac
+  name: quickstart-datastax-oss
   owner: raks.krishna@datastax.com
   package_lambda: false
   regions:
   - us-east-1
   - us-east-2
   - us-west-2
-  s3_bucket: ''
+  parameters:
+    s3_bucket: ''
+    AvailabilityZones: $[taskcat_getaz_3]
+    S3BucketName: $[taskcat_autobucket]
+    S3KeyPrefix: quickstart-datastax-oss
+    KeyPairName: raks-aws
+    RemoteAccessCIDR: 0.0.0.0/0
+    CreateClusterWithPublicIP: "true"
+    ClusterSize: 1
 tests:
-  # datastax-ddac-existing-vpc:
-  #   parameters:
-  #     AvailabilityZones: $[taskcat_getaz_3]
-  #     DDACInstallType: Dev
-  #     EmailAddress: raks.krishna@datastax.com
-  #     KeyPairName: raks-aws
-  #     QSS3BucketName: $[taskcat_autobucket]
-  #     QSS3KeyPrefix: quickstart-datastax-ddac/
-  #     RemoteAccessCIDR: 0.0.0.0/0
-  #     CreateClusterWithPublicIP: "true"
-  #     VPCID: "vpc-029d783ceaeadc765"
-  #     PublicSubnet1ID: "subnet-00ce98dfa31f7754a"
-  #     PublicSubnet2ID: "subnet-0559e23084761f2d6"
-  #     PublicSubnet3ID: "subnet-0ba670afbcc2dddbf"
-  #     PrivateSubnet1ID: "subnet-0fa5cb58014342bb8"
-  #     PrivateSubnet2ID: "subnet-055e606fa49f4cbbd"
-  #     PrivateSubnet3ID: "subnet-05697c5984fe76116"
-  #   regions:
-  #   - us-east-1
-  #   s3_bucket: ''
-  #   template: templates/datastax-ddac-master-existing-vpc.template.yaml
-  datastax-ddac-new-vpc:
+  quickstart-datastax-oss-existing-vpc:
     parameters:
-      AvailabilityZones: $[taskcat_getaz_3]
-      DDACInstallType: Standard
-      EmailAddress: raks.krishna@datastax.com
-      KeyPairName: raks-aws
-      QSS3BucketName: $[taskcat_autobucket]
-      QSS3KeyPrefix: quickstart-datastax-ddac/
+      VPCID: "vpc-029d783ceaeadc765"
+      PublicSubnet1ID: "subnet-00ce98dfa31f7754a"
+      PublicSubnet2ID: "subnet-0559e23084761f2d6"
+      PublicSubnet3ID: "subnet-0ba670afbcc2dddbf"
+      PrivateSubnet1ID: "subnet-0fa5cb58014342bb8"
+      PrivateSubnet2ID: "subnet-055e606fa49f4cbbd"
+      PrivateSubnet3ID: "subnet-05697c5984fe76116"
+    regions:
+    - us-east-1
+    template: templates/datastax-oss-existing-vpc.template.yaml
+  quickstart-datastax-oss-new-vpc:
+    parameters:
       RemoteAccessCIDR: 0.0.0.0/0
     regions:
     - us-east-2
     - us-west-2
-    s3_bucket: ''
-    template: templates/datastax-ddac-master-new-vpc.template.yaml
+    template: templates/datastax-oss-master-new-vpc.template.yaml
