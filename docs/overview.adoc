@@ -1,4 +1,4 @@
-This Quick Start reference deployment guide provides step-by-step instructions for deploying Apache Cassandra 4.0 on the Amazon Web Services (AWS) Cloud.
+This Quick Start reference deployment guide provides step-by-step instructions for deploying **Apache Cassandra(TM) 4.0-alpha4** on the Amazon Web Services (AWS) Cloud.
 
 As Apache Cassandra™ adoption grows within your organization, so could the challenges involved with using, maintaining, and supporting the technology. This can add considerable cost, complexity, and administrative burden. Apache Cassandra addresses these challenges by streamlining operations and controlling costs for all your Cassandra workloads.
 

@@ -7,7 +7,7 @@ where you want to deploy the Quick Start on AWS.
 
 image:choosing-region.png[]
 
-Figure 2: Choosing an AWS Region
+*Choosing an AWS Region*
 
 [TIP]
 Consider choosing a region closest to your data center or
@@ -26,7 +26,7 @@ name, and then choose *Create*.
 
 image:create-key-pair.png[]
 
-Figure 3: Creating a key pair
+*Creating a key pair*
 
 Amazon EC2 uses public-key cryptography to encrypt and decrypt login
 information. To be able to log in to your instances, you must create a

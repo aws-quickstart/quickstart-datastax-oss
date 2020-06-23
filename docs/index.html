@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.10">
-<title>Apache CassandraTM 4.0 on AWS</title>
+<title>Apache Cassandra&#8482; 4.0 on AWS</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /* Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
@@ -439,7 +439,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </head>
 <body class="article toc2 toc-left">
 <div id="header">
-<h1>Apache Cassandra<sup>TM</sup> 4.0 on AWS</h1>
+<h1>Apache Cassandra&#8482; 4.0 on AWS</h1>
 <div id="toc" class="toc2">
 <div id="toctitle">Quick Start Reference Deployment</div>
 <ul class="sectlevel1">
@@ -488,7 +488,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <h2 id="_overview">Overview</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>This Quick Start reference deployment guide provides step-by-step instructions for deploying Apache Cassandra 4.0 on the Amazon Web Services (AWS) Cloud.</p>
+<p>This Quick Start reference deployment guide provides step-by-step instructions for deploying <strong>Apache Cassandra&#8482; 4.0-alpha4</strong> on the Amazon Web Services (AWS) Cloud.</p>
 </div>
 <div class="paragraph">
 <p>As Apache Cassandra™ adoption grows within your organization, so could the challenges involved with using, maintaining, and supporting the technology. This can add considerable cost, complexity, and administrative burden. Apache Cassandra addresses these challenges by streamlining operations and controlling costs for all your Cassandra workloads.</p>
@@ -527,7 +527,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <img src="images/arch.png" alt="Figure 1">
 </div>
 </div>
-<div class="paragraph">
+<div class="paragraph text-center">
 <p><strong>Figure 1: Quick Start architecture for Apache Cassandra on AWS</strong></p>
 </div>
 <div class="paragraph">
@@ -647,7 +647,7 @@ where you want to deploy the Quick Start on AWS.</p>
 <p><span class="image"><img src="images/choosing-region.png" alt="choosing region"></span></p>
 </div>
 <div class="paragraph">
-<p>Figure 2: Choosing an AWS Region</p>
+<p><strong>Choosing an AWS Region</strong></p>
 </div>
 <div class="admonitionblock tip">
 <table>
@@ -679,7 +679,7 @@ name, and then choose <strong>Create</strong>.</p>
 <p><span class="image"><img src="images/create-key-pair.png" alt="create key pair"></span></p>
 </div>
 <div class="paragraph">
-<p>Figure 3: Creating a key pair</p>
+<p><strong>Creating a key pair</strong></p>
 </div>
 <div class="paragraph">
 <p>Amazon EC2 uses public-key cryptography to encrypt and decrypt login
@@ -1202,6 +1202,9 @@ If you&#39;re deploying Apache Cassandra into an existing VPC, make sure that yo
 <img src="images/oss-stack-output-dev.png" alt="stack-output">
 </div>
 </div>
+<div class="paragraph text-center">
+<p><strong>Stack Output</strong></p>
+</div>
 <div class="listingblock">
 <div class="content">
 <pre class="highlight"><code class="language-shell" data-lang="shell">ssh -i $KEY_FILE ubuntu@$DevIpAddress</code></pre>
@@ -1214,6 +1217,9 @@ If you&#39;re deploying Apache Cassandra into an existing VPC, make sure that yo
 <div class="content">
 <img src="images/oss-stack-output-seed1.png" alt="seed1-private-ip">
 </div>
+</div>
+<div class="paragraph text-center">
+<p><strong>Seed1 IP</strong></p>
 </div>
 <div class="paragraph">
 <p>Once logged into the DevOps instance, run</p>
@@ -1238,6 +1244,9 @@ If you&#39;re deploying Apache Cassandra into an existing VPC, make sure that yo
 <div class="content">
 <img src="images/nodetool_status.png" alt="nodetool-status">
 </div>
+</div>
+<div class="paragraph text-center">
+<p><strong>NodeTool Status</strong></p>
 </div>
 <div class="paragraph">
 <p>The Developer resource web site is accessible at DevUrl shown in the outputs.</p>
@@ -1379,8 +1388,11 @@ See releases in git TIP: See releases in git <a href="https://github.com/aws-qui
 <div class="paragraph">
 <p><br>
 <br>
-<br>
-© 2020, Amazon Web Services, Inc. or its affiliates, and DataStax, Inc. All rights reserved.</p>
+<br></p>
+</div>
+<hr>
+<div class="paragraph">
+<p>© 2020, Amazon Web Services, Inc. or its affiliates, and DataStax, Inc. All rights reserved.</p>
 </div>
 <div class="paragraph">
 <p><strong class="underline">Notices</strong></p>
@@ -1397,7 +1409,7 @@ See releases in git TIP: See releases in git <a href="https://github.com/aws-qui
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2020-06-23 13:00:00 -0500
+Last updated 2020-06-23 17:25:49 -0500
 </div>
 </div>
 </body>
