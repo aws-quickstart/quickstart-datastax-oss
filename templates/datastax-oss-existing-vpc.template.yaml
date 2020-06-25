@@ -1,5 +1,7 @@
 AWSTemplateFormatVersion: 2010-09-09
 Metadata:
+  QuickStartDocumentation:
+    EntrypointName: "Launch into an existing VPC"
   AWS::CloudFormation::Interface:
     ParameterGroups:
       - Label:
