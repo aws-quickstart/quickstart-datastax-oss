@@ -1,0 +1,5 @@
+[cols=",,",options="header",]
+|===
+| Date | Change | In sections
+| Jun 2020 | Initial publication | — |
+|===

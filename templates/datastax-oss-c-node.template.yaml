@@ -84,40 +84,50 @@ Conditions:
   Seed2: !Equals [!Ref NodeNumber, 2]
 Mappings:
   AWSAMIRegionMapNode:
-    AMI:
-      US1604HVM: ubuntu/images/hvm-ssd/ubuntu-xenial-16.04-amd64-server-*
-    eu-north-1:
-      US1604HVM: ami-004baf4bebfc60e00
-    ap-south-1:
-      US1604HVM: ami-050d142d4db023b60
-    eu-west-3:
-      US1604HVM: ami-05dbde73d870dde1d
-    eu-west-2:
-      US1604HVM: ami-0a614b729ef585e96
-    eu-west-1:
-      US1604HVM: ami-04533969992547875
-    ap-northeast-2:
-      US1604HVM: ami-0761dd1f89936259e
     ap-northeast-1:
-      US1604HVM: ami-058c6e5b73b074cd2
-    sa-east-1:
-      US1604HVM: ami-0b105ed6ad5255125
-    ca-central-1:
-      US1604HVM: ami-09a79257f435d556a
+      US1804HVM: ami-0278fe6949f6b1a06
+    ap-northeast-2:
+      US1804HVM: ami-00edfb46b107f643c
+    ap-south-1:
+      US1804HVM: ami-0b44050b2d893d5f7
     ap-southeast-1:
-      US1604HVM: ami-0bd999ddca2c8ba67
+      US1804HVM: ami-0f7719e8b7ba25c61
     ap-southeast-2:
-      US1604HVM: ami-0a81041a48bbbbd69
+      US1804HVM: ami-04fcc97b5f6edcd89
+    ca-central-1:
+      US1804HVM: ami-0edd51cc29813e254
     eu-central-1:
-      US1604HVM: ami-074a2642e2a3737d2
+      US1804HVM: ami-0e342d72b12109f91
+    me-south-1:
+      US1804HVM: ami-051274f257aba97f9
+    ap-east-1:
+      US1804HVM: ami-c790d6b6
+    eu-north-1:
+      US1804HVM: ami-050981837962d44ac
+    eu-west-1:
+      US1804HVM: ami-0701e7be9b2a77600
+    eu-west-2:
+      US1804HVM: ami-0eb89db7593b5d434
+    eu-west-3:
+      US1804HVM: ami-08c757228751c5335
+    sa-east-1:
+      US1804HVM: ami-077d5d3682940b34a
     us-east-1:
-      US1604HVM: ami-0edfed9d6e9a4031b
+      US1804HVM: ami-085925f297f89fce1
+    us-gov-west-1:
+      US1804HVM: ami-adecdbcc
+    us-gov-east-1:
+      US1804HVM: ami-c29975b3
     us-east-2:
-      US1604HVM: ami-0735e22e032b35e38
+      US1804HVM: ami-07c1207a9d40bc3bd
     us-west-1:
-      US1604HVM: ami-0b91a410940e82c54
+      US1804HVM: ami-0f56279347d2fa43e
     us-west-2:
-      US1604HVM: ami-00a0cf500e59c9f7c
+      US1804HVM: ami-003634241a8fcdec0
+    cn-north-1:
+      US1804HVM: ami-0071f6f4df15863cc
+    cn-northwest-1:
+      US1804HVM: ami-0a22b8776bb32836b
 Resources:
   CassandraNode:
     Type: 'AWS::EC2::Instance'
@@ -258,7 +268,7 @@ Resources:
       ImageId: !FindInMap
         - AWSAMIRegionMapNode
         - !Ref 'AWS::Region'
-        - US1604HVM
+        - US1804HVM
       BlockDeviceMappings:
         - DeviceName: /dev/xvdf
           Ebs:
@@ -272,28 +282,34 @@ Resources:
       UserData:
         Fn::Base64:
           !Sub |
-            #!/bin/bash -xe
+            #!/bin/bash
             #CFN Signaling fuctions (begin)
+            yum install git -y || apt-get install -y git || zypper -n install git
+
             function cfn_fail
             {
               cfn-signal -e 1 --stack ${AWS::StackName} --region ${AWS::Region} --resource CassandraNode
               exit 1
             }
+
             function cfn_success
             {
               cfn-signal -e 0 --stack ${AWS::StackName} --region ${AWS::Region} --resource CassandraNode
               exit 0
             }
+
             #Load Linux utils
             until git clone https://github.com/aws-quickstart/quickstart-linux-utilities.git ; do echo "Retrying"; done
-            cd /quickstart-linux-utilities && source quickstart-cfn-tools.source
+            cd /quickstart-linux-utilities;
+            source quickstart-cfn-tools.source;
             # Constants
             # Prep operating systems
-            qs_update-os || qs_err
-            qs_bootstrap_pip || qs_err
-            qs_aws-cfn-bootstrap || qs_err
+            qs_update-os || qs_err;
+            #qs_bootstrap_pip || qs_err " pip bootstrap failed ";
+            qs_aws-cfn-bootstrap || qs_err " cfn bootstrap failed ";
+
             #Run cfn-init configsets
-            cfn-init -v --stack ${AWS::StackName} --resource CassandraNode --configsets cs_install --region ${AWS::Region} || qs_err
+            cfn-init -v --stack '${AWS::StackName}' --resource CassandraNode --configsets cs_install --region ${AWS::Region} || cfn_fail
             # Signal cfn-init (final check)
             [ $(qs_status) == 0 ] && cfn_success || cfn_fail
 Outputs:
