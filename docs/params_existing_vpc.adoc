@@ -2,7 +2,7 @@
 
 https://fwd.aws/Dz54E[_View template_]
 
-_**VPC Network Configuration:**_
+_**VPC Network Configuration**_
 
 [cols=",,",options="header",]
 |===
@@ -17,12 +17,12 @@ _**VPC Network Configuration:**_
 | Public Subnet 3 ID (`PublicSubnet3CIDR`) | _Requires input_ | Subnet ID for the public (DMZ) subnet 3 located in Availability Zone 3.
 |===
 
-_**Apache Cassandra Cluster/Nodes Configuration:**_
+_**Apache Cassandra Cluster/Nodes Configuration**_
 
 [cols=",,",options="header",]
 |===
 | Parameter label (`name`) | Default | Description
-| Apache Cassandra Version (`OSSVersion`) | 4.0 | Apache Cassandra version to install .
+| Apache Cassandra Version (`OSSVersion`) | 4.0 | Apache Cassandra version to install.
 | Number of nodes to install (`ClusterSize`) | 3 | Choose from "1 - 32" for number of cassandra nodes to install.
 | Cluster Name (`ClusterName`) | Cassandra-Cluster | The name of the Apache Cassandra cluster.
 | Data Center Name (`DatacenterName`) | OSS-dc0 | Name of the Apache Cassandra data center.
@@ -40,16 +40,17 @@ _**Cassandra Cluster Access:**_
 | Key Name (`KeyPairName`) | _Requires input_ | Public/private key pair, which allows you to connect securely to your instance after it launches. When you created an AWS account, this is the key pair you created in your preferred region.
 |===
 
-_**DevOps Configuration:**_
+_**DevOps/Bastion Configuration**_
 
 [cols=",,",options="header",]
 |===
 | Parameter label (`name`) | Default | Description
+| Create Dev/Bastion Instance (`CreateDevInstance`) | true | Whether to create the jumpbox.
 | Instance Type (`DevInstanceType`) | t3.medium | EC2 instance type for the DevOps Host.
 | Volume Sizes (`DevVolumeSize`) | 16 | The EBS volume size, in GiB, for the DevOps Host.
 |===
 
-_**AWS Quick Start Configuration:**_
+_**AWS Quick Start Configuration**_
 
 [cols=",,",options="header",]
 |===
