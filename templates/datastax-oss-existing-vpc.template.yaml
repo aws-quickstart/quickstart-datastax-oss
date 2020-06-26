@@ -36,6 +36,56 @@ Metadata:
           - CreateDevInstance
           - DevInstanceType
           - DevVolumeSize
+      - Label:
+          default: 'AWS Quick Start Configuration'
+        Parameters:
+          - S3BucketName
+          - S3KeyPrefix
+    ParameterLabels:
+      VPCID:
+        default: Existing ID of the VPC
+      VPCCIDR:
+        default: VPC CIDR
+      PrivateSubnet1CIDR:
+        default: Private subnet 1 CIDR
+      PrivateSubnet2CIDR:
+        default: Private subnet 2 CIDR
+      PrivateSubnet3CIDR:
+        default: Private subnet 3 CIDR
+      PublicSubnet1CIDR:
+        default: Public subnet 1 CIDR
+      PublicSubnet2CIDR:
+        default: Public subnet 2 CIDR
+      PublicSubnet3CIDR:
+        default: Public subnet 3 CIDR
+      OSSVersion:
+        default: Apache Cassandra version to install.
+      ClusterSize:
+        default: Choose from "1 - 32" for number of cassandra nodes to install.
+      ClusterName:
+        default: The name of the Apache Cassandra cluster.
+      DatacenterName:
+        default: Name of the Apache Cassandra data center.
+      NodeInstanceType:
+        default: EC2 instance type for Apache Cassandra nodes.
+      NodeVolumeSize:
+        default: EBS volume size of the Apache Cassandra Cluster Nodes in GB.
+      CreateClusterWithPublicIP:
+        default: Create the Apache Cassandra Cluster nodes in public subnet.
+      RemoteAccessCIDR:
+        default: Permitted CIDR block for remote access.
+      KeyPairName:
+        default: AWS Key Pair
+      CreateDevInstance:
+        default: Whether to create the jumpbox.
+      DevInstanceType:
+        default: EC2 instance type for the DevOps/Bastion Host.
+      DevVolumeSize:
+        default: The EBS volume size, in GiB, for the DevOps Host.
+      S3BucketName:
+        default: S3 bucket where the templates are stored.
+      S3KeyPrefix:
+        default: S3 Key Prefix
 Parameters:
   S3BucketName:
     AllowedPattern: '^[0-9a-zA-Z]+([0-9a-zA-Z-]*[0-9a-zA-Z])*$'
