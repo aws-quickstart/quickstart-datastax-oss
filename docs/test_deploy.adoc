@@ -24,6 +24,8 @@ Once logged into the DevOps instance, run
 ssh -i $KEY_FILE ubuntu@$Seed1PrivateIpAddress
 ----
 
+If you chose to create the cluster in the public subnet, you can skip the above steps and ssh into one of the nodes with the public ip in the output tab.
+
 You can then view the status of the Apache Cassandra Cluster:
 [source,shell]
 ----
