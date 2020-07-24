@@ -488,7 +488,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <h2 id="_overview">Overview</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>This Quick Start reference deployment guide provides step-by-step instructions for deploying <strong>Apache Cassandra&#8482; 4.0-alpha4</strong> on the Amazon Web Services (AWS) Cloud.</p>
+<p>This Quick Start reference deployment guide provides step-by-step instructions for deploying <strong>Apache Cassandra&#8482; 4.0-beta1</strong> on the Amazon Web Services (AWS) Cloud.</p>
 </div>
 <div class="paragraph">
 <p>As Apache Cassandra™ adoption grows within your organization, so could the challenges involved with using, maintaining, and supporting the technology. This can add considerable cost, complexity, and administrative burden. Apache Cassandra addresses these challenges by streamlining operations and controlling costs for all your Cassandra workloads.</p>
@@ -834,7 +834,7 @@ If you&#39;re deploying Apache Cassandra into an existing VPC, make sure that yo
 </tbody>
 </table>
 <div class="paragraph">
-<p><em><strong>Apache Cassandra Cluster/Nodes Configuration:</strong></em></p>
+<p><em><strong>Apache Cassandra Cluster/Nodes Configuration</strong></em></p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
@@ -993,7 +993,7 @@ If you&#39;re deploying Apache Cassandra into an existing VPC, make sure that yo
 <p><a href="https://fwd.aws/Dz54E"><em>View template</em></a></p>
 </div>
 <div class="paragraph">
-<p><em><strong>VPC Network Configuration:</strong></em></p>
+<p><em><strong>VPC Network Configuration</strong></em></p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
@@ -1052,7 +1052,7 @@ If you&#39;re deploying Apache Cassandra into an existing VPC, make sure that yo
 </tbody>
 </table>
 <div class="paragraph">
-<p><em><strong>Apache Cassandra Cluster/Nodes Configuration:</strong></em></p>
+<p><em><strong>Apache Cassandra Cluster/Nodes Configuration</strong></em></p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
@@ -1238,6 +1238,9 @@ If you&#39;re deploying Apache Cassandra into an existing VPC, make sure that yo
 <div class="content">
 <pre class="highlight"><code class="language-shell" data-lang="shell">ssh -i $KEY_FILE ubuntu@$Seed1PrivateIpAddress</code></pre>
 </div>
+</div>
+<div class="paragraph">
+<p>If you chose to create the cluster in the public subnet, you can skip the above steps and ssh into one of the nodes with the public ip in the output tab.</p>
 </div>
 <div class="paragraph">
 <p>You can then view the status of the Apache Cassandra Cluster:</p>
