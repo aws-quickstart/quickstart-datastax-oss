@@ -1,12 +1,20 @@
-=== Prerequisites
-_Prerequisites, such as Marketplace AMI subscription go here_
+// === Prerequisites
+// _Prerequisites, such as Marketplace AMI subscription go here_
 
-=== Specialized Knowledge
-WARNING: This Quick Start assumes familiarity with <knowledge expectations>.
-This deployment guide also requires a moderate level of familiarity with
-AWS services. If you’re new to AWS, visit the
-https://aws.amazon.com/getting-started/[Getting Started Resource Center]
-and the https://aws.amazon.com/training/[AWS Training and Certification
-website]. These sites provide materials for learning how to design,
-deploy, and operate your infrastructure and applications on the AWS
-Cloud.
+// === Specialized Knowledge
+// WARNING: This Quick Start assumes familiarity with <knowledge expectations>.
+// This deployment guide also requires a moderate level of familiarity with
+// AWS services. If you’re new to AWS, visit the
+// https://aws.amazon.com/getting-started/[Getting Started Resource Center]
+// and the https://aws.amazon.com/training/[AWS Training and Certification
+// website]. These sites provide materials for learning how to design,
+// deploy, and operate your infrastructure and applications on the AWS
+// Cloud.
+
+// - https://aws.amazon.com/documentation/vpc/[_Amazon VPC_]
+// - https://aws.amazon.com/documentation/ec2/[_Amazon EC2_]
+// - https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AmazonEBS.html[_Amazon EBS_]
+
+// We also recommend that you become familiar with the features and configuration of Apache Cassandra.
+
+// - https://cassandra.apache.org/doc/latest/new/index.html[_Apache Cassandra documentation_]

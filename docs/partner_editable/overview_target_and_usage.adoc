@@ -2,4 +2,12 @@
 // Identify your target audience and explain how/why they would use this Quick Start.
 //Avoid borrowing text from third-party websites (copying text from AWS service documentation is fine). Also, avoid marketing-speak, focusing instead on the technical aspect.
 
-This Quick Start is for users who <target audience and usage scenario>
+This Quick Start is for users who need an easily deployed Apache Cassandra cluster for development and or testing purposes
+
+This Quick Start reference deployment guide provides step-by-step instructions for deploying **Apache Cassandra(TM) 4.0-beta1** on the Amazon Web Services (AWS) Cloud.
+
+As Apache Cassandra™ adoption grows within your organization, so could the challenges involved with using, maintaining, and supporting the technology. This can add considerable cost, complexity, and administrative burden. Apache Cassandra addresses these challenges by streamlining operations and controlling costs for all your Cassandra workloads.
+
+You’ll have access to best-in-class, 100% open source Apache Cassandra software, as well as optional support and services from the experts that authored the majority of the Cassandra code.
+
+https://aws.amazon.com/quickstart/?quickstart-all.q=datastax[_Quick Starts_] are automated reference deployments that use AWS CloudFormation templates to launch, configure, and run the AWS compute, network, storage, and other services required to deploy a specific workload on AWS.
