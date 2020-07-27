@@ -1,23 +1,46 @@
 // Add steps as necessary for accessing the software, post-configuration, and testing. Don’t include full usage instructions for your software, but add links to your product documentation for that information.
 //Should any sections not be applicable, remove them
 
-== Test the deployment
+// == Test the deployment
 // If steps are required to test the deployment, add them here. If not, remove the heading
 
 == Post deployment steps
 // If Post-deployment steps are required, add them here. If not, remove the heading
+Apache Cassandra backs up data by taking a snapshot of all on-disk data files (SSTable files) stored in the data directory. You can take a snapshot of all keyspaces, a single keyspace, or a single table while the system is online. See https://cassandra.apache.org/doc/latest/operating/backups.html[_Backing up and Restoring data_].
+For storing the backups in AWS S3, see https://aws.amazon.com/getting-started/tutorials/backup-to-s3-cli/[_Backup to S3_]
 
 == Best practices for using {partner-product-name} on AWS
 // Provide post-deployment best practices for using the technology on AWS, including considerations such as migrating data, backups, ensuring high performance, high availability, etc. Link to software documentation for detailed information.
 
-_Add any best practices for using the software._
+Data Modelling in Apache Cassandra, see https://www.datastax.com/resources/whitepaper/data-modeling-apache-cassandra[Data Modeling - Apache Cassandra]
 
-== Security
+Developing applications with DataStax drivers, see https://docs.datastax.com/en/devapp/doc/devapp/driversBestPractices.html[Best practices for DataStax drivers]
+
+// == Security
 // Provide post-deployment best practices for using the technology on AWS, including considerations such as migrating data, backups, ensuring high performance, high availability, etc. Link to software documentation for detailed information.
 
-_Add any security-related information._
+// _Add any security-related information._
 
 == Other useful information
 //Provide any other information of interest to users, especially focusing on areas where AWS or cloud usage differs from on-premises usage.
 
-_Add any other details that will help the customer use the software on AWS._
+**AWS services**
+
+- AWS CloudFormation
+https://aws.amazon.com/documentation/cloudformation/[_https://aws.amazon.com/documentation/cloudformation/_]
+- Amazon EC2
+https://docs.aws.amazon.com/AWSEC2/latest/WindowsGuide/[_https://docs.aws.amazon.com/AWSEC2/latest/WindowsGuide/_]
+- Amazon VPC
+https://aws.amazon.com/documentation/vpc/[_https://aws.amazon.com/documentation/vpc/_]
+
+**Apache Cassandra**
+
+- Apache Cassandra documentation
+https://cassandra.apache.org/doc/latest/new/index.html[_https://cassandra.apache.org/doc/latest/new/index.html_]
+- DataStax Academy online courses and tutorials
+https://academy.datastax.com/[_https://academy.datastax.com/_]
+
+**Quick Start reference deployments**
+
+- AWS Quick Start home page
+https://aws.amazon.com/quickstart/[_https://aws.amazon.com/quickstart/_]

@@ -1,2 +1,44 @@
 // Add steps as necessary for accessing the software, post-configuration, and testing. Don’t include full usage instructions for your software, but add links to your product documentation for that information.
-<Add instructions for testing the deployment.>
+After you deploy the Apache Cassandra cluster, the quickest way to begin using the cluster is to use SSH to connect to the DevOps instance and then to one of the node instances. You can use https://aws.amazon.com/blogs/security/securely-connect-to-linux-instances-running-in-a-private-amazon-vpc/[_SSH agent forwarding_] using the key pair (replacing the KEY_FILE and DevIpAddress values for those of your cluster):
+
+You can get the ip addresses of the nodes from the output tab of the stack.
+
+image::../images/oss-stack-output-dev.png[stack-output]
+
+[.text-center]
+*Stack Output*
+
+[source,shell]
+----
+ssh -i $KEY_FILE ubuntu@$DevIpAddress
+----
+
+You can get the Seed1PrivateIpAddress from the output tab of the stack.
+
+image::../images/oss-stack-output-seed1.png[seed1-private-ip]
+[.text-center]
+*Seed1 IP*
+
+Once logged into the DevOps instance, run
+
+[source,shell]
+----
+ssh -i $KEY_FILE ubuntu@$Seed1PrivateIpAddress
+----
+
+If you chose to create the cluster in the public subnet, you can skip the above steps and ssh into one of the nodes with the public ip in the output tab.
+
+You can then view the status of the Apache Cassandra Cluster:
+[source,shell]
+----
+~$ nodetool status
+----
+
+For a 6 node cluster, the nodetool status should be like
+
+image::../images/nodetool_status.png[nodetool-status]
+[.text-center]
+*NodeTool Status*
+
+
+The Developer resource web site is accessible at DevUrl shown in the outputs.
