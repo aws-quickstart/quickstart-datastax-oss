@@ -1,4 +1,5 @@
 AWSTemplateFormatVersion: 2010-09-09
+Description: (qs-1r0baum31) DataStax OSS in vpc 
 Metadata:
   QuickStartDocumentation:
     EntrypointName: "Launch into an existing VPC"

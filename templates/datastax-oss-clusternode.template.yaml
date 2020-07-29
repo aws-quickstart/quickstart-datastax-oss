@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: 2010-09-09
-Description: Creates Cassandra clusternode(s) in ASG
+Description: Creates Cassandra clusternode(s) in ASG (qs-1r0baum2g)
 Parameters:
   OSSVersion:
     AllowedValues:
