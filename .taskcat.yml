@@ -16,22 +16,11 @@ project:
     CreateClusterWithPublicIP: "true"
     ClusterSize: 1
 tests:
-  quickstart-datastax-oss-existing-vpc:
-    parameters:
-      VPCID: "vpc-029d783ceaeadc765"
-      PublicSubnet1ID: "subnet-00ce98dfa31f7754a"
-      PublicSubnet2ID: "subnet-0559e23084761f2d6"
-      PublicSubnet3ID: "subnet-0ba670afbcc2dddbf"
-      PrivateSubnet1ID: "subnet-0fa5cb58014342bb8"
-      PrivateSubnet2ID: "subnet-055e606fa49f4cbbd"
-      PrivateSubnet3ID: "subnet-05697c5984fe76116"
-    regions:
-    - us-east-1
-    template: templates/datastax-oss-existing-vpc.template.yaml
   quickstart-datastax-oss-new-vpc:
     parameters:
       RemoteAccessCIDR: 0.0.0.0/0
     regions:
+    - us-east-1
     - us-east-2
     - us-west-2
     template: templates/datastax-oss-master-new-vpc.template.yaml
