@@ -1,3 +1,4 @@
 /taskcat_outputs/
 /.taskcat/
 /.vscode/
+.taskcat_raks.yml
