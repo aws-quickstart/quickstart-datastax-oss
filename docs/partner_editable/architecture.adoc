@@ -10,26 +10,21 @@ image::../images/architecture_diagram.png[Architecture]
 
 As shown in Figure 1, the Quick Start sets up the following:
 
+## In the public subnets:
+
 * A highly available architecture that spans three Availability Zones.*
-* A VPC configured with public and private subnets, according to AWS
-best practices, to provide you with your own virtual network on AWS.*
 
-In the public subnets:
-- 10.0.128.0/19
-- 10.0.144.0/19
-- 10.0.160.0/19
+* A VPC configured with public and private subnets, according to AWS best practices, to provide you with your own virtual network on AWS.*
 
-In the private subnets:
-- 10.0.0.0/19
-- 10.0.32.0/19
-- 10.0.64.0/19
+## In the private subnets:
 
+* Amazon Elastic Compute Cloud (Amazon EC2)  
+ - Seed Nodes (The inital E22 instances that out side of the ASG that assit in bootstraping the cluster)
+ - C*Nodes ("c" refer to Cassandra Nodes that are part of the Auto Scaling group)
 
-* Amazon Elastic Compute Cloud (Amazon EC2) Auto Scaling groups for scaling {partner-product-name-short} nodes in the private subnets.
+* Auto Scaling groups used for scaling {partner-product-name-short} nodes in the private subnets based on workload demand.
 
-
-* Managed network address translation (NAT) gateways to allow outbound
-internet access for resources in the private subnets.*
+* Managed network address translation (NAT) gateways to allow outbound internet access for resources in the private subnets.*
 
 *The template that deploys the Quick Start into an existing VPC skips
 the components marked by asterisks and prompts you for your existing VPC
