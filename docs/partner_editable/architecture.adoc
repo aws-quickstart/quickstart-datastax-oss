@@ -18,9 +18,9 @@ As shown in Figure 1, the Quick Start sets up the following:
 
 ## In the private subnets:
 
-* Amazon Elastic Compute Cloud (Amazon EC2)  
- - Seed Nodes (The inital E22 instances that out side of the ASG that assit in bootstraping the cluster)
- - C*Nodes ("c" refer to Cassandra Nodes that are part of the Auto Scaling group)
+* Amazon Elastic Compute Cloud (Amazon EC2)
+ - Seed Nodes - Seed nodes are used to bootstrap the gossip process for new nodes joining a cluster (The inital E22 instances that are out side of the ASG that assist in bootstraping the cluster).
+ - C* Nodes - "c" refers to Cassandra Nodes that are not seed nodes and the 4th node onwards are part of the Auto Scaling group. Making every node a seed node is not recommended because of increased maintenance and reduced gossip performance. Gossip optimization is not critical, but it is recommended to use a small seed list.
 
 * Auto Scaling groups used for scaling {partner-product-name-short} nodes in the private subnets based on workload demand.
 
