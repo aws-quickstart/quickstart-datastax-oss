@@ -43,4 +43,4 @@ https://academy.datastax.com/[_https://academy.datastax.com/_]
 **Quick Start reference deployments**
 
 - AWS Quick Start home page
-https://aws.amazon.com/quickstart/[_https://aws.amazon.com/quickstart/_]
+https://aws.amazon.com/quickstart/[https://aws.amazon.com/quickstart/]

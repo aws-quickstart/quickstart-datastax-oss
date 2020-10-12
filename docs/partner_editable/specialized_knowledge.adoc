@@ -11,11 +11,13 @@ website]. These sites provide materials for learning how to design,
 deploy, and operate your infrastructure and applications on the AWS
 Cloud.
 
-- https://aws.amazon.com/documentation/vpc/[_Amazon VPC_]
-- https://aws.amazon.com/documentation/ec2/[_Amazon EC2_]
-- https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AmazonEBS.html[_Amazon EBS_]
+Additional sites:
+
+- https://aws.amazon.com/documentation/vpc/[Amazon VPC]
+- https://aws.amazon.com/documentation/ec2/[Amazon EC2]
+- https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AmazonEBS.html[Amazon EBS]
 
 We also recommend that you become familiar with the features and configuration of Apache Cassandra.
 
-- https://cassandra.apache.org/doc/latest/new/index.html[_Apache Cassandra documentation_]
+- https://cassandra.apache.org/doc/latest/new/index.html[Apache Cassandra documentation]
 

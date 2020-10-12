@@ -2,12 +2,12 @@
 // Briefly describe the software. Use consistent and clear branding.
 // Include the benefits of using the software on AWS, and provide details on usage scenarios.
 
-Apache Cassandra™ is the open-source, massively scalable, active-everywhere NoSQL database used by the internet’s largest applications. Cassandra is the only NoSQL database with a masterless architecture enabling zero downtime, zero lock-in, and global scale for data sovereignty.
+Cassandra is an open-source, scalable, active-everywhere NoSQL database used by the internet’s largest applications. Cassandra is the only NoSQL database with a masterless architecture enabling zero downtime, zero lock-in, and global scale for data sovereignty.
 
-Apache Cassandra™ for AWS gives users and enterprises a simple deployment process based on cloud best practices to quickly install an Apache Cassandra cluster on AWS in a single region across multiple zones.
+Apache Cassandra for AWS gives users and enterprises a deployment process based on cloud best practices to quickly install an Cassandra cluster on AWS in a single Region across multiple zones.
 
-Each cluster also includes a VM that provides a complete set of development resources including code examples, docs, and data integration tools.
+Each cluster also includes a virtual machine (VM) that provides a complete set of development resources, including code examples, documentation, and data integration tools.
 
-Optionally, DataStax Luna provides subscription-based support for open source Apache Cassandra on AWS. DataStax Luna subscribers get the benefits of open source software, with peace of mind from direct access to the engineers who have authored a majority of Cassandra code and support some of the largest Cassandra deployments.
+Optionally, DataStax Luna provides subscription-based support for open-source Cassandra on AWS. DataStax Luna subscribers get the benefits of open-source software and direct access to the engineers who authored the majority of Cassandra code and provide support for some of the largest Cassandra deployments.
 
-For more on support, visit https://luna.datastax.com/[DataStax Luna] and follow us on @DataStax.
+For details about Cassandra support, see https://luna.datastax.com./[DataStax Luna].
