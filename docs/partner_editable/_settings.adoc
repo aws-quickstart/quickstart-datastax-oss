@@ -1,11 +1,11 @@
 :quickstart-project-name: quickstart-documentation-base
 :partner-product-name: Apache Cassandra
 :partner-company-name: DataStax
-:doc-month: Aug
+:doc-month: October
 :doc-year: 2020
-:partner-contributors: Raks K - {partner-company-name}
-:quickstart-contributors: Jim Smith - AWS Global Partner SA, AWS + Joe Jones - Technical Product Manager, AWS
-:deployment_time: 15 / 20 minutes
+:partner-contributors: Raks K, {partner-company-name}
+:quickstart-contributors: Jim Smith, AWS Global Partner Solutions Architect, and Joe Jones, Technical Product Manager, AWS
+:deployment_time: 15-20 minutes
 :default_deployment_region: us-east-1
 // Uncomment these two attributes if you are leveraging
 // - an AWS Marketplace listing.
