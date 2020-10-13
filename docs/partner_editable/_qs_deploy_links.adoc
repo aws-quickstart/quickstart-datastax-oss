@@ -1,5 +1,5 @@
 [cols=",]
 |===
-|http://qs_launch_link[Deploy {partner-product-name} into a new VPC on AWS^] 
-|http://qs_launch_link[Deploy {partner-product-name} into an existing VPC on AWS^]
+|https://fwd.aws/DWjgJ[Deploy {partner-product-name} into a new VPC on AWS^] 
+|https://fwd.aws/dNAeQ[Deploy {partner-product-name} into an existing VPC on AWS^]
 |===

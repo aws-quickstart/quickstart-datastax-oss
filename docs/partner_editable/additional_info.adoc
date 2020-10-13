@@ -6,15 +6,17 @@
 
 == Post deployment steps
 // If Post-deployment steps are required, add them here. If not, remove the heading
-Apache Cassandra backs up data by taking a snapshot of all on-disk data files (SSTable files) stored in the data directory. You can take a snapshot of all keyspaces, a single keyspace, or a single table while the system is online. See https://cassandra.apache.org/doc/latest/operating/backups.html[_Backing up and Restoring data_].
-For storing the backups in AWS S3, see https://aws.amazon.com/getting-started/tutorials/backup-to-s3-cli/[_Backup to S3_]
+Cassandra backs up data by taking a snapshot of all on-disk data files (SSTable files) stored in the data directory. You can take a snapshot of all keyspaces, a single keyspace, or a single table while the system is online. For more information about backing up and storing data, see https://cassandra.apache.org/doc/latest/operating/backups.html[Backups^] on the Cassandra documentation website.
+For information about storing backups in Amazon S3, see https://aws.amazon.com/getting-started/tutorials/backup-to-s3-cli/[Batch upload files to the cloud^].
 
 == Best practices for using {partner-product-name} on AWS
 // Provide post-deployment best practices for using the technology on AWS, including considerations such as migrating data, backups, ensuring high performance, high availability, etc. Link to software documentation for detailed information.
 
-Data Modelling in Apache Cassandra, see https://www.datastax.com/resources/whitepaper/data-modeling-apache-cassandra[Data Modeling - Apache Cassandra]
+See the following resources:
 
-Developing applications with DataStax drivers, see https://docs.datastax.com/en/devapp/doc/devapp/driversBestPractices.html[Best practices for DataStax drivers]
+* https://www.datastax.com/resources/whitepaper/data-modeling-apache-cassandra[Data Modeling in Apache Cassandra^]
+
+* https://docs.datastax.com/en/devapp/doc/devapp/driversBestPractices.html[Best practices for DataStax drivers^]
 
 // == Security
 // Provide post-deployment best practices for using the technology on AWS, including considerations such as migrating data, backups, ensuring high performance, high availability, etc. Link to software documentation for detailed information.
@@ -26,21 +28,18 @@ Developing applications with DataStax drivers, see https://docs.datastax.com/en/
 
 **AWS services**
 
-- AWS CloudFormation
-https://aws.amazon.com/documentation/cloudformation/[_https://aws.amazon.com/documentation/cloudformation/_]
-- Amazon EC2
-https://docs.aws.amazon.com/AWSEC2/latest/WindowsGuide/[_https://docs.aws.amazon.com/AWSEC2/latest/WindowsGuide/_]
-- Amazon VPC
-https://aws.amazon.com/documentation/vpc/[_https://aws.amazon.com/documentation/vpc/_]
+* AWS CloudFormation
+https://aws.amazon.com/documentation/cloudformation/[AWS CloudFormation Documentation^]
+* Amazon EC2
+https://docs.aws.amazon.com/AWSEC2/latest/WindowsGuide/[What is Amazon EC2?^]
+* Amazon VPC
+https://aws.amazon.com/documentation/vpc/[Amazon Virtual Private Cloud Documentation^]
 
 **Apache Cassandra**
 
-- Apache Cassandra documentation
-https://cassandra.apache.org/doc/latest/new/index.html[_https://cassandra.apache.org/doc/latest/new/index.html_]
-- DataStax Academy online courses and tutorials
-https://academy.datastax.com/[_https://academy.datastax.com/_]
+* https://cassandra.apache.org/doc/latest/new/index.html[Apache Cassandra documentation^]
+* https://academy.datastax.com/[DataStax Academy online courses and tutorials^]
 
 **Quick Start reference deployments**
 
-- AWS Quick Start home page
-https://aws.amazon.com/quickstart/[https://aws.amazon.com/quickstart/]
+https://aws.amazon.com/quickstart/[AWS Quick Start home page^]
