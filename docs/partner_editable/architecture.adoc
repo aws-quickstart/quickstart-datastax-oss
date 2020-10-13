@@ -15,7 +15,7 @@ As shown in Figure 1, the Quick Start sets up the following:
 
 * In the public subnets:
 ** Managed network address translation (NAT) gateways to allow outbound internet access for resources in the private subnets.*
-** A DevOps jump host node where you can use tools to help manage the cluster.
+** A DevOps instance where you can use tools to help manage the cluster.
 
 * In the private subnets:
 
@@ -25,6 +25,6 @@ As shown in Figure 1, the Quick Start sets up the following:
 
 ** Amazon EC2 Auto Scaling group used for scaling {partner-product-name-short} nodes in the private subnets based on workload demand.
 
-* An Amazon Simple Storage Service (Amazon S3) bucket for storing the CloudFormation templates and scripts. 
+* An Amazon Simple Storage Service (Amazon S3) bucket for storing the AWS CloudFormation templates and scripts. 
 
 *The template that deploys the Quick Start into an existing VPC skips the components marked by asterisks and prompts you for your existing VPC configuration.

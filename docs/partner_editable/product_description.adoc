@@ -4,10 +4,10 @@
 
 Cassandra is an open-source, scalable, active-everywhere NoSQL database used by the internet’s largest applications. Cassandra is the only NoSQL database with a masterless architecture enabling zero downtime, zero lock-in, and global scale for data sovereignty.
 
-Apache Cassandra for AWS gives users and enterprises a deployment process based on cloud best practices to quickly install an Cassandra cluster on AWS in a single Region across multiple zones.
+Cassandra for AWS gives users and enterprises a deployment process based on cloud best practices to quickly install an Cassandra cluster on AWS in a single Region across multiple zones.
 
 Each cluster also includes a virtual machine (VM) that provides a complete set of development resources, including code examples, documentation, and data integration tools.
 
-Optionally, DataStax Luna provides subscription-based support for open-source Cassandra on AWS. DataStax Luna subscribers get the benefits of open-source software and direct access to the engineers who authored the majority of Cassandra code and provide support for some of the largest Cassandra deployments.
+Optionally, DataStax Luna provides subscription-based support for open-source Cassandra on AWS. DataStax Luna subscribers get the benefits of open-source software and direct access to the engineers who authored most of Cassandra's code and provide support for some of the largest Cassandra deployments.
 
 For details about Cassandra support, see https://luna.datastax.com./[DataStax Luna].
