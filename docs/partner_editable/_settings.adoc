@@ -4,7 +4,7 @@
 :doc-month: October
 :doc-year: 2020
 :partner-contributors: Raks Krishna, {partner-company-name}
-:quickstart-contributors: Tony Vattathil, AWS Global Partner Solutions Architect, and Joe Jones, Technical Product Manager, AWS
+:quickstart-contributors: Tony Vattathil, AWS Global Partner Solutions Architect
 :deployment_time: 15-20 minutes
 :default_deployment_region: us-east-1
 // Uncomment these two attributes if you are leveraging
