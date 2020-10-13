@@ -1,4 +1,4 @@
-##Apache Cassandra on the AWS Cloud—Quick Start
+## Apache Cassandra on the AWS Cloud—Quick Start
 
 For architectural details, step-by-step instructions, and customization options, see the [deployment guide](https://aws-quickstart.github.io/quickstart-datastax-oss/).
 
