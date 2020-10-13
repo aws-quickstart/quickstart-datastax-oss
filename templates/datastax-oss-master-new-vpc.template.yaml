@@ -2,11 +2,11 @@ AWSTemplateFormatVersion: 2010-09-09
 Description: DataStax OSS in new VPC (qs-1r0baum3l)
 Metadata:
   QuickStartDocumentation:
-    EntrypointName: "Parameters for launching to a new VPC"
+    EntrypointName: "Parameters for launching into a new VPC"
   AWS::CloudFormation::Interface:
     ParameterGroups:
       - Label:
-          default: ' VPC Network Configuration'
+          default: ' VPC network configuration'
         Parameters:
           - AvailabilityZones
           - VPCCIDR
@@ -17,7 +17,7 @@ Metadata:
           - PublicSubnet2CIDR
           - PublicSubnet3CIDR
       - Label:
-          default: 'Cassandra Cluster/Nodes Configuration'
+          default: 'Cassandra cluster/nodes configuration'
         Parameters:
           - OSSVersion
           - ClusterSize
@@ -26,19 +26,19 @@ Metadata:
           - NodeInstanceType
           - NodeVolumeSize
       - Label:
-          default: 'Cassandra Cluster Access'
+          default: 'Cassandra cluster access'
         Parameters:
           - CreateClusterWithPublicIP
           - RemoteAccessCIDR
           - KeyPairName
       - Label:
-          default: 'DevOps/Bastion Configuration'
+          default: 'DevOps/bastion configuration'
         Parameters:
           - CreateDevInstance
           - DevInstanceType
           - DevVolumeSize
       - Label:
-          default: 'AWS Quick Start Configuration'
+          default: 'AWS Quick Start configuration'
         Parameters:
           - S3BucketName
           - S3KeyPrefix
@@ -60,33 +60,33 @@ Metadata:
       PublicSubnet3CIDR:
         default: Public subnet 3 CIDR
       OSSVersion:
-        default: Apache Cassandra version to install.
+        default: Apache Cassandra version to install
       ClusterSize:
-        default: Choose from "1 - 32" for number of cassandra nodes to install.
+        default: Choose from "1 - 32" for number of Cassandra nodes to install
       ClusterName:
-        default: The name of the Apache Cassandra cluster.
+        default: The name of the Cassandra cluster
       DatacenterName:
-        default: Name of the Apache Cassandra data center.
+        default: Name of the Cassandra data center
       NodeInstanceType:
-        default: EC2 instance type for Apache Cassandra nodes.
+        default: Amazon EC2 instance type for Cassandra nodes
       NodeVolumeSize:
-        default: EBS volume size of the Apache Cassandra Cluster Nodes in GB.
+        default: Amazon EBS volume size of the Cassandra cluster nodes in GB
       CreateClusterWithPublicIP:
-        default: Create the Apache Cassandra Cluster nodes in public subnet.
+        default: Create the Cassandra cluster nodes in public subnet
       RemoteAccessCIDR:
-        default: Permitted CIDR block for remote access.
+        default: Permitted CIDR block for remote access
       KeyPairName:
-        default: AWS Key Pair
+        default: AWS key pair
       CreateDevInstance:
-        default: Whether to create the jumpbox.
+        default: Whether to create the jump box
       DevInstanceType:
-        default: EC2 instance type for the DevOps/Bastion Host.
+        default: Amazon EC2 instance type for the DevOps/bastion host
       DevVolumeSize:
-        default: The EBS volume size, in GiB, for the DevOps Host.
+        default: The Amazon EBS volume size in GB for the DevOps host
       S3BucketName:
-        default: S3 bucket where the templates are stored.
+        default: S3 bucket where the templates are stored
       S3KeyPrefix:
-        default: S3 Key Prefix
+        default: S3 key prefix
 Parameters:
   S3BucketName:
     AllowedPattern: '^[0-9a-zA-Z]+([0-9a-zA-Z-]*[0-9a-zA-Z])*$'
@@ -155,14 +155,14 @@ Parameters:
       - 31
       - 32
   AvailabilityZones:
-    Description: Select 3 AZs from this List of Availability Zones to use for the subnets in the VPC. The logical order of your selections is preserved.
+    Description: Select 3 Availability Zones from this list to use for the subnets in the VPC. The logical order of your selections is preserved.
     Type: List<AWS::EC2::AvailabilityZone::Name>
   ClusterName:
-    Description: The name of the Cassandra Cluster.
+    Description: The name of the Cassandra cluster.
     Type: String
     Default: Cassandra-Cluster
   DatacenterName:
-    Description: The name of the Cassandra Datacenter.
+    Description: The name of the Cassandra data center.
     Type: String
     Default: OSS-dc0
   NodeInstanceType:
@@ -188,16 +188,16 @@ Parameters:
       - r4.4xlarge
       - r4.8xlarge
       - r4.16xlarge
-    ConstraintDescription: "must be a valid EC2 instance type."
+    ConstraintDescription: "Must be a valid Amazon EC2 instance type."
     Default: m4.large
-    Description: "EC2 instance type of each node in the Cassandra Cluster"
+    Description: "Amazon EC2 instance type of each node in the Cassandra cluster."
     Type: String
   NodeVolumeSize:
       Type: Number
-      Description: "EBS volume size of each node in the Cassandra Cluster in GB"
+      Description: "Amazon EBS volume size of each node in the Cassandra cluster in GB."
       Default: 512
   CreateDevInstance:
-    Description: "Whether to create the jumpbox"
+    Description: "Determines whether to create the jump box."
     Type: String
     Default: "true"
     AllowedValues:
@@ -217,68 +217,68 @@ Parameters:
       - t3.large
       - t3.xlarge
       - t3.2xlarge
-    ConstraintDescription: "must be a valid EC2 instance type."
+    ConstraintDescription: "Must be a valid Amazon EC2 instance type."
     Default: t3.medium
-    Description: "EC2 instance type of the DevOps Instance"
+    Description: "EC2 instance type of the DevOps instance."
     Type: String
   DevVolumeSize:
       Type: Number
-      Description: "EBS volume size of the DevOps Instance in GB"
+      Description: "Amazon EBS volume size of the DevOps instance in GB."
       Default: 16
   KeyPairName:
     Type: "AWS::EC2::KeyPair::KeyName"
     AllowedPattern : ".+"
-    Description: "Select an existing KeyPair."
-    ConstraintDescription: "Name of an existing EC2 KeyPair."
+    Description: "Select an existing key pair."
+    ConstraintDescription: "Name of an existing Amazon EC2 key pair."
   PrivateSubnet1CIDR:
     AllowedPattern: ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/(1[6-9]|2[0-8]))$
-    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
+    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28.
     Default: 10.0.0.0/19
-    Description: CIDR block for private subnet 1 located in Availability Zone 1
+    Description: CIDR block for private subnet 1 located in Availability Zone 1.
     Type: String
   PrivateSubnet2CIDR:
     AllowedPattern: ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/(1[6-9]|2[0-8]))$
-    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
+    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28.
     Default: 10.0.32.0/19
-    Description: CIDR block for private subnet 2 located in Availability Zone 2
+    Description: CIDR block for private subnet 2 located in Availability Zone 2.
     Type: String
   PrivateSubnet3CIDR:
     AllowedPattern: ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/(1[6-9]|2[0-8]))$
-    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
+    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28.
     Default: 10.0.64.0/19
-    Description: CIDR block for private subnet 3 located in Availability Zone 3
+    Description: CIDR block for private subnet 3 located in Availability Zone 3.
     Type: String
   PublicSubnet1CIDR:
     AllowedPattern: ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/(1[6-9]|2[0-8]))$
-    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
+    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28.
     Default: 10.0.128.0/20
-    Description: CIDR block for the public (DMZ) subnet 1 located in Availability Zone 1
+    Description: CIDR block for the public (DMZ) subnet 1 located in Availability Zone 1.
     Type: String
   PublicSubnet2CIDR:
     AllowedPattern: ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/(1[6-9]|2[0-8]))$
-    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
+    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28.
     Default: 10.0.144.0/20
-    Description: CIDR block for the public (DMZ) subnet 2 located in Availability Zone 2
+    Description: CIDR block for the public (DMZ) subnet 2 located in Availability Zone 2.
     Type: String
   PublicSubnet3CIDR:
     AllowedPattern: ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/(1[6-9]|2[0-8]))$
-    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
+    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28.
     Default: 10.0.160.0/20
-    Description: CIDR block for the public (DMZ) subnet 3 located in Availability Zone 3
+    Description: CIDR block for the public (DMZ) subnet 3 located in Availability Zone 3.
     Type: String
   VPCCIDR:
     AllowedPattern: ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/(1[6-9]|2[0-8]))$
-    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
+    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28.
     Default: 10.0.0.0/16
-    Description: CIDR block for the VPC
+    Description: CIDR block for the VPC.
     Type: String
   RemoteAccessCIDR:
     AllowedPattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$"
-    ConstraintDescription: "CIDR block parameter must be in the form x.x.x.x/x"
-    Description: "Allowed CIDR block for external SSH access and for application access to the cassandra cluster, if the cluster is created with CreateClusterWithPublicIP=true"
+    ConstraintDescription: "CIDR block parameter must be in the form x.x.x.x/x."
+    Description: "Allowed CIDR block for external SSH access and for application access to the Cassandra cluster, if the cluster is created with CreateClusterWithPublicIP=true"
     Type: String
   CreateClusterWithPublicIP:
-    Description: "Whether to create the Cassandra Cluster nodes in public subnet"
+    Description: "Whether to create the Cassandra cluster nodes in public subnet."
     Type: String
     Default: "false"
     AllowedValues:
