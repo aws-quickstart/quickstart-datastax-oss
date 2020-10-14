@@ -26,18 +26,18 @@ Once logged in to the DevOps instance, run the following command:
 ssh -i $KEY_FILE ubuntu@$Seed1PrivateIpAddress
 ----
 
-If you chose to create the cluster in the public subnet, you can skip the above steps and ssh into one of the nodes with the public ip in the output tab.
+If you chose to create the cluster in the public subnet, you can skip the steps above and SSH in to one of the nodes with the public IP address in the *Output* tab.
 
-You can then view the status of the Apache Cassandra Cluster:
+Then you can view the status of the Cassandra cluster:
 [source,shell]
 ----
 ~$ nodetool status
 ----
 
-For a 6 node cluster, the nodetool status should be like
+For a 6-node cluster, the nodetool status should be:
 
 image::../images/nodetool_status.png[nodetool-status]
 [.text-center]
 *NodeTool Status*
 
-The Developer resource web site is accessible at DevUrl shown in the outputs.
+The developer resource website is accessible at *Dev Url* value in the *Output* tab.
