@@ -1,5 +1,5 @@
 // Add steps as necessary for accessing the software, post-configuration, and testing. Don’t include full usage instructions for your software, but add links to your product documentation for that information.
-After you deploy the Apache Cassandra cluster, the fastest way to begin using the cluster is to use SSH to connect to the DevOps instance and then to one of the node instances. You can use https://aws.amazon.com/blogs/security/securely-connect-to-linux-instances-running-in-a-private-amazon-vpc/[SSH agent forwarding] using the key pair (replacing the KEY_FILE and DevIpAddress values for those of your cluster).
+After you deploy the Cassandra cluster, the fastest way to begin using the cluster is to use SSH to connect to the DevOps instance and then to one of the node instances. You can use https://aws.amazon.com/blogs/security/securely-connect-to-linux-instances-running-in-a-private-amazon-vpc/[SSH agent forwarding] using the key pair (replacing the KEY_FILE and DevIpAddress values for those of your cluster).
 
 You can get the IP addresses of the nodes from the *Output* tab of the stack.
 
