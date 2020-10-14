@@ -1,10 +1,11 @@
 // Add steps as necessary for accessing the software, post-configuration, and testing. Don’t include full usage instructions for your software, but add links to your product documentation for that information.
 //Should any sections not be applicable, remove them
 
-// == Test the deployment
+== Test the deployment
 // If steps are required to test the deployment, add them here. If not, remove the heading
+include::../{includedir}/test_deployment.adoc[]
 
-== Post deployment steps
+== Post-deployment steps
 // If Post-deployment steps are required, add them here. If not, remove the heading
 Cassandra backs up data by taking a snapshot of all on-disk data files (SSTable files) stored in the data directory. You can take a snapshot of all keyspaces, a single keyspace, or a single table while the system is online. For more information about backing up and storing data, see https://cassandra.apache.org/doc/latest/operating/backups.html[Backups^] on the Cassandra documentation website.
 For information about storing backups in Amazon S3, see https://aws.amazon.com/getting-started/tutorials/backup-to-s3-cli/[Batch upload files to the cloud^].
