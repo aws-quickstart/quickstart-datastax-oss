@@ -6,7 +6,7 @@ Metadata:
   AWS::CloudFormation::Interface:
     ParameterGroups:
       - Label:
-          default: ' VPC network configuration'
+          default: 'VPC network configuration'
         Parameters:
           - AvailabilityZones
           - VPCCIDR
