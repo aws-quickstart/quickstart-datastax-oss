@@ -3,7 +3,7 @@
 
 == Test the deployment
 // If steps are required to test the deployment, add them here. If not, remove the heading
-include::../{includedir}/test_deployment.adoc[]
+include::../{specificdir}/test_deployment.adoc[]
 
 == Post-deployment steps
 // If Post-deployment steps are required, add them here. If not, remove the heading
