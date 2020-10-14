@@ -47,18 +47,6 @@ Metadata:
         default: Existing ID of the VPC
       VPCCIDR:
         default: VPC CIDR
-      PrivateSubnet1CIDR:
-        default: Private subnet 1 CIDR
-      PrivateSubnet2CIDR:
-        default: Private subnet 2 CIDR
-      PrivateSubnet3CIDR:
-        default: Private subnet 3 CIDR
-      PublicSubnet1CIDR:
-        default: Public subnet 1 CIDR
-      PublicSubnet2CIDR:
-        default: Public subnet 2 CIDR
-      PublicSubnet3CIDR:
-        default: Public subnet 3 CIDR
       OSSVersion:
         default: Apache Cassandra version to install
       ClusterSize:
@@ -87,6 +75,18 @@ Metadata:
         default: Amazon S3 bucket where the templates are stored
       S3KeyPrefix:
         default: Amazon S3 key prefix
+      PrivateSubnet1ID:
+        default: Private subnet 1 ID
+      PrivateSubnet2ID:
+        default: Private subnet 2 ID
+      PrivateSubnet3ID:
+        default: Private subnet 2 ID
+      PublicSubnet1ID:
+        default: Public subnet 1 ID
+      PublicSubnet2ID:
+        default: Public subnet 2 ID
+      PublicSubnet3ID:
+        default: Public subnet 3 ID
 Parameters:
   S3BucketName:
     AllowedPattern: '^[0-9a-zA-Z]+([0-9a-zA-Z-]*[0-9a-zA-Z])*$'
