@@ -1,0 +1,34 @@
+[
+    {
+        "ParameterKey": "S3BucketName",
+        "ParameterValue": "raks1dev"
+    },
+    {
+        "ParameterKey": "S3KeyPrefix",
+        "ParameterValue": "dspn/quickstart-datastax-oss"
+    },
+    {
+        "ParameterKey": "KeyPairName",
+        "ParameterValue": "raks-aws"
+    },
+    {
+        "ParameterKey": "RemoteAccessCIDR",
+        "ParameterValue": "0.0.0.0/0"
+    },
+    {
+        "ParameterKey": "AvailabilityZones",
+        "ParameterValue": "us-east-1a,us-east-1b,us-east-1c"
+    },
+    {
+        "ParameterKey": "ClusterSize",
+        "ParameterValue": "1"
+    },
+    {
+        "ParameterKey": "CreateDevInstance",
+        "ParameterValue": "false"
+    },
+    {
+        "ParameterKey": "CreateClusterWithPublicIP",
+        "ParameterValue": "true"
+    }
+]

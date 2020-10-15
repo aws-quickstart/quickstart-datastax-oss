@@ -10,4 +10,4 @@ Each cluster also includes a virtual machine (VM) that provides a complete set o
 
 Optionally, DataStax Luna provides subscription-based support for open-source Cassandra on AWS. DataStax Luna subscribers get the benefits of open-source software and direct access to the engineers who authored most of Cassandra's code and provide support for some of the largest Cassandra deployments.
 
-For details about Cassandra support, see https://luna.datastax.com./[DataStax Luna].
+For details about Cassandra support, see https://luna.datastax.com/[DataStax Luna].

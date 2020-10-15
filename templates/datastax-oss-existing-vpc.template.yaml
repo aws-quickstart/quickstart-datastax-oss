@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: 2010-09-09
-Description: (qs-1r0baum31) DataStax OSS in vpc 
+Description: (qs-1r0baum31) DataStax OSS in vpc
 Metadata:
   QuickStartDocumentation:
     EntrypointName: "Parameters for launching into an existing VPC"
@@ -407,6 +407,16 @@ Resources:
         KeyPairName: !Ref KeyPairName
         SecGroup: !GetAtt SecGroup.GroupId
 Outputs:
+  ApacheCassandraVersion:
+    Value: !Ref OSSVersion
+    Description: Apache Cassandra cluster version.
+  DevIpAddress:
+    Condition: CreateDev
+    Value: !GetAtt DevNodeStack.Outputs.DevIpAddress
+    Description: Dev jump box public IP.
+  DevUrl:
+    Value: "http://oss-getting-started.s3-website-us-east-1.amazonaws.com"
+    Description: Dev URL.
   Seed1PrivateIpAddress:
     Value: !GetAtt
       - SeedNode1Stack
@@ -429,13 +439,3 @@ Outputs:
       - SeedNode2Stack
       - Outputs.Seed2PublicIpAddress
     Description: C* 2nd seed node public IP.
-  DevIpAddress:
-    Condition: CreateDev
-    Value: !GetAtt DevNodeStack.Outputs.DevIpAddress
-    Description: Dev jump box public IP.
-  DevUrl:
-    Value: "http://oss-getting-started.s3-website-us-east-1.amazonaws.com"
-    Description: Dev URL.
-  ApacheCassandraVersion:
-    Value: !Ref OSSVersion
-    Description: Apache Cassandra cluster version.
