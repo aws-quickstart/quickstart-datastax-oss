@@ -285,6 +285,9 @@ Parameters:
       - "false"
       - "true"
 Conditions:
+  CreateDev: !Equals
+    - !Ref CreateDevInstance
+    - true
   Create2ndNode: !Or
     - !Equals [!Ref ClusterSize, 2]
     - !Not [!Equals [!Ref ClusterSize, 1]]
@@ -335,15 +338,16 @@ Resources:
         S3BucketName: !Ref S3BucketName
         S3KeyPrefix: !Ref S3KeyPrefix
 Outputs:
-  DevUrl:
-    Value: "http://oss-getting-started.s3-website-us-east-1.amazonaws.com"
-    Description: Dev Url
   ApacheCassandraVersion:
     Value: !Ref OSSVersion
     Description: Apache Cassandra Cluster Version.
   DevIpAddress:
+    Condition: CreateDev
     Value: !GetAtt CassandraStack.Outputs.DevIpAddress
     Description: Dev Jump box Public IP
+  DevUrl:
+    Value: "http://oss-getting-started.s3-website-us-east-1.amazonaws.com"
+    Description: Dev Url
   Seed1PrivateIpAddress:
     Value: !GetAtt
       - CassandraStack
