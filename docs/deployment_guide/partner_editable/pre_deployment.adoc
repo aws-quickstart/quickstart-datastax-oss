@@ -1,3 +1,47 @@
 //Include any predeployment steps here, such as signing up for a Marketplace AMI or making any changes to a partner account. If there are no predeployment steps, leave this file empty.
 
 == Predeployment steps
+
+=== Prepare your AWS account
+
+If you don’t already have an AWS account, create one at
+https://aws.amazon.com by following the on-screen instructions. Part of
+the sign-up process involves receiving a phone call and entering a PIN
+using the phone keypad.
+Use the region selector in the navigation bar to choose the AWS Region
+where you want to deploy the Quick Start on AWS.
+[.text-left]
+image::../docs/deployment_guide/images/choosing-region.png[]
+[.text-left]
+Choosing an AWS Region
+
+[TIP]
+Choose a Region closest to your data center or
+corporate network to reduce network latency between systems running on
+AWS and the systems and users on your corporate network.
+
+Also, note that your choice of Region determines whether the Quick
+Start deploys network address translation (NAT) gateways or NAT instances for network connections. For
+a list of Regions that support NAT gateways, see
+http://aws.amazon.com/vpc/pricing/[Amazon VPC pricing].
+
+Create a http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html[key
+pair] in your preferred Region. To do this, in the navigation pane of
+the Amazon EC2 console, choose *Key Pairs*, *Create Key Pair*, type a
+name, and then choose *Create*.
+[.text-left]
+image::../docs/deployment_guide/images/create-key-pair.png[]
+[.text-left]
+*Creating a key pair*
+
+Amazon EC2 uses public-key cryptography to encrypt and decrypt login
+information. To log in to your instances, you must create a
+key pair. With Windows instances, a key pair is used to obtain the
+administrator password through the Amazon EC2 console and then log in using
+Remote Desktop Protocol (RDP), as explained in the
+http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html#having-ec2-create-your-key-pair[Amazon Elastic Compute Cloud User Guide]. When using
+Linux, a key pair is used to authenticate Secure Shell (SSH) login.
+
+=== Prepare your {partner-company-name} account
+
+(Optional) Create a free account in https://academy.datastax.com[DataStax Academy] for Apache Cassandra certification resources, courses, and role-based learning paths.

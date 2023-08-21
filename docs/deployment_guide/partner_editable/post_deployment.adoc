@@ -1,3 +1,66 @@
 // Include any postdeployment steps here, such as steps necessary to test that the deployment was successful. If there are no postdeployment steps, leave this file empty.
+image::../docs/deployment_guide/images/cfn_outputs.png[outputs]
 
 == Postdeployment steps
+
+Cassandra backs up data by taking a snapshot of all on-disk data files (SSTable files) stored in the data directory. You can take a snapshot of all keyspaces, a single keyspace, or a single table while the system is online. For more information about backing up and storing data, see https://cassandra.apache.org/doc/latest/operating/backups.html[Backups^] on the Cassandra documentation website.
+For information about storing backups in Amazon S3, see https://aws.amazon.com/getting-started/tutorials/backup-to-s3-cli/[Batch upload files to the cloud^].
+
+=== Test the deployment
+
+After you deploy the Cassandra cluster, the fastest way to begin using the cluster is to use SSH to connect to the DevOps instance and then to one of the node instances. You can use https://aws.amazon.com/blogs/security/securely-connect-to-linux-instances-running-in-a-private-amazon-vpc/[SSH agent forwarding] using the key pair (replacing the KEY_FILE and DevIpAddress values for those of your cluster).
+
+You can get the IP addresses of the nodes from the *Output* tab of the stack.
+
+image::../docs/deployment_guide/images/oss-stack-output-dev.png[stack-output]
+
+[.text-center]
+*Stack Output*
+
+[source,shell]
+----
+ssh -i $KEY_FILE ubuntu@$DevIpAddress
+----
+
+You can get the Seed1PrivateIpAddress from the *Output* tab of the stack.
+
+image::../docs/deployment_guide/images/oss-stack-output-seed1.png[seed1-private-ip]
+[.text-center]
+*Seed1 IP*
+
+Once logged in to the DevOps instance, run the following command:
+
+[source,shell]
+----
+ssh -i $KEY_FILE ubuntu@$Seed1PrivateIpAddress
+----
+
+If you chose to create the cluster in the public subnet, you can skip the steps above and SSH in to one of the nodes with the public IP address in the *Output* tab.
+
+Then you can view the status of the Cassandra cluster:
+[source,shell]
+----
+~$ nodetool status
+----
+
+For a 6-node cluster, the nodetool status should be:
+
+image::../docs/deployment_guide/images/nodetool_status.png[nodetool-status]
+[.text-center]
+*NodeTool Status*
+
+The developer resource website is accessible at *Dev Url* value in the *Output* tab.
+
+== Best practices for using {partner-product-name} on AWS
+// Provide post-deployment best practices for using the technology on AWS, including considerations such as migrating data, backups, ensuring high performance, high availability, etc. Link to software documentation for detailed information.
+
+See the following resources:
+
+* https://www.datastax.com/resources/whitepaper/data-modeling-apache-cassandra[Data Modeling in Apache Cassandra^]
+
+* https://docs.datastax.com/en/devapp/doc/devapp/driversBestPractices.html[Best practices for DataStax drivers^]
+
+// == Security
+// Provide post-deployment best practices for using the technology on AWS, including considerations such as migrating data, backups, ensuring high performance, high availability, etc. Link to software documentation for detailed information.
+
+// _Add any security-related information._

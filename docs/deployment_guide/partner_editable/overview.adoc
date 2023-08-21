@@ -1,10 +1,13 @@
 This guide covers the information you need to deploy the {partner-product-name} Partner Solution in the AWS Cloud.
 
-// Fill in the info in <angle brackets> for use on the landing page only: 
-This Amazon Web Services (AWS) Partner Solution deploys [<product name>](<partner's marketing product page>) in the AWS Cloud so that <purpose>. This solution is for <target users> who want to <do what> so that <why>. For more information, refer to the [<product name> documentation](<URL>).
+As Cassandra adoption grows within your organization, so could the challenges involved with using, maintaining, and supporting the technology. These challenges can add considerable cost, complexity, and administrative burden. Cassandra addresses these challenges by streamlining operations and controlling costs for all your Cassandra workloads.
 
-// Deploying this solution does not guarantee an organization’s compliance with any laws, certifications, policies, or other regulations. [Uncomment this statement only for solutions that relate to compliance. We'll add the corresponding reference part to the landing page and get legal approval before publishing.]
+This Partner Solution reference deployment guide provides step-by-step instructions for deploying Apache Cassandra 4.0 on the AWS Cloud. Cassandra is an open-source, scalable, active-everywhere NoSQL database used by the internet’s largest applications. Cassandra is the only NoSQL database with a masterless architecture enabling zero downtime, zero lock-in, and global scale for data sovereignty.
 
-// For advanced information about the product, troubleshooting, or additional functionality, refer to the https://{partner-solution-github-org}.github.io/{partner-solution-project-name}/operational/index.html[Operational Guide^].
+Cassandra for AWS gives users and enterprises a deployment process based on cloud best practices to quickly install an Cassandra cluster on AWS in a single Region across multiple zones.
 
-// For information about using this Partner Solution for migrations, refer to the https://{partner-solution-github-org}.github.io/{partner-solution-project-name}/migration/index.html[Migration Guide^].
+Each cluster also includes a virtual machine (VM) that provides a complete set of development resources, including code examples, documentation, and data integration tools.
+
+Optionally, DataStax Luna provides subscription-based support for open-source Cassandra on AWS. DataStax Luna subscribers get the benefits of open-source software and direct access to the engineers who authored most of Cassandra's code and provide support for some of the largest Cassandra deployments.
+
+For details about Cassandra support, see https://luna.datastax.com/[DataStax Luna].
