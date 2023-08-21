@@ -1,6 +1,8 @@
-// If no preperation is required, remove all content from here
+//Include any predeployment steps here, such as signing up for a Marketplace AMI or making any changes to a partner account. If there are no predeployment steps, leave this file empty.
 
-==== Prepare your AWS account
+== Predeployment steps
+
+=== Prepare your AWS account
 
 If you don’t already have an AWS account, create one at
 https://aws.amazon.com by following the on-screen instructions. Part of
@@ -9,7 +11,7 @@ using the phone keypad.
 Use the region selector in the navigation bar to choose the AWS Region
 where you want to deploy the Quick Start on AWS.
 [.text-left]
-image::../images/choosing-region.png[]
+image::../docs/deployment_guide/images/choosing-region.png[]
 [.text-left]
 Choosing an AWS Region
 
@@ -28,7 +30,7 @@ pair] in your preferred Region. To do this, in the navigation pane of
 the Amazon EC2 console, choose *Key Pairs*, *Create Key Pair*, type a
 name, and then choose *Create*.
 [.text-left]
-image::../images/create-key-pair.png[]
+image::../docs/deployment_guide/images/create-key-pair.png[]
 [.text-left]
 *Creating a key pair*
 
@@ -40,10 +42,6 @@ Remote Desktop Protocol (RDP), as explained in the
 http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html#having-ec2-create-your-key-pair[Amazon Elastic Compute Cloud User Guide]. When using
 Linux, a key pair is used to authenticate Secure Shell (SSH) login.
 
-==== Prepare your {partner-company-name} account
+=== Prepare your {partner-company-name} account
 
 (Optional) Create a free account in https://academy.datastax.com[DataStax Academy] for Apache Cassandra certification resources, courses, and role-based learning paths.
-
-==== Prepare for the deployment
-
-// Describe any preparation required to complete the product build, such as obtaining licenses or placing files in S3

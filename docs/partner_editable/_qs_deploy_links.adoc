@@ -1,5 +1,0 @@
-[cols=",]
-|===
-|https://fwd.aws/DWjgJ[Deploy {partner-product-name} into a new VPC on AWS^] 
-|https://fwd.aws/dNAeQ[Deploy {partner-product-name} into an existing VPC on AWS^]
-|===

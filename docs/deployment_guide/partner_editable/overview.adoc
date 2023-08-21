@@ -1,0 +1,13 @@
+This guide covers the information you need to deploy the {partner-product-name} Partner Solution in the AWS Cloud.
+
+As Cassandra adoption grows within your organization, so could the challenges involved with using, maintaining, and supporting the technology. These challenges can add considerable cost, complexity, and administrative burden. Cassandra addresses these challenges by streamlining operations and controlling costs for all your Cassandra workloads.
+
+This Partner Solution reference deployment guide provides step-by-step instructions for deploying Apache Cassandra 4.0 on the AWS Cloud. Cassandra is an open-source, scalable, active-everywhere NoSQL database used by the internet’s largest applications. Cassandra is the only NoSQL database with a masterless architecture enabling zero downtime, zero lock-in, and global scale for data sovereignty.
+
+Cassandra for AWS gives users and enterprises a deployment process based on cloud best practices to quickly install an Cassandra cluster on AWS in a single Region across multiple zones.
+
+Each cluster also includes a virtual machine (VM) that provides a complete set of development resources, including code examples, documentation, and data integration tools.
+
+Optionally, DataStax Luna provides subscription-based support for open-source Cassandra on AWS. DataStax Luna subscribers get the benefits of open-source software and direct access to the engineers who authored most of Cassandra's code and provide support for some of the largest Cassandra deployments.
+
+For details about Cassandra support, see https://luna.datastax.com/[DataStax Luna].
